@@ -11,6 +11,9 @@ class LogHelper
 	 */
 	private static function log(value:Dynamic, level:LogStyle):Void
 	{
+		if (value == null)
+			value = "null";
+
 		Sys.println(value);
 		flixel.FlxG.log.advanced(value, level);
 	}

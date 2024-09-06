@@ -1,5 +1,7 @@
 package helpers;
 
+import lua_bridge.LuaScript;
+import lua_bridge.LuaCache;
 import haxe.io.Path;
 import sys.io.File;
 import openfl.display.BitmapData;
@@ -8,7 +10,7 @@ import sys.FileSystem;
 
 class FileHelper
 {
-	private static var loadedGraphics:haxe.ds.Map<String, FlxGraphic> = new haxe.ds.Map<String, FlxGraphic>();
+	private static var loadedGraphics:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
 
 	/**
 	 * Converts the path to an usable path
@@ -20,18 +22,19 @@ class FileHelper
 		// Path from script
 		if (file.charAt(0) == '.')
 		{
-			// ../Images/gfDanceTitle.png => ~/source/States/Title/Scripts/../Images/gfDanceTitle.png
-			// File from executable => File from script
+			var script:Null<LuaScript> = LuaCache.GetScript();
+
+			// File from script => File from executable 
+			if (script != null)
+				file = Path.directory(script.file) + "/" + file;
 		}
 
 		// Path from executable
 		if (file.charAt(0) == '~')
 			file = '.' + file.substring(1);
 
-		//if (true)
-		//	file = Path.normalize(file);
-
-		LogHelper.info(file);
+		// Normalize the path
+		file = haxe.io.Path.normalize(file);
 
 		// If path is an existing file, return path
 		if (FileSystem.exists(file) && !FileSystem.isDirectory(file))

@@ -1,5 +1,6 @@
 package lua_bridge;
 
+import sys.thread.Thread;
 import helpers.LogHelper;
 import llua.Convert;
 import llua.Lua;
@@ -16,6 +17,9 @@ class LuaHelper
 	 */
 	public static function call(lua:State, name:String):Int
 	{
+		// Update the last script
+		LuaCache.SetLastScript(lua);
+
 		var result:Dynamic = null;
 
 		try

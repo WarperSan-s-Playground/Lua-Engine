@@ -8,7 +8,7 @@ function CreateGF()
         return;
     end
 
-    local c = loadGraphic(gf.value, "~/source/States/Title/Images/gfDanceTitle.png", "~/source/States/Title/XML/gfDanceTitle.xml");
+    local c = loadGraphic(gf.value, "../Images/gfDanceTitle.png", "../XML/gfDanceTitle.xml");
 
     if c.isError then
         trace("Failed to load the graphic: " .. c.message);
@@ -31,4 +31,4 @@ end
 
 CreateGF();
 --RemoveGF();
-trace("TEST");
+trace(p);
