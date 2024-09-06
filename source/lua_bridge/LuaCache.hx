@@ -25,6 +25,10 @@ class LuaCache
 		lastScriptRan.set(Thread.current(), script);
 	}
 
+	/**
+	 * Fetches the last script ran on this thread
+	 * @return Last script ran or null if nothing found
+	 */
 	public static function GetScript():Null<LuaScript>
 	{
 		var current:Thread = Thread.current();
@@ -38,6 +42,7 @@ class LuaCache
 		return lastScriptRan.get(current);
 	}
 
+	/** Links the given script to the given state */
 	public static function LinkScript(lua:State, script:LuaScript):Void
 	{
 		// If exists, skip
@@ -50,6 +55,7 @@ class LuaCache
 		runningScripts.set(lua, script);
 	}
 
+	/** Unlinks the given script from the given state if they were linked */
 	public static function UnlinkScript(lua:State, script:LuaScript):Void
 	{
 		// If not found, skip

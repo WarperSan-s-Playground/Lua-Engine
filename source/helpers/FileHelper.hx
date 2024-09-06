@@ -15,10 +15,14 @@ class FileHelper
 	/**
 	 * Converts the path to an usable path
 	 * @param file User given path
-	 * @return Null<String> Path to use or null if invalid
+	 * @return Path to use or null if invalid
 	 */
-	public static function GetPath(file:String):Null<String>
+	public static function GetPath(file:Null<String>):Null<String>
 	{
+		// If file not given, skip
+		if (file == null)
+			return null;
+
 		// Path from script
 		if (file.charAt(0) == '.')
 		{
@@ -46,7 +50,7 @@ class FileHelper
 	/**
 	 * Reads the content of the given file
 	 * @param file File to read from
-	 * @return Null<String> Content read or null if invalid
+	 * @return Content read or null if invalid
 	 */
 	public static function ReadFile(file:String):Null<String>
 	{
@@ -61,7 +65,7 @@ class FileHelper
 	/**
 	 * Creates a graphic from the given file
 	 * @param file File of the resource
-	 * @return Null<FlxGraphic> Graphic for this file
+	 * @return Graphic for this file
 	 */
 	public static function LoadGraphic(file:String):Null<FlxGraphic>
 	{
@@ -92,7 +96,7 @@ class FileHelper
 	 * Creates frames from the given file
 	 * @param graphic Graphic to add the animation to
 	 * @param file File of the resource
-	 * @return Null<flixel.graphics.frames.FlxFramesCollection> Animation for this file
+	 * @return Animation for this file
 	 */
 	public static function LoadFrames(graphic:flixel.graphics.FlxGraphic, file:String):Null<flixel.graphics.frames.FlxFramesCollection>
 	{

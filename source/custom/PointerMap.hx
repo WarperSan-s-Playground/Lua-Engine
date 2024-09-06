@@ -10,7 +10,7 @@ class PointerMap<T1, T2>
 	public function new() {}
 
 	/** Sets the given value to the given key */
-	public function set(key:T1, value:T2)
+	public function set(key:T1, value:T2):Void
 	{
         var index:Int = this.indexOf(key);
 		if (index != -1)
@@ -23,7 +23,7 @@ class PointerMap<T1, T2>
 	}
 
 	/** Removes the given key */
-	public function remove(key:T1)
+	public function remove(key:T1):Void
 	{
         var index:Int = this.indexOf(key);
         this.data.splice(index, 1);

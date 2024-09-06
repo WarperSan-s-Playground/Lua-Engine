@@ -12,10 +12,7 @@ class PlayState extends flixel.FlxState
 
 		flixel.FlxG.autoPause = false;
 
-		// ~ = Path from Exectuable
-		// . = Path from Script
-
-		var script:LuaScript = this.addScript("source/States/Title/Scripts/script.lua");
+		var script:LuaScript = LuaScript.openFile("source/States/Title/Scripts/script.lua");
 		script.close();
 	}
 

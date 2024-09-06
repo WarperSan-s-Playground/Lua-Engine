@@ -1,34 +1,42 @@
-GF_ID = -1;
+TITLE_DATA = nil;
 
-function CreateGF()
-    local gf = makeSprite();
+function LoadTitleData()
+    local loadMSG = fromJSON("../gfDanceTitle.json");
 
-    if gf.isError then
-        trace("Failed to create a sprite: " .. gf.message);
+    if loadMSG.isError then
+        trace("Failed to load the data: " .. loadMSG.message);
         return;
     end
 
-    local c = loadGraphic(gf.value, "../Images/gfDanceTitle.png", "../XML/gfDanceTitle.xml");
-
-    if c.isError then
-        trace("Failed to load the graphic: " .. c.message);
-        return;
-    end
-
-    local idle = addAnimationByPrefix(gf.value, "gfDanceTitle", "gfDance", 24, true);
-
-    if idle.isError then
-        trace("Failed to load the animation: " .. idle.message);
-        return;
-    end
-
-    GF_ID = gf.value;
+    TITLE_DATA = loadMSG.value;
 end
 
-function RemoveGF()
-    removeSprite(GF_ID);
+function CreateLogo()
+    local logoMSG = makeSprite(
+        TITLE_DATA["titleX"],
+        TITLE_DATA["titleY"]
+    );
+
+    if logoMSG.isError then
+        trace("Failed to create a sprite: " .. logoMSG.message);
+        return;
+    end
+
+    local graphicMSG = loadGraphic(logoMSG.value, "../Images/logoBumpin.png", "../XML/logoBumpin.xml");
+
+    if graphicMSG.isError then
+        trace("Failed to load the graphic: " .. graphicMSG.message);
+        return;
+    end
+
+    local animMSG = addAnimationByPrefix(logoMSG.value, "bump", "logo bumpin", 24, true);
+
+    if animMSG.isError then
+        trace("Failed to load the animation: " .. animMSG.message);
+        return;
+    end
 end
 
-CreateGF();
---RemoveGF();
-trace(p);
+addScript("./gfTitle.lua");
+LoadTitleData();
+CreateLogo();

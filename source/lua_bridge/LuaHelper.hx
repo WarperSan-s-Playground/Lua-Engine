@@ -1,6 +1,5 @@
 package lua_bridge;
 
-import sys.thread.Thread;
 import helpers.LogHelper;
 import llua.Convert;
 import llua.Lua;
@@ -13,7 +12,7 @@ class LuaHelper
 	 * Calls the given method in the given script
 	 * @param lua Lua script to target
 	 * @param name Name of the method to call
-	 * @return Int The method returned a value
+	 * @return The method returned a value
 	 */
 	public static function call(lua:State, name:String):Int
 	{
@@ -39,12 +38,12 @@ class LuaHelper
 
 			// Call method
 			var value:Dynamic = Reflect.callMethod(null, callback, args);
-			result = LuaError.success(value);
+			result = LuaMessage.success(value);
 		}
 		catch (e:String)
 		{
 			LogHelper.error('Error while calling \'$name\': $e');
-			result = LuaError.error(e);
+			result = LuaMessage.error(e);
 		}
 
 		Convert.toLua(lua, result);
@@ -55,25 +54,22 @@ class LuaHelper
 	 * Adds the given function to the given lua script
 	 * @param lua Script to add to
 	 * @param name Name of the function
-	 * @param func Callback of the function
+	 * @param Callback of the function
 	 */
 	public static function add(lua:State, name:String, func:Dynamic):Void
 	{
-		// If added
-		if (Lua_helper.callbacks.exists(name))
-		{
-			LogHelper.warn('The function \'$name\' was already added.');
-			return;
-		}
+		// If already added, skip
+		//if (Lua_helper.callbacks.exists(name))
+		//	return;
 
 		Lua_helper.add_callback(lua, name, func);
-		LogHelper.debug('The function \'$name\' was added to the current file.');
+		//LogHelper.debug('The function \'$name\' was added to the current file.');
 	}
 
 	/**
 	 * Adds all the functions from the given object as a callback
 	 * @param lua Script to add to
-	 * @param o Object to fetch the functions from
+	 * @param Object to fetch the functions from
 	 */
 	public static function addAll(lua:State, o:Dynamic):Void
 	{
@@ -86,10 +82,7 @@ class LuaHelper
 
 			// If not a function, skip
 			if (!Reflect.isFunction(callback))
-			{
-				LogHelper.warn('The field \'$field\' is invalid for a callback.');
 				continue;
-			}
 
 			LuaHelper.add(lua, field, callback);
 		}
@@ -98,7 +91,7 @@ class LuaHelper
 	/**
 	 * Fetches the object with the given ID
 	 * @param id ID of the object
-	 * @return flixel.FlxBasic Object fetched
+	 * @return Object fetched
 	 */
 	public static function getObject(id:Int):flixel.FlxBasic
 	{

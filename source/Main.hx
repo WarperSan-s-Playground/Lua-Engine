@@ -1,5 +1,7 @@
 package;
 
+import flixel.FlxG;
+import openfl.display.FPS;
 import builtin.LogBuiltIn;
 import flixel.FlxGame;
 import openfl.display.Sprite;
@@ -22,5 +24,11 @@ class Main extends Sprite
 		llua.Lua.set_callbacks_function(luaCallback);
 
 		addChild(new FlxGame(0, 0, PlayState, 60, 60, true));
+
+		var fps:FPS = new FPS(0, 0, 0xffffff);
+		addChild(fps);
+
+		FlxG.updateFramerate = 240;
+		FlxG.drawFramerate = 240;
 	}
 }

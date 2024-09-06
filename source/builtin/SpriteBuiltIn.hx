@@ -26,6 +26,7 @@ class SpriteBuiltIn
 		var sprite:FlxSprite = new FlxSprite();
 		sprite.x = x;
 		sprite.y = y;
+		sprite.antialiasing = true;
 		state.add(sprite);
 
 		return sprite.ID;
