@@ -9,6 +9,7 @@ function LoadTitleData()
     end
 
     TITLE_DATA = loadMSG.value;
+    setGlobal("TITLE_DATA", TITLE_DATA);
 end
 
 function CreateLogo()
@@ -37,6 +38,6 @@ function CreateLogo()
     end
 end
 
-addScript("./gfTitle.lua");
 LoadTitleData();
+addScript("./gfTitle.lua");
 CreateLogo();

@@ -6,6 +6,7 @@ import haxe.Json;
 import haxe.io.Path;
 import helpers.FileHelper;
 
+/** Class holding every built-in methods for files */
 class FileBuiltIn
 {
 	/**
