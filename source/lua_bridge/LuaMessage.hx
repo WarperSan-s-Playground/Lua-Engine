@@ -26,7 +26,7 @@ class LuaMessage
 	 * @param message Message of the error
 	 * @param value Value of the error
 	 */
-	public static function error(message:String = "Message undefined", value:Dynamic = false):Dynamic
+	public static function error(message:String = "Message undefined", value:Null<Dynamic> = false):Dynamic
 	{
 		return create(message, value, true);
 	}
@@ -35,8 +35,14 @@ class LuaMessage
 	 * Creates a success
 	 * @param value Value of the success
 	 */
-	public static function success(value:Dynamic = true):Dynamic
+	public static function success(value:Null<Dynamic>):Dynamic
 	{
 		return create("Success.", value, false);
+	}
+
+	/** Checks if the given message is an error */
+	public static function isError(message:Dynamic):Bool
+	{
+		return message == null || message.isError;
 	}
 }

@@ -1,7 +1,7 @@
 package builtin;
 
-import lua_bridge.LuaScript;
 import lua_bridge.LuaCache;
+import lua_bridge.LuaScript;
 
 /** Class holding every built-in methods for data */
 class DataBuiltIn

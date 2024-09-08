@@ -1,8 +1,8 @@
 package builtin;
 
-import flixel.animation.FlxAnimationController;
-import lua_bridge.LuaHelper;
 import flixel.FlxSprite;
+import flixel.animation.FlxAnimationController;
+import helpers.LuaHelper;
 
 /**
  * Class holding every built-in methods for animations

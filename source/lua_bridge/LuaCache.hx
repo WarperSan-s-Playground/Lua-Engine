@@ -2,8 +2,8 @@ package lua_bridge;
 
 import custom.PointerMap;
 import helpers.LogHelper;
-import sys.thread.Thread;
 import llua.State;
+import sys.thread.Thread;
 
 class LuaCache
 {

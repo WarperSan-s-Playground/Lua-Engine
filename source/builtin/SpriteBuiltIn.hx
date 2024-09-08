@@ -1,10 +1,10 @@
 package builtin;
 
-import helpers.FileHelper;
-import lua_bridge.LuaHelper;
-import flixel.FlxSprite;
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.FlxState;
+import helpers.FileHelper;
+import helpers.LuaHelper;
 
 /**
  * Class holding every built-in methods for sprites

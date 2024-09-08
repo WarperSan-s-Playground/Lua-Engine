@@ -1,7 +1,7 @@
 package builtin;
 
-import helpers.LogHelper;
 import haxe.PosInfos;
+import helpers.LogHelper;
 
 /**
  * Class holding every built-in methods for logs

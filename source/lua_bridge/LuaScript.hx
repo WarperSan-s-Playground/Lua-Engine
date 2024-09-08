@@ -1,15 +1,12 @@
 package lua_bridge;
 
-import builtin.DataBuiltIn;
+import haxe.ds.GenericStack;
 import helpers.FileHelper;
-import llua.Lua;
-import builtin.FileBuiltIn;
-import llua.State;
-import llua.LuaL;
 import helpers.LogHelper;
-import builtin.LogBuiltIn;
-import builtin.AnimationBuiltIn;
-import builtin.SpriteBuiltIn;
+import helpers.LuaHelper;
+import llua.Lua;
+import llua.LuaL;
+import llua.State;
 
 class LuaScript
 {
@@ -37,7 +34,19 @@ class LuaScript
 		// Close self
 		LuaCache.UnlinkScript(this.lua, this);
 		llua.Lua.close(this.lua);
-		rootScripts.remove(this);
+		roots.remove(this);
+	}
+
+	// #region Constructor
+	public var file:String;
+
+	private var lua:llua.State;
+
+	private function new(file:String, parent:Null<LuaScript>)
+	{
+		this.setFile(file);
+		this.setLua();
+		this.setParent(parent);
 	}
 
 	/**
@@ -65,38 +74,6 @@ class LuaScript
 		return script;
 	}
 
-	/** Executes this script */
-	public function execute():Void
-	{
-		try
-		{
-			LuaL.openlibs(this.lua);
-			LuaCache.LinkScript(this.lua, this);
-			var index:Int = LuaL.dofile(this.lua, this.file);
-
-			var result:Null<String> = Lua.tostring(this.lua, index);
-
-			if (result != null)
-				throw(result);
-		}
-		catch (e:String)
-		{
-			LogHelper.error('Error while executing \'${this.file}\': $e');
-		}
-	}
-
-	// #region Constructor
-	public var file:String;
-
-	private var lua:llua.State;
-
-	private function new(file:String, parent:Null<LuaScript>)
-	{
-		this.setFile(file);
-		this.setLua();
-		this.setParent(parent);
-	}
-
 	/** Sets the current file to the given file */
 	private function setFile(file:String):Void
 	{
@@ -114,16 +91,17 @@ class LuaScript
 		this.lua = LuaL.newstate();
 
 		// Add every built-in methods
-		LuaHelper.addAll(this.lua, SpriteBuiltIn);
-		LuaHelper.addAll(this.lua, AnimationBuiltIn);
-		LuaHelper.addAll(this.lua, LogBuiltIn);
-		LuaHelper.addAll(this.lua, FileBuiltIn);
-		LuaHelper.addAll(this.lua, DataBuiltIn);
+		LuaHelper.addAll(this.lua, builtin.SpriteBuiltIn);
+		LuaHelper.addAll(this.lua, builtin.AnimationBuiltIn);
+		LuaHelper.addAll(this.lua, builtin.LogBuiltIn);
+		LuaHelper.addAll(this.lua, builtin.FileBuiltIn);
+		LuaHelper.addAll(this.lua, builtin.DataBuiltIn);
+		LuaHelper.addAll(this.lua, builtin.StateBuiltIn);
 	}
 
 	// #endregion
 	// #region Root
-	private static var rootScripts:Array<LuaScript> = new Array<LuaScript>(); // Root scripts
+	private static var roots:Array<LuaScript> = new Array<LuaScript>(); // Root scripts
 
 	/**
 	 * Opens the given file as a lua script
@@ -133,6 +111,57 @@ class LuaScript
 	public static function openFile(file:String):Null<LuaScript>
 	{
 		return LuaScript.create(file, null);
+	}
+
+	/**
+	 * Finds the first script that is the given file
+	 * @param file File to search for
+	 * @return Script that is the given file
+	 */
+	public static function findScript(file:String):Null<LuaScript>
+	{
+		var fixed:Null<String> = FileHelper.GetPath(file);
+
+		if (fixed == null)
+			throw('Could not find the file at \'$file\'.');
+
+		var script:Null<LuaScript> = null;
+
+		for (root in roots)
+		{
+			script = root.findScriptInside(fixed);
+
+			// If found, stop
+			if (script != null)
+				break;
+		}
+
+		return script;
+	}
+
+	/**
+	 * Finds the first script that is the given file
+	 * @param file File to search for
+	 * @return Script that is the given file
+	 */
+	private function findScriptInside(file:String):Null<LuaScript>
+	{
+		// If looking for this, skip
+		if (this.file == file)
+			return this;
+
+		var script:Null<LuaScript> = null;
+
+		for (child in this.children)
+		{
+			script = child.findScriptInside(file);
+
+			// If found, stop
+			if (script != null)
+				break;
+		}
+
+		return script;
 	}
 
 	// #endregion
@@ -156,13 +185,15 @@ class LuaScript
 		// If root, add to roots
 		if (parent == null)
 		{
-			rootScripts.push(this);
+			roots.push(this);
 		}
 		else
 		{
 			parent.children.push(this);
 			this.parent = parent;
 		}
+
+		this.call("OnParentChanged", [parent], false);
 	}
 
 	// #endregion
@@ -188,6 +219,12 @@ class LuaScript
 		// If not overwrite and key exists, error
 		if (!overwrite && this.data.exists(key))
 			throw('The key \'$key\' already exists for \'$file\'.');
+
+		var old:Dynamic = this.data.get(key);
+		var msg:Dynamic = this.call("OnDataSet", [old, value, key], false)[0];
+
+		if (!LuaMessage.isError(msg))
+			value = msg.value;
 
 		this.data.set(key, value);
 	}
@@ -225,6 +262,56 @@ class LuaScript
 			return;
 
 		this.parent.removeData(key);
+	}
+
+	// #endregion
+	// #region Executing
+
+	/** Executes this script */
+	public function execute():Void
+	{
+		try
+		{
+			LuaL.openlibs(this.lua);
+			LuaCache.LinkScript(this.lua, this);
+			var status:Int = LuaL.dofile(this.lua, this.file);
+
+			if (status != Lua.LUA_OK)
+				throw(Lua.tostring(this.lua, status));
+		}
+		catch (e:String)
+		{
+			LogHelper.error('Error while executing \'${this.file}\': $e');
+		}
+	}
+
+	/** Calls the given method in this script and it's children */
+	public function call(name:String, args:Array<Dynamic>, callInChildren:Bool):Array<Null<Dynamic>>
+	{
+		var results:Array<Null<Dynamic>> = [];
+		var remaining:Array<LuaScript> = [this];
+
+		while (remaining.length > 0)
+		{
+			var current:LuaScript = remaining.pop();
+
+			// Skip if closed
+			if (current.isClosed)
+				continue;
+
+			var result:Null<Dynamic> = LuaHelper.call(current.lua, name, args);
+
+			results.push(result);
+
+			// Call in children
+			if (callInChildren)
+			{
+				for (child in current.children)
+					remaining.push(child);
+			}
+		}
+
+		return results;
 	}
 
 	// #endregion

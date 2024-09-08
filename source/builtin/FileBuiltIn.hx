@@ -1,10 +1,10 @@
 package builtin;
 
-import lua_bridge.LuaCache;
-import lua_bridge.LuaScript;
 import haxe.Json;
 import haxe.io.Path;
 import helpers.FileHelper;
+import lua_bridge.LuaCache;
+import lua_bridge.LuaScript;
 
 /** Class holding every built-in methods for files */
 class FileBuiltIn
@@ -65,10 +65,28 @@ class FileBuiltIn
 
 			child = script.openOther(file);
 		}
-        else
-            child = LuaScript.openFile(file);
+		else
+			child = LuaScript.openFile(file);
 
 		if (child == null)
 			throw('Failed to create a script for the file \'$file\'.');
+	}
+
+	/**
+	 * Closes the script associated with the given file
+	 * @param file File to close
+	 */
+	public static function closeScript(file:Null<String> = null):Void
+	{
+		// If file not given, skip
+		if (file == null)
+			return;
+
+		var script:Null<LuaScript> = LuaScript.findScript(file);
+
+		if (script == null)
+			throw('Could not find an instance of \'$file\'.');
+
+		script.close();
 	}
 }

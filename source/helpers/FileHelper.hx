@@ -1,12 +1,12 @@
 package helpers;
 
-import lua_bridge.LuaScript;
-import lua_bridge.LuaCache;
-import haxe.io.Path;
-import sys.io.File;
-import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
+import haxe.io.Path;
+import lua_bridge.LuaCache;
+import lua_bridge.LuaScript;
+import openfl.display.BitmapData;
 import sys.FileSystem;
+import sys.io.File;
 
 class FileHelper
 {
@@ -19,23 +19,11 @@ class FileHelper
 	 */
 	public static function GetPath(file:Null<String>):Null<String>
 	{
+		file = ParsePath(file);
+
 		// If file not given, skip
 		if (file == null)
 			return null;
-
-		// Path from script
-		if (file.charAt(0) == '.')
-		{
-			var script:Null<LuaScript> = LuaCache.GetScript();
-
-			// File from script => File from executable 
-			if (script != null)
-				file = Path.directory(script.file) + "/" + file;
-		}
-
-		// Path from executable
-		if (file.charAt(0) == '~')
-			file = '.' + file.substring(1);
 
 		// Normalize the path
 		file = haxe.io.Path.normalize(file);
@@ -45,6 +33,40 @@ class FileHelper
 			return file;
 
 		return null;
+	}
+
+	/**
+	 * Parses the given path to the absolute path
+	 * @param file User given path
+	 * @return Path to use or null if invalid
+	 */
+	public static function ParsePath(file:Null<String>):Null<String>
+	{
+		// If file not given, skip
+		if (file == null)
+			return null;
+
+		var firstChar:String = file.charAt(0);
+
+		// Search path from running script
+		if (firstChar == '.')
+		{
+			var script:Null<LuaScript> = LuaCache.GetScript();
+
+			// File from script => File from executable
+			if (script != null)
+				file = Path.directory(script.file) + "/" + file;
+		}
+		// Search path from the executable
+		else if (firstChar == '~')
+		{
+			file = '.' + file.substring(1);
+		}
+		// Search path from either script or executable
+		else
+			file = GetPath('./' + file) ?? GetPath('~/' + file);
+
+		return file;
 	}
 
 	/**
