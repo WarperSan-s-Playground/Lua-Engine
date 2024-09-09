@@ -12,11 +12,11 @@ class PointerMap<T1, T2>
 	/** Sets the given value to the given key */
 	public function set(key:T1, value:T2):Void
 	{
-        var index:Int = this.indexOf(key);
+		var index:Int = this.indexOf(key);
 		if (index != -1)
 		{
 			this.data[index][1] = value;
-            return;
+			return;
 		}
 
 		this.data.push([key, value]);
@@ -25,8 +25,10 @@ class PointerMap<T1, T2>
 	/** Removes the given key */
 	public function remove(key:T1):Void
 	{
-        var index:Int = this.indexOf(key);
-        this.data.splice(index, 1);
+		var index:Int = this.indexOf(key);
+
+		if (index != -1)
+			this.data.splice(index, 1);
 	}
 
 	/** Checks if the key exists */
@@ -40,10 +42,10 @@ class PointerMap<T1, T2>
 	{
 		var index:Int = this.indexOf(key);
 
-        if (index == -1)
-            return null;
+		if (index == -1)
+			return null;
 
-        return this.data[index][1];
+		return this.data[index][1];
 	}
 
 	/** Fetches the index of the given key */
@@ -59,5 +61,16 @@ class PointerMap<T1, T2>
 		}
 
 		return -1;
+	}
+
+	/** Fetches all the keys in this map */
+	public function keys():Array<T1>
+	{
+		var keys:Array<T1> = [];
+
+		for (item in this.data)
+			keys.push(item[0]);
+
+		return keys;
 	}
 }
