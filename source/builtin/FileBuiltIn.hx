@@ -1,5 +1,6 @@
 package builtin;
 
+import lua_bridge.LuaParenting;
 import haxe.Json;
 import haxe.io.Path;
 import helpers.FileHelper;
@@ -7,6 +8,7 @@ import lua_bridge.LuaCache;
 import lua_bridge.LuaScript;
 
 /** Class holding every built-in methods for files */
+@:rtti
 class FileBuiltIn
 {
 	/**
@@ -82,7 +84,7 @@ class FileBuiltIn
 		if (file == null)
 			return;
 
-		var script:Null<LuaScript> = LuaScript.findScript(file);
+		var script:Null<LuaScript> = LuaParenting.Find(file);
 
 		if (script == null)
 			throw('Could not find an instance of \'$file\'.');

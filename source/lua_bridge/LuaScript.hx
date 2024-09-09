@@ -1,6 +1,6 @@
 package lua_bridge;
 
-import haxe.ds.GenericStack;
+import custom.DataContainer;
 import helpers.FileHelper;
 import helpers.LogHelper;
 import helpers.LuaHelper;
@@ -8,35 +8,11 @@ import llua.Lua;
 import llua.LuaL;
 import llua.State;
 
+/**
+ * Class that represents an instance of a Lua script
+ */
 class LuaScript
 {
-	public var isClosed:Bool = false;
-
-	/** Closes this script and the related scripts */
-	public function close()
-	{
-		// If already closed, skip
-		if (this.isClosed)
-			return;
-
-		this.isClosed = true;
-
-		// Close children
-		for (child in this.children)
-		{
-			// If invalid or already closed, skip
-			if (child == null || child.isClosed)
-				continue;
-
-			child.close();
-		}
-
-		// Close self
-		LuaCache.UnlinkScript(this.lua, this);
-		llua.Lua.close(this.lua);
-		roots.remove(this);
-	}
-
 	// #region Constructor
 	public var file:String;
 
@@ -46,7 +22,8 @@ class LuaScript
 	{
 		this.setFile(file);
 		this.setLua();
-		this.setParent(parent);
+		LuaParenting.SetParent(this, parent);
+		this.shared = new DataContainer(this);
 	}
 
 	/**
@@ -91,17 +68,57 @@ class LuaScript
 		this.lua = LuaL.newstate();
 
 		// Add every built-in methods
-		LuaHelper.addAll(this.lua, builtin.SpriteBuiltIn);
-		LuaHelper.addAll(this.lua, builtin.AnimationBuiltIn);
-		LuaHelper.addAll(this.lua, builtin.LogBuiltIn);
-		LuaHelper.addAll(this.lua, builtin.FileBuiltIn);
-		LuaHelper.addAll(this.lua, builtin.DataBuiltIn);
-		LuaHelper.addAll(this.lua, builtin.StateBuiltIn);
+		var builtins:Dynamic = getAllBuiltIn();
+
+		var i:Int = 0;
+		while (i < builtins.methods.length)
+		{
+			LuaHelper.add(this.lua, builtins.names[i], builtins.methods[i]);
+			i++;
+		}
+	}
+
+	public static var BUILT_IN:Array<Dynamic> = [
+		builtin.SpriteBuiltIn,
+		builtin.AnimationBuiltIn,
+		builtin.LogBuiltIn,
+		builtin.FileBuiltIn,
+		builtin.DataBuiltIn,
+		builtin.StateBuiltIn,
+		builtin.DebugBuiltIn
+	];
+
+	public static function getAllBuiltIn():Dynamic
+	{
+		var methods:Array<Dynamic> = [];
+		var names:Array<String> = [];
+
+		for (bi in BUILT_IN)
+		{
+			var fields:Array<String> = Type.getClassFields(bi);
+
+			// Add each field
+			for (field in fields)
+			{
+				var callback:Dynamic = Reflect.field(bi, field);
+
+				// If not a function, skip
+				if (!Reflect.isFunction(callback))
+					continue;
+
+				methods.push(callback);
+				names.push(field);
+			}
+		}
+
+		return {
+			methods: methods,
+			names: names
+		};
 	}
 
 	// #endregion
-	// #region Root
-	private static var roots:Array<LuaScript> = new Array<LuaScript>(); // Root scripts
+	// #region Open
 
 	/**
 	 * Opens the given file as a lua script
@@ -114,62 +131,6 @@ class LuaScript
 	}
 
 	/**
-	 * Finds the first script that is the given file
-	 * @param file File to search for
-	 * @return Script that is the given file
-	 */
-	public static function findScript(file:String):Null<LuaScript>
-	{
-		var fixed:Null<String> = FileHelper.GetPath(file);
-
-		if (fixed == null)
-			throw('Could not find the file at \'$file\'.');
-
-		var script:Null<LuaScript> = null;
-
-		for (root in roots)
-		{
-			script = root.findScriptInside(fixed);
-
-			// If found, stop
-			if (script != null)
-				break;
-		}
-
-		return script;
-	}
-
-	/**
-	 * Finds the first script that is the given file
-	 * @param file File to search for
-	 * @return Script that is the given file
-	 */
-	private function findScriptInside(file:String):Null<LuaScript>
-	{
-		// If looking for this, skip
-		if (this.file == file)
-			return this;
-
-		var script:Null<LuaScript> = null;
-
-		for (child in this.children)
-		{
-			script = child.findScriptInside(file);
-
-			// If found, stop
-			if (script != null)
-				break;
-		}
-
-		return script;
-	}
-
-	// #endregion
-	// #region Parenty
-	private var parent:Null<LuaScript> = null; // Parent of this script
-	private var children:Array<LuaScript> = new Array<LuaScript>(); // Children of this script
-
-	/**
 	 * Opens another file that is related to this one. If this script closes, the other script closes too.
 	 * @param file File to open
 	 * @return Script created
@@ -179,90 +140,40 @@ class LuaScript
 		return LuaScript.create(file, this);
 	}
 
-	/** Sets the parent of this script to the given parent */
-	private function setParent(parent:Null<LuaScript>):Void
+	// #endregion
+	// #region Close
+	public var isClosed:Bool = false;
+
+	/** Closes this script and the related scripts */
+	public function close()
 	{
-		// If root, add to roots
-		if (parent == null)
+		// If already closed, skip
+		if (this.isClosed)
+			return;
+
+		this.isClosed = true;
+
+		// Close children
+		for (child in LuaParenting.GetChildren(this))
 		{
-			roots.push(this);
-		}
-		else
-		{
-			parent.children.push(this);
-			this.parent = parent;
+			// If invalid or already closed, skip
+			if (child == null || child.isClosed)
+				continue;
+
+			child.close();
 		}
 
-		this.call("OnParentChanged", [parent], false);
+		// Close self
+		LuaCache.UnlinkScript(this.lua, this);
+		LuaParenting.RemoveParent(this);
+		llua.Lua.close(this.lua);
 	}
 
 	// #endregion
 	// #region Data
-	private var data:Map<String, Dynamic> = new Map<String, Dynamic>();
+	public var shared:custom.DataContainer;
 
-	/**
-	 * Stores the given data to the given key
-	 * @param key Key to use
-	 * @param value Value to store
-	 * @param overwrite Overwrites the value if already found
-	 * @param inRoot Store in root
-	 */
-	public function setData(key:String, value:Dynamic, overwrite:Bool = false, inRoot:Bool = true):Void
-	{
-		// If in root and has parent, continue
-		if (inRoot && this.parent != null)
-		{
-			this.parent.setData(key, value, overwrite, true);
-			return;
-		}
-
-		// If not overwrite and key exists, error
-		if (!overwrite && this.data.exists(key))
-			throw('The key \'$key\' already exists for \'$file\'.');
-
-		var old:Dynamic = this.data.get(key);
-		var msg:Dynamic = this.call("OnDataSet", [old, value, key], false)[0];
-
-		if (!LuaMessage.isError(msg))
-			value = msg.value;
-
-		this.data.set(key, value);
-	}
-
-	/**
-	 * Fetches the data associated with the given key
-	 * @param key Key to look for
-	 * @return Data fetched
-	 */
-	public function getData(key:String):Dynamic
-	{
-		// If exists, return
-		if (this.data.exists(key))
-			return this.data.get(key);
-
-		// If no parent, error
-		if (this.parent == null)
-			throw('No data is associated with the key \'$key\'.');
-
-		return this.parent.getData(key);
-	}
-
-	/**
-	 * Removes the data associated with the given key
-	 * @param key Key to remove
-	 */
-	public function removeData(key:String):Void
-	{
-		// If removed, skip
-		if (this.data.remove(key))
-			return;
-
-		// If no parent, error
-		if (this.parent == null)
-			return;
-
-		this.parent.removeData(key);
-	}
+	public static var global:custom.DataContainer = new custom.DataContainer(null);
 
 	// #endregion
 	// #region Executing
@@ -288,27 +199,13 @@ class LuaScript
 	/** Calls the given method in this script and it's children */
 	public function call(name:String, args:Array<Dynamic>, callInChildren:Bool):Array<Null<Dynamic>>
 	{
+		var scripts:Array<LuaScript> = LuaParenting.GetAll(callInChildren);
 		var results:Array<Null<Dynamic>> = [];
-		var remaining:Array<LuaScript> = [this];
 
-		while (remaining.length > 0)
+		for (i in scripts)
 		{
-			var current:LuaScript = remaining.pop();
-
-			// Skip if closed
-			if (current.isClosed)
-				continue;
-
-			var result:Null<Dynamic> = LuaHelper.call(current.lua, name, args);
-
+			var result:Null<Dynamic> = LuaHelper.call(i.lua, name, args);
 			results.push(result);
-
-			// Call in children
-			if (callInChildren)
-			{
-				for (child in current.children)
-					remaining.push(child);
-			}
 		}
 
 		return results;

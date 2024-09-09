@@ -3,9 +3,8 @@ package builtin;
 import haxe.PosInfos;
 import helpers.LogHelper;
 
-/**
- * Class holding every built-in methods for logs
- */
+/** Class holding every built-in methods for logs */
+@:rtti
 class LogBuiltIn
 {
 	/**

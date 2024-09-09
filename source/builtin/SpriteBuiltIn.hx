@@ -6,9 +6,8 @@ import flixel.FlxState;
 import helpers.FileHelper;
 import helpers.LuaHelper;
 
-/**
- * Class holding every built-in methods for sprites
- */
+/** Class holding every built-in methods for sprites */
+@:rtti
 class SpriteBuiltIn
 {
 	/**

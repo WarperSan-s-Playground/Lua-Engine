@@ -4,6 +4,8 @@ import flixel.FlxG;
 import helpers.FileHelper;
 import states.LuaState;
 
+/** Class holding every built-in methods for states */
+@:rtti
 class StateBuiltIn
 {
 	/**
@@ -15,11 +17,11 @@ class StateBuiltIn
 		// Get path
 		var fixed:Null<String> = FileHelper.GetPath(file);
 
-        if (fixed == null)
-            throw('Tried to create a state from a missing file.');
+		if (fixed == null)
+			throw('Tried to create a state from a missing file.');
 
 		// Create state
-        var state:LuaState = new LuaState(file);
+		var state:LuaState = new LuaState(file);
 
 		// Switch state
 		FlxG.switchState(state);

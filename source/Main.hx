@@ -1,11 +1,11 @@
 package;
 
-import states.LuaState;
-import flixel.FlxG;
-import openfl.display.FPS;
 import builtin.LogBuiltIn;
+import flixel.FlxG;
 import flixel.FlxGame;
+import openfl.display.FPS;
 import openfl.display.Sprite;
+import states.LuaState;
 
 // MENUS TO ADD:
 // - Title Menu
@@ -32,5 +32,8 @@ class Main extends Sprite
 
 		FlxG.updateFramerate = 250;
 		FlxG.drawFramerate = 250;
+
+		// Print doc if necessary
+		helpers.DocumentationHelper.PrintDoc("source/documentation.json");
 	}
 }

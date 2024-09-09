@@ -4,9 +4,8 @@ import flixel.FlxSprite;
 import flixel.animation.FlxAnimationController;
 import helpers.LuaHelper;
 
-/**
- * Class holding every built-in methods for animations
- */
+/** Class holding every built-in methods for animations */
+@:rtti
 class AnimationBuiltIn
 {
 	/**
