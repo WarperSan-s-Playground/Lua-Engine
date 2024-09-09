@@ -5,6 +5,9 @@ import helpers.LogHelper;
 import llua.State;
 import sys.thread.Thread;
 
+/**
+ * Class that manages the access of scripts from a state or from a thread
+ */
 class LuaCache
 {
 	private static var runningScripts:PointerMap<State, LuaScript> = new PointerMap<State, LuaScript>();
