@@ -8,5 +8,3 @@ addScript("logoTitle.lua");
 
 closeScript("gfTitle.lua");
 closeScript("logoTitle.lua");
-
-trace(getAllScripts().value);

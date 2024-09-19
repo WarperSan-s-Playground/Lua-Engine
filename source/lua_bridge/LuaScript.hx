@@ -18,10 +18,10 @@ class LuaScript
 
 	private var lua:llua.State;
 
-	private function new(file:String, parent:Null<LuaScript>)
+	private function new(file:String, parent:Null<LuaScript>, autoImport:Bool)
 	{
 		this.setFile(file);
-		this.setLua();
+		this.setLua(autoImport);
 		LuaParenting.SetParent(this, parent);
 		this.shared = new DataContainer(this);
 	}
@@ -30,16 +30,17 @@ class LuaScript
 	 * Creates a script from the given file
 	 * @param file File to load from
 	 * @param parent Parent of the script
+	 * @param autoImport Automatically imports all the built-in methods
 	 * @return Created script
 	 */
-	private static function create(file:String, parent:Null<LuaScript>):Null<LuaScript>
+	private static function create(file:String, parent:Null<LuaScript>, autoImport:Bool):Null<LuaScript>
 	{
 		// Create script
 		var script:Null<LuaScript> = null;
 
 		try
 		{
-			script = new LuaScript(file, parent);
+			script = new LuaScript(file, parent, autoImport);
 			script.execute();
 		}
 		catch (e:String)
@@ -62,23 +63,52 @@ class LuaScript
 		this.file = fixed;
 	}
 
-	/** Sets the lua state */
-	private function setLua():Void
+	/**
+	 * Sets the lua state
+	 * @param autoImport Automatically imports all the built-in functions
+	 */
+	private function setLua(autoImport:Bool):Void
 	{
 		this.lua = LuaL.newstate();
 
-		// Add every built-in methods
-		var builtins:Dynamic = getAllBuiltIn();
+		var methods:Array<Dynamic> = getBuiltIn(autoImport);
 
+		// Add every built-in methods
 		var i:Int = 0;
-		while (i < builtins.methods.length)
+		while (i < methods.length)
 		{
-			LuaHelper.add(this.lua, builtins.names[i], builtins.methods[i]);
+			this.importFile(methods[i]);
 			i++;
 		}
 	}
 
-	public static var BUILT_IN:Array<Dynamic> = [
+	// #endregion
+	// #region Built-in
+
+	public static function getBuiltIn(addImportable:Bool):Array<Dynamic>
+	{
+		var methods:Array<Dynamic> = [];
+
+		for (i in DEFAULT_BUILT_IN)
+			methods.push(i);
+
+		// Add importables if necessary
+		if (addImportable)
+		{
+			for (i in IMPORTABLE_BUILT_IN)
+				methods.push(i);
+		}
+
+		return methods;
+	}
+
+	/** All the files that are always imported to this script */
+	private static var DEFAULT_BUILT_IN:Array<Dynamic> = [
+		builtin.ScriptBuiltIn
+	];
+	
+	/** All the files that can be manually imported to this script */
+	public static var IMPORTABLE_BUILT_IN:Array<Dynamic> = [
 		builtin.SpriteBuiltIn,
 		builtin.AnimationBuiltIn,
 		builtin.LogBuiltIn,
@@ -88,33 +118,35 @@ class LuaScript
 		builtin.DebugBuiltIn
 	];
 
-	public static function getAllBuiltIn():Dynamic
+	/**
+	 * Imports a single method to this script
+	 * @param name Name of the method
+	 * @param callback Action to call
+	 */
+	public function importMethod(name:String, callback:Dynamic):Void
 	{
-		var methods:Array<Dynamic> = [];
-		var names:Array<String> = [];
+		LuaHelper.add(this.lua, name, callback);
+	}
 
-		for (bi in BUILT_IN)
+	/**
+	 * Imports a whole class to this script
+	 * @param builtIn Class to import from
+	 */
+	public function importFile(builtIn:Dynamic):Void
+	{
+		var fields:Array<String> = Type.getClassFields(builtIn);
+
+		// Add each field
+		for (field in fields)
 		{
-			var fields:Array<String> = Type.getClassFields(bi);
+			var callback:Dynamic = Reflect.field(builtIn, field);
 
-			// Add each field
-			for (field in fields)
-			{
-				var callback:Dynamic = Reflect.field(bi, field);
+			// If not a function, skip
+			if (!Reflect.isFunction(callback))
+				continue;
 
-				// If not a function, skip
-				if (!Reflect.isFunction(callback))
-					continue;
-
-				methods.push(callback);
-				names.push(field);
-			}
+			this.importMethod(field, callback);
 		}
-
-		return {
-			methods: methods,
-			names: names
-		};
 	}
 
 	// #endregion
@@ -123,21 +155,23 @@ class LuaScript
 	/**
 	 * Opens the given file as a lua script
 	 * @param file File to open
+	 * @param autoImport Automatically imports all the built-in methods
 	 * @return Script created
 	 */
-	public static function openFile(file:String):Null<LuaScript>
+	public static function openFile(file:String, autoImport:Bool):Null<LuaScript>
 	{
-		return LuaScript.create(file, null);
+		return LuaScript.create(file, null, autoImport);
 	}
 
 	/**
 	 * Opens another file that is related to this one. If this script closes, the other script closes too.
 	 * @param file File to open
+	 * @param autoImport Automatically imports all the built-in methods
 	 * @return Script created
 	 */
-	public function openOther(file:String):Null<LuaScript>
+	public function openOther(file:String, autoImport:Bool):Null<LuaScript>
 	{
-		return LuaScript.create(file, this);
+		return LuaScript.create(file, this, autoImport);
 	}
 
 	// #endregion

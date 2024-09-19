@@ -1,5 +1,6 @@
 package builtin;
 
+import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -14,7 +15,7 @@ class SpriteBuiltIn
 	 * Creates a new sprite for this state
 	 * @return ID of the sprite
 	 */
-	public static function makeSprite(x:Float = 0, y:Float = 0):Dynamic
+	public static function makeSprite(x:Float = 0, y:Float = 0):Int
 	{
 		var state:FlxState = FlxG.state;
 
@@ -78,5 +79,37 @@ class SpriteBuiltIn
 		}
 
 		sprite.frames = FileHelper.LoadFrames(sprite.graphic, xml);
+	}
+
+	/**
+	 * Makes a graphic to the given sprite
+	 * @param id Sprite to make to
+	 * @param width Width of the graphic
+	 * @param height Height of the graphic
+	 * @param color Color of the graphic
+	 */
+	public static function makeGraphic(id:Int = -1, width:Int = 0, height:Int = 0, color:Null<String> = null):Void
+	{
+		var sprite:FlxSprite = cast LuaHelper.getObject(id);
+
+		// Clamp width
+		if (width < 0)
+			width = 0;
+
+		// Clamp height
+		if (height < 0)
+			height = 0;
+
+		// Parse color
+		if (color == null)
+			color = "#FFFFFF";
+
+		var clr:Null<FlxColor> = FlxColor.fromString(color);
+
+		if (clr == null)
+			throw('Could not parse the color \'$color\'.');
+
+		// Make graphic
+		sprite.makeGraphic(width, height, clr);
 	}
 }

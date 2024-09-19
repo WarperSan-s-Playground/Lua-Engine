@@ -16,7 +16,7 @@ class DocumentationHelper
 		var generated:Map<String, Dynamic> = [];
 		var functions:Map<String, Dynamic> = [];
 
-		for (t in LuaScript.BUILT_IN)
+		for (t in LuaScript.getBuiltIn(true))
 			for (i in ProcessClass(t))
 				functions.set(i[0], i[1]);
 
@@ -38,10 +38,10 @@ class DocumentationHelper
 
 		// If invalid, skip
 		if (__rtti == null)
-        {
-            LogHelper.error('The class \'$o\' is missing the rtti tag.');
+		{
+			LogHelper.error('The class \'$o\' is missing the rtti tag.');
 			return [];
-        }
+		}
 
 		var classXML = Xml.parse(__rtti).firstElement();
 		var methods:Array<Array<Dynamic>> = [];
@@ -69,58 +69,88 @@ class DocumentationHelper
 			// If doc node
 			if (e.nodeName == "haxe_doc")
 			{
-				var doc = e.firstChild().nodeValue;
-				var r = ~/ ?(^|\n\t )*\*/g;
-				method.set("documentation", r.replace(doc, ""));
+				method.set("documentation", ProcessHaxeDoc(e));
 				continue;
 			}
 
 			// name:Type = defaultValue
 			if (e.nodeName == "f")
 			{
-				var args:String = "";
-				var names = e.get("a").split(":");
-				var values = e.get("v").split(":");
-
-				var children = e.elements();
-				var current = children.next();
-				var index = 0;
-
-				while (children.hasNext())
-				{
-					// Add name
-					args += names[index];
-
-					// Add type
-					var type = current.get("path");
-
-					if (type == null && current.nodeName == "d")
-						type = "Dynamic";
-
-					if (type != null)
-						args += ":" + type;
-
-					// Add value
-					if (values[index] != "")
-						args += " = " + values[index];
-
-					current = children.next();
-					index++;
-				}
+				var results = ProcessArguments(e);
 
 				// Set arguments
-				method.set("args", args);
-
-				// Set return from last item
-				var type = current.get("path");
-
-				if (type == null && current.nodeName == "d")
-					type = "Dynamic";
-
-				method.set("returns", type);
+				method.set("args", results[0]);
+				method.set("returns", ProcessReturn(results[1]));
 			}
 		}
 
 		return method;
+	}
+
+	/** Process the haxe documentation */
+	private static function ProcessHaxeDoc(e:Xml):String
+	{
+		var doc = e.firstChild().nodeValue;
+		doc = ~/ ?\* /g.replace(doc, ""); // Remove /*
+		doc = ~/(?<=@param )(\w*)/g.replace(doc, "`$1`"); // Put the arguments inside a fancy tag
+		doc = ~/\n\t/g.replace(doc, "\n\r"); // Reformat new line
+		doc = ~/@param /g.replace(doc, "* "); // Remove @param tag
+
+		return doc;
+	}
+
+	/** Process the arguments */
+	private static function ProcessArguments(e:Xml):Array<Dynamic>
+	{
+		var args:String = "";
+		var names = e.get("a").split(":");
+		var values = e.get("v").split(":");
+
+		var elems = e.elements();
+		var current = elems.next();
+		var index = 0;
+
+		while (elems.hasNext())
+		{
+			if (index > 0)
+				args += ", ";
+
+			// Add name
+			args += names[index].substring(1);
+
+			// Add type
+			var type = current.get("path");
+
+			if (type == null && current.nodeName == "d")
+				type = "Dynamic";
+
+			if (type != null)
+				args += ":" + type;
+
+			// Add value
+			if (values[index] != "")
+				args += " = " + values[index];
+
+			current = elems.next();
+			index++;
+		}
+
+		return [args, current];
+	}
+
+	/** Process the return documentation */
+	private static function ProcessReturn(e:Xml):String
+	{
+		// Set return from last item
+		var type = e.get("path");
+		var s = Type.getClassName(lua_bridge.LuaMessage).split(".").pop();
+
+		if (type == null && e.nodeName == "d")
+			type = "Dynamic";
+
+		if (type != "Void")
+			s += '<$type>';
+
+		return s;
 	}
 }

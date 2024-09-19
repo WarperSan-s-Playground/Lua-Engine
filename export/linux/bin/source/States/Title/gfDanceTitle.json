@@ -5,6 +5,6 @@
 	"startY":576,
 	"gfX":512,
 	"gfY":40,
-	"backgroundSprite":"",
+	"backgroundSprite": "none",
 	"bpm":102
 }

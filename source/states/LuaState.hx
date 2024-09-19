@@ -15,7 +15,7 @@ class LuaState extends flixel.FlxState
 
 	override function create()
 	{
-		root = LuaScript.openFile(this.file);
+		root = LuaScript.openFile(this.file, true);
 		try {
 			root.call("OnCreate", [], true);
 		}
