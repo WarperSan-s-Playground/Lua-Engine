@@ -1,6 +1,6 @@
 package helpers;
 
-import lua_bridge.LuaScript;
+import lua_bridge.LuaImport;
 import sys.FileSystem;
 
 /** Class that creates the documentation for this engine to be compatible with https://github.com/Snirozu/Funkin-Script-AutoComplete */
@@ -16,7 +16,7 @@ class DocumentationHelper
 		var generated:Map<String, Dynamic> = [];
 		var functions:Map<String, Dynamic> = [];
 
-		for (t in LuaScript.getBuiltIn(true))
+		for (t in LuaImport.getBuiltIn(true))
 			for (i in ProcessClass(t))
 				functions.set(i[0], i[1]);
 
@@ -91,6 +91,7 @@ class DocumentationHelper
 	private static function ProcessHaxeDoc(e:Xml):String
 	{
 		var doc = e.firstChild().nodeValue;
+
 		doc = ~/ ?\* /g.replace(doc, ""); // Remove /*
 		doc = ~/(?<=@param )(\w*)/g.replace(doc, "`$1`"); // Put the arguments inside a fancy tag
 		doc = ~/\n\t/g.replace(doc, "\n\r"); // Reformat new line

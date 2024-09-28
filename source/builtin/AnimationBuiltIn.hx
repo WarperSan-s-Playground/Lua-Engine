@@ -18,7 +18,7 @@ class AnimationBuiltIn
 	 */
 	public static function addAnimationByPrefix(id:Int = -1, name:String = "anim", prefix:String = "anim", frameRate:Int = 24, looped:Bool = true):Void
 	{
-		var sprite:FlxSprite = cast LuaHelper.getObject(id);
+		var sprite:FlxSprite = cast LuaHelper.getObject(id, "flixel.FlxSprite");
 
 		// If controller invalid, skip
 		if (sprite.animation == null)

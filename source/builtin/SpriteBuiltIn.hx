@@ -39,7 +39,7 @@ class SpriteBuiltIn
 	 */
 	public static function removeSprite(id:Int = -1, forceDestroy:Bool = false):Void
 	{
-		var sprite:FlxSprite = cast LuaHelper.getObject(id);
+		var sprite:FlxSprite = cast LuaHelper.getObject(id, "flixel.FlxSprite");
 
 		if (forceDestroy || sprite.container == null)
 			sprite.destroy();
@@ -55,7 +55,7 @@ class SpriteBuiltIn
 	 */
 	public static function loadGraphic(id:Int = -1, path:String = "", xml:Null<String> = null):Void
 	{
-		var sprite:FlxSprite = cast LuaHelper.getObject(id);
+		var sprite:FlxSprite = cast LuaHelper.getObject(id, "flixel.FlxSprite");
 
 		// Check if path valid
 		var fixedPath:String = helpers.FileHelper.GetPath(path);
@@ -90,7 +90,7 @@ class SpriteBuiltIn
 	 */
 	public static function makeGraphic(id:Int = -1, width:Int = 0, height:Int = 0, color:Null<String> = null):Void
 	{
-		var sprite:FlxSprite = cast LuaHelper.getObject(id);
+		var sprite:FlxSprite = cast LuaHelper.getObject(id, "flixel.FlxSprite");
 
 		// Clamp width
 		if (width < 0)

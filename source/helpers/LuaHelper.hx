@@ -12,13 +12,20 @@ class LuaHelper
 	/**
 	 * Fetches the object with the given ID
 	 * @param id ID of the object
+	 * @param type Type of the object
 	 * @return Object fetched
 	 */
-	public static function getObject(id:Int):flixel.FlxBasic
+	public static function getObject(id:Int, type:String):Dynamic
 	{
 		// If id invalid, skip
 		if (id < 0)
 			throw('The ID \'$id\' is not valid.');
+
+		var typeClass:Class<Dynamic> = Type.resolveClass(type);
+
+		// If type invalid, skip
+		if (typeClass == null)
+			throw('No class was found with the name \'$type\'.');
 
 		var state:flixel.FlxState = flixel.FlxG.state;
 
@@ -28,12 +35,12 @@ class LuaHelper
 
 		var basic:Null<flixel.FlxBasic> = state.getFirst((b:flixel.FlxBasic) ->
 		{
-			return b.ID == id && Std.isOfType(b, flixel.FlxSprite);
+			return b.ID == id && Std.isOfType(b, typeClass);
 		});
 
 		// If basic not found, skip
 		if (basic == null)
-			throw('Could not find a ${flixel.FlxSprite} with the ID \'$id\'.');
+			throw('Could not find a $typeClass with the ID \'$id\'.');
 
 		return basic;
 	}

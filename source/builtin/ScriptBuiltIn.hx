@@ -1,5 +1,6 @@
 package builtin;
 
+import lua_bridge.LuaImport;
 import helpers.LogHelper;
 import lua_bridge.LuaCache;
 import haxe.io.Path;
@@ -84,7 +85,7 @@ class ScriptBuiltIn
 
 		var targetFile:Null<Dynamic> = null;
 
-		for (_file in LuaScript.IMPORTABLE_BUILT_IN)
+		for (_file in LuaImport.IMPORTABLE_BUILT_IN)
 		{
 			var name:Null<String> = Type.getClassName(_file).split('.').pop();
 

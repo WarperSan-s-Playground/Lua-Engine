@@ -13,18 +13,7 @@ import llua.State;
  */
 class LuaScript
 {
-	// #region Constructor
-	public var file:String;
-
-	private var lua:llua.State;
-
-	private function new(file:String, parent:Null<LuaScript>, autoImport:Bool)
-	{
-		this.setFile(file);
-		this.setLua(autoImport);
-		LuaParenting.SetParent(this, parent);
-		this.shared = new DataContainer(this);
-	}
+	// #region OPEN
 
 	/**
 	 * Creates a script from the given file
@@ -42,9 +31,10 @@ class LuaScript
 		{
 			script = new LuaScript(file, parent, autoImport);
 			script.execute();
-			
+
 			// Callback
-			script.call("OnCreate", [], false);
+			var hasParent:Bool = parent != null;
+			script.call("OnCreate", [hasParent], false);
 		}
 		catch (e:String)
 		{
@@ -53,6 +43,42 @@ class LuaScript
 		}
 
 		return script;
+	}
+
+	/**
+	 * Opens the given file as a lua script
+	 * @param file File to open
+	 * @param autoImport Automatically imports all the built-in methods
+	 * @return Script created
+	 */
+	public static function openFile(file:String, autoImport:Bool):Null<LuaScript>
+	{
+		return LuaScript.create(file, null, autoImport);
+	}
+
+	/**
+	 * Opens another file that is related to this one. If this script closes, the other script closes too.
+	 * @param file File to open
+	 * @param autoImport Automatically imports all the built-in methods
+	 * @return Script created
+	 */
+	public function openOther(file:String, autoImport:Bool):Null<LuaScript>
+	{
+		return LuaScript.create(file, this, autoImport);
+	}
+
+	// #endregion
+	// #region CONSTRUCTOR
+	public var file:String;
+
+	private var lua:llua.State;
+
+	private function new(file:String, parent:Null<LuaScript>, autoImport:Bool)
+	{
+		this.setFile(file);
+		this.setLua(autoImport);
+		LuaParenting.SetParent(this, parent);
+		this.shared = new DataContainer(this);
 	}
 
 	/** Sets the current file to the given file */
@@ -74,7 +100,7 @@ class LuaScript
 	{
 		this.lua = LuaL.newstate();
 
-		var methods:Array<Dynamic> = getBuiltIn(autoImport);
+		var methods:Array<Dynamic> = LuaImport.getBuiltIn(autoImport);
 
 		// Add every built-in methods
 		var i:Int = 0;
@@ -86,39 +112,7 @@ class LuaScript
 	}
 
 	// #endregion
-	// #region Built-in
-
-	public static function getBuiltIn(addImportable:Bool):Array<Dynamic>
-	{
-		var methods:Array<Dynamic> = [];
-
-		for (i in DEFAULT_BUILT_IN)
-			methods.push(i);
-
-		// Add importables if necessary
-		if (addImportable)
-		{
-			for (i in IMPORTABLE_BUILT_IN)
-				methods.push(i);
-		}
-
-		return methods;
-	}
-
-	/** All the files that are always imported to this script */
-	private static var DEFAULT_BUILT_IN:Array<Dynamic> = [builtin.ScriptBuiltIn, builtin.RawBuiltIn];
-
-	/** All the files that can be manually imported to this script */
-	public static var IMPORTABLE_BUILT_IN:Array<Dynamic> = [
-		builtin.SpriteBuiltIn,
-		builtin.AnimationBuiltIn,
-		builtin.LogBuiltIn,
-		builtin.FileBuiltIn,
-		builtin.DataBuiltIn,
-		builtin.StateBuiltIn,
-		builtin.DebugBuiltIn,
-		builtin.MusicBuiltIn
-	];
+	// #region IMPORTS
 
 	/**
 	 * Imports a single method to this script
@@ -152,70 +146,13 @@ class LuaScript
 	}
 
 	// #endregion
-	// #region Open
-
-	/**
-	 * Opens the given file as a lua script
-	 * @param file File to open
-	 * @param autoImport Automatically imports all the built-in methods
-	 * @return Script created
-	 */
-	public static function openFile(file:String, autoImport:Bool):Null<LuaScript>
-	{
-		return LuaScript.create(file, null, autoImport);
-	}
-
-	/**
-	 * Opens another file that is related to this one. If this script closes, the other script closes too.
-	 * @param file File to open
-	 * @param autoImport Automatically imports all the built-in methods
-	 * @return Script created
-	 */
-	public function openOther(file:String, autoImport:Bool):Null<LuaScript>
-	{
-		return LuaScript.create(file, this, autoImport);
-	}
-
-	// #endregion
-	// #region Close
-	public var isClosed:Bool = false;
-
-	/** Closes this script and the related scripts */
-	public function close()
-	{
-		// If already closed, skip
-		if (this.isClosed)
-			return;
-
-		this.isClosed = true;
-
-		// Close children
-		for (child in LuaParenting.GetChildren(this))
-		{
-			// If invalid or already closed, skip
-			if (child == null || child.isClosed)
-				continue;
-
-			child.close();
-		}
-
-		// Callback
-		this.call("OnDestroy", [], false);
-
-		// Close self
-		LuaCache.UnlinkScript(this.lua, this);
-		LuaParenting.RemoveParent(this);
-		llua.Lua.close(this.lua);
-	}
-
-	// #endregion
-	// #region Data
+	// #region DATA
 	public var shared:custom.DataContainer;
 
 	public static var global:custom.DataContainer = new custom.DataContainer(null);
 
 	// #endregion
-	// #region Executing
+	// #region EXECUTE
 
 	/** Executes this script */
 	public function execute():Void
@@ -253,6 +190,38 @@ class LuaScript
 		}
 
 		return results;
+	}
+
+	// #endregion
+	// #region CLOSE
+	public var isClosed:Bool = false;
+
+	/** Closes this script and the related scripts */
+	public function close()
+	{
+		// If already closed, skip
+		if (this.isClosed)
+			return;
+
+		this.isClosed = true;
+
+		// Close children
+		for (child in LuaParenting.GetChildren(this))
+		{
+			// If invalid or already closed, skip
+			if (child == null || child.isClosed)
+				continue;
+
+			child.close();
+		}
+
+		// Callback
+		this.call("OnDestroy", [], false);
+
+		// Close self
+		LuaCache.UnlinkScript(this.lua, this);
+		LuaParenting.RemoveParent(this);
+		llua.Lua.close(this.lua);
 	}
 
 	// #endregion

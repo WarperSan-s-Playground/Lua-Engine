@@ -12,7 +12,7 @@ class RawBuiltIn
 	public static function getRaw(path:Null<String> = null):Dynamic
 	{
         var result:Dynamic = ClassHelper.getClassFromPath(path);
-        return ClassHelper.getClassField(result.obj, result.path);
+		return ClassHelper.getClassField(result.obj, result.path);
 	}
 
 	/**
@@ -26,7 +26,7 @@ class RawBuiltIn
 		var segments:Array<String> = result.path.split('.');
         var lastField:Null<String> = segments.pop();
         
-        var field:Null<Dynamic> = null;
+        var field:Dynamic = null;
 
         // Search in object
         if (segments.length > 1)
@@ -35,7 +35,7 @@ class RawBuiltIn
         else
             field = result.obj;
 
-        Reflect.setField(field, lastField, value);
+		Reflect.setProperty(field, lastField, value);
 	}
 
 	/**
@@ -48,6 +48,9 @@ class RawBuiltIn
 	{
 		var result:Dynamic = ClassHelper.getClassFromPath(path);
 		var method:Dynamic = ClassHelper.getClassField(result.obj, result.path);
+
+		if (method == null)
+			throw('No method found with the path \'$path\'.');
 
 		if (args == null)
 			args = [];

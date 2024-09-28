@@ -1,5 +1,6 @@
 package helpers;
 
+import flixel.util.FlxColor;
 import lua_bridge.LuaCache;
 
 class ClassHelper
@@ -17,38 +18,26 @@ class ClassHelper
 
 		var obj:Null<Dynamic> = null;
 
-		// Get variable from basic '{0}:test'
-		if (path.indexOf('{') != -1 && path.indexOf('}:') != -1)
+		// TYPE{ID}:PATH
+		var parsedPath:Dynamic = parsePath(path);
+
+		// ID + Path
+		if (parsedPath.id != null)
 		{
-			var id:Null<Int> = Std.parseInt(path.split('{')[1].split('}:')[0]);
+			if (parsedPath.type == null)
+				parsedPath.type = "flixel.FlxBasic";
 
-			if (id == null)
-				throw('The given ID of \'$id\' is not valid.');
-
-			obj = LuaHelper.getObject(id);
+			obj = LuaHelper.getObject(parsedPath.id, parsedPath.type);
 		}
-		// Get class of path 'flixel.FlxG:width'
-		else if (path.indexOf(':') != -1)
+		// PATH + TYPE
+		else if (parsedPath.path != null && parsedPath.type != null)
 		{
-			var className:String = path.split(':')[0];
-			path = path.substr(className.length + 1);
-			obj = Type.resolveClass(className);
-
-			if (obj == null)
-				throw('Could not find the class named \'$className\'.');
-		}
-		// Get variable from local script 'file'
-		else
-		{
-			obj = LuaCache.GetScript();
-
-			if (obj == null)
-				throw('No script was run before this.');
+			obj = parsedPath.type;
 		}
 
 		return {
 			obj: obj,
-			path: path
+			path: parsedPath.path
 		};
 	}
 
@@ -67,7 +56,7 @@ class ClassHelper
 		for (i in segments)
 		{
 			if (current == null)
-				throw('Could not continue the search, because \'${segments[counter - 1]}\' is null.');
+				throw('Could not continue the search from \'$path\', because \'${segments[counter - 1]}\' is null.');
 
 			// Stop when reaching the field
 			current = Reflect.field(current, i);
@@ -75,5 +64,38 @@ class ClassHelper
 		}
 
 		return current;
+	}
+
+	private static function parsePath(path:String):Dynamic
+	{
+		// Find ID
+		var idRegex = ~/{\d*}/g;
+		var id:Null<Int> = null;
+
+		if (idRegex.match(path))
+		{
+			var s:String = idRegex.matched(0);
+			id = Std.parseInt(s.substring(1, s.length - 1));
+			path = path.split(s).join("");
+		}
+
+		// Find type
+		var typeRegex:EReg = ~/.*:/g;
+		var type:Null<Dynamic> = null;
+
+		if (typeRegex.match(path))
+		{
+			var s:String = typeRegex.matched(0);
+			type = Type.resolveClass(s.substr(0, s.length - 1));
+			path = path.split(s).join("");
+		}
+		else
+			type = LuaCache.GetScript();
+
+		return {
+			type: type,
+			id: id,
+			path: path
+		};
 	}
 }
