@@ -16,13 +16,6 @@ class LuaState extends flixel.FlxState
 	override function create()
 	{
 		root = LuaScript.openFile(this.file, true);
-		try {
-			root.call("OnCreate", [], true);
-		}
-		catch (e:String)
-		{
-			trace(e);
-		}
 	}
 
 	override function update(elapsed:Float)
@@ -34,8 +27,6 @@ class LuaState extends flixel.FlxState
 	override function destroy()
 	{
 		super.destroy();
-
-		root.call("OnDestroy", [], true);
 		root.close();
 	}
 }

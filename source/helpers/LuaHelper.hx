@@ -148,9 +148,13 @@ class LuaHelper
 				Convert.toLua(lua, arg);
 
 			// Call
-			Lua.pcall(lua, args.length, 1, 0);
+			var error:Int = Lua.pcall(lua, args.length, 1, 0);
 
 			var value:Dynamic = Convert.fromLua(lua, -1);
+
+			if (error != 0)
+				throw(value);
+
 			result = LuaMessage.success(value);
 			Lua.pop(lua, 1);
 		}

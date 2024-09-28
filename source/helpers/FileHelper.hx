@@ -1,5 +1,6 @@
 package helpers;
 
+import openfl.media.Sound;
 import flixel.graphics.FlxGraphic;
 import haxe.io.Path;
 import lua_bridge.LuaCache;
@@ -11,6 +12,7 @@ import sys.io.File;
 class FileHelper
 {
 	private static var loadedGraphics:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
+	private static var loadedSounds:Map<String, Sound> = new Map<String, Sound>();
 
 	/**
 	 * Converts the path to an usable path
@@ -85,7 +87,7 @@ class FileHelper
 	}
 
 	/**
-	 * Creates a graphic from the given file
+	 * Loads the graphic from the given file
 	 * @param file File of the resource
 	 * @return Graphic for this file
 	 */
@@ -115,7 +117,7 @@ class FileHelper
 	}
 
 	/**
-	 * Creates frames from the given file
+	 * Loads the frames from the given file
 	 * @param graphic Graphic to add the animation to
 	 * @param file File of the resource
 	 * @return Animation for this file
@@ -133,5 +135,28 @@ class FileHelper
 			return null;
 
 		return flixel.graphics.frames.FlxAtlasFrames.fromSparrow(graphic, content);
+	}
+
+	/**
+	 * Loads the sound from the given file
+	 * @param file File of the resource
+	 * @return Sound for this file
+	 */
+	public static function LoadSound(file:String):Null<Sound>
+	{
+		// If cached, return value
+		if (loadedSounds.exists(file))
+			return loadedSounds.get(file);
+
+		var data:Sound = Sound.fromFile(file);
+
+		// If data invalid, skip
+		if (data == null)
+			return null;
+
+		// Add to cache
+		loadedSounds.set(file, data);
+
+		return data;
 	}
 }

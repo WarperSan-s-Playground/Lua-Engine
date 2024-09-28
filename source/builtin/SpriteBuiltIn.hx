@@ -61,7 +61,7 @@ class SpriteBuiltIn
 		var fixedPath:String = helpers.FileHelper.GetPath(path);
 
 		if (fixedPath == null)
-			throw('The path \'${path}\' is invalid.');
+			throw('The path \'$path\' is invalid.');
 
 		// Load grahic
 		var graphic:Null<flixel.graphics.FlxGraphic> = helpers.FileHelper.LoadGraphic(fixedPath);

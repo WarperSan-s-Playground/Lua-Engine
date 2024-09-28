@@ -34,6 +34,6 @@ class Main extends Sprite
 		FlxG.drawFramerate = 250;
 
 		// Print doc if necessary
-		helpers.DocumentationHelper.PrintDoc("source/documentation.json");
+		helpers.DocumentationHelper.PrintDoc("source/LuaEngine.json");
 	}
 }

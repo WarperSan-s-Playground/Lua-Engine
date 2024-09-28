@@ -42,6 +42,9 @@ class LuaScript
 		{
 			script = new LuaScript(file, parent, autoImport);
 			script.execute();
+			
+			// Callback
+			script.call("OnCreate", [], false);
 		}
 		catch (e:String)
 		{
@@ -103,10 +106,8 @@ class LuaScript
 	}
 
 	/** All the files that are always imported to this script */
-	private static var DEFAULT_BUILT_IN:Array<Dynamic> = [
-		builtin.ScriptBuiltIn
-	];
-	
+	private static var DEFAULT_BUILT_IN:Array<Dynamic> = [builtin.ScriptBuiltIn, builtin.RawBuiltIn];
+
 	/** All the files that can be manually imported to this script */
 	public static var IMPORTABLE_BUILT_IN:Array<Dynamic> = [
 		builtin.SpriteBuiltIn,
@@ -115,7 +116,8 @@ class LuaScript
 		builtin.FileBuiltIn,
 		builtin.DataBuiltIn,
 		builtin.StateBuiltIn,
-		builtin.DebugBuiltIn
+		builtin.DebugBuiltIn,
+		builtin.MusicBuiltIn
 	];
 
 	/**
@@ -197,6 +199,9 @@ class LuaScript
 			child.close();
 		}
 
+		// Callback
+		this.call("OnDestroy", [], false);
+
 		// Close self
 		LuaCache.UnlinkScript(this.lua, this);
 		LuaParenting.RemoveParent(this);
@@ -233,13 +238,18 @@ class LuaScript
 	/** Calls the given method in this script and it's children */
 	public function call(name:String, args:Array<Dynamic>, callInChildren:Bool):Array<Null<Dynamic>>
 	{
-		var scripts:Array<LuaScript> = LuaParenting.GetAll(callInChildren);
 		var results:Array<Null<Dynamic>> = [];
 
-		for (i in scripts)
+		// Call in self
+		results.push(LuaHelper.call(this.lua, name, args));
+
+		if (callInChildren)
 		{
-			var result:Null<Dynamic> = LuaHelper.call(i.lua, name, args);
-			results.push(result);
+			for (child in LuaParenting.GetChildren(this))
+			{
+				for (r in child.call(name, args, callInChildren))
+					results.push(r);
+			}
 		}
 
 		return results;
