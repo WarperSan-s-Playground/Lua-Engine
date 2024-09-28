@@ -1,6 +1,5 @@
-package.path = package.path .. ";./source/utils/?.lua"
-local colorUtils = require("Colors");
-local rawUtils = require("Raw");
+require("source/utils/Colors");
+require("source/utils/Raw");
 
 local data = getShared("TITLE_DATA").value;
 
@@ -60,13 +59,13 @@ function UpdateTitle(value)
     end
 
     -- Ease the value
-    value = rawUtils.call("flixel.tweens.FlxEase", "quadInOut", value);
+    value = Raw.call("flixel.tweens.FlxEase", "quadInOut", value);
 
     -- Set alpha
-    local alpha = rawUtils.call("flixel.math.FlxMath", "lerp", ALPHAS[1], ALPHAS[2], value);
-    rawUtils.set('flixel.FlxSprite', 'alpha', ID, alpha);
+    local alpha = Raw.call("flixel.math.FlxMath", "lerp", ALPHAS[1], ALPHAS[2], value);
+    Raw.set('flixel.FlxSprite', 'alpha', ID, alpha);
 
     -- Set color
-    local color = colorUtils.interpolate(COLORS[1], COLORS[2], value);
-    rawUtils.set('flixel.FlxSprite', 'color', ID, color);
+    local color = Colors.interpolate(COLORS[1], COLORS[2], value);
+    Raw.set('flixel.FlxSprite', 'color', ID, color);
 end

@@ -121,6 +121,9 @@ class LuaScript
 	 */
 	public function importMethod(name:String, callback:Dynamic):Void
 	{
+		if (callback == null)
+			throw('Could not add the method \'$name\'.');
+
 		LuaHelper.add(this.lua, name, callback);
 	}
 
@@ -159,7 +162,10 @@ class LuaScript
 	{
 		try
 		{
+			// Open standard libraries
 			LuaL.openlibs(this.lua);
+
+			// Load file
 			LuaCache.LinkScript(this.lua, this);
 			var status:Int = LuaL.dofile(this.lua, this.file);
 

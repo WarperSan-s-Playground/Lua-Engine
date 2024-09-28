@@ -1,12 +1,12 @@
-local rawUtils = {};
+Raw = {};
 
 -- Calls `callRaw` in the correct format
-function rawUtils.call(class, name, ...)
+function Raw.call(class, name, ...)
     return callRaw(class .. ':' .. name, { ... }).value;
 end
 
 -- Calls `setRaw` in the correct format
-function rawUtils.set(class, name, id, value)
+function Raw.set(class, name, id, value)
     local path = '';
 
     if (id ~= nil) then
@@ -23,5 +23,3 @@ function rawUtils.set(class, name, id, value)
 
     return setRaw(path, value).value;
 end
-
-return rawUtils;

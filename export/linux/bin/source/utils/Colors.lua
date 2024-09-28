@@ -1,6 +1,6 @@
 
 
-local colorUtils = {};
+Colors = {};
 
 function HEX2ARGB(hex)
     local a = math.floor(hex / 0x1000000) % 0x100
@@ -17,7 +17,7 @@ function HEX2ARGB(hex)
 end
 
 -- Interpolates between two HEX colors in the ARGB format
-function colorUtils.interpolate(startColor, endColor, time)
+function Colors.interpolate(startColor, endColor, time)
     local color1 = HEX2ARGB(startColor);
     local color2 = HEX2ARGB(endColor);
 
@@ -32,5 +32,3 @@ function colorUtils.interpolate(startColor, endColor, time)
 
     return 0x1000000 * a + 0x10000 * r + 0x100 * g + b;
 end
-
-return colorUtils;
