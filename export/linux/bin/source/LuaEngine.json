@@ -1,0 +1,109 @@
+{
+	"functions": {
+		"importFile": {
+			"documentation": "Imports the given file to this script\n\r* `file` File to import",
+			"args": "file:String = null",
+			"returns": "LuaMessage"
+		},
+		"playMusic": {
+			"documentation": "Plays the given music\n\r* `path` Path of the music\n\r* `overrideMusic` Determines if this will overrride the current music\n\r* `volume` How loud the sound should be, from 0 to 1\n\r* `looped` Whether to loop this music",
+			"args": "path:String = \"\", overrideMusic:Bool = true, volume:Float = 1.0, looped:Bool = true",
+			"returns": "LuaMessage"
+		},
+		"getRaw": {
+			"documentation": "Fetches the raw value at the given path\n\r* `path` Path to the value request. If you want a specific class, use a `:` between the class and the variable",
+			"args": "path:String = null",
+			"returns": "LuaMessage<Null>"
+		},
+		"fromJSON": {
+			"documentation": "Parses the given file as JSON\n\r* `file` File to parse\n\r@return Object created",
+			"args": "file:String = null",
+			"returns": "LuaMessage<Dynamic>"
+		},
+		"loadGraphic": {
+			"documentation": "Loads the given image to the given sprite\n\r* `id` Sprite to load to\n\r* `path` Image to load from\n\r* `xml` XML file to load frames from",
+			"args": "id:Int = -1, path:String = \"\", xml:String = null",
+			"returns": "LuaMessage"
+		},
+		"closeScript": {
+			"documentation": "Closes the script associated with the given file\n\r* `file` File to close",
+			"args": "file:String = null",
+			"returns": "LuaMessage"
+		},
+		"makeSprite": {
+			"documentation": "Creates a new sprite for this state\n\r@return ID of the sprite",
+			"args": "x:Float = 0, y:Float = 0",
+			"returns": "LuaMessage<Int>"
+		},
+		"trace": {
+			"documentation": "Prints a value to the debug console and in-game log\n\r* `value` Value to print",
+			"args": "alue:Dynamic, infos:haxe.PosInfos = null",
+			"returns": "LuaMessage"
+		},
+		"setGlobal": {
+			"documentation": "Stores the given value at the given key in the global space\n\r* `key` Key to store at\n\r* `value` Value to store\n\r* `overwrite` Overwrites the value if already found",
+			"args": "key:String = null, value:Dynamic = null, overwrite:Bool = false",
+			"returns": "LuaMessage"
+		},
+		"setRaw": {
+			"documentation": "Sets the raw value at the given path to the given value\n\r* `path` Path to the value request. If you want a specific class, use a `:` between the class and the variable\n\r* `value` Value to assign",
+			"args": "path:String = null, value:Dynamic = null",
+			"returns": "LuaMessage"
+		},
+		"setShared": {
+			"documentation": "Stores in the shared space the given value at the given key\n\r* `key` Key to store at\n\r* `value` Value to store\n\r* `overwrite` Overwrites the value if already found\n\r* `inRoot` Store in root",
+			"args": "key:String = null, value:Dynamic = null, overwrite:Bool = false, inRoot:Bool = true",
+			"returns": "LuaMessage"
+		},
+		"removeGlobal": {
+			"documentation": "Removes the value associated with the given key in the global space\n\r* `key` Key to remove",
+			"args": "key:String = null",
+			"returns": "LuaMessage"
+		},
+		"getGlobal": {
+			"documentation": "Fetches the value associated with the given key in the global space\n\r* `key` Key to look for\n\r@return Value found",
+			"args": "key:String = null",
+			"returns": "LuaMessage<Dynamic>"
+		},
+		"removeSprite": {
+			"documentation": "Removes a sprite with the given ID\n\r* `id` ID of the sprite to remove\n\r* `forceDestroy` Force the game to destroy the sprite",
+			"args": "id:Int = -1, forceDestroy:Bool = false",
+			"returns": "LuaMessage"
+		},
+		"removeShared": {
+			"documentation": "Removes in the shared space the value associated with the given key\n\r* `key` Key to remove",
+			"args": "key:String = null",
+			"returns": "LuaMessage"
+		},
+		"makeGraphic": {
+			"documentation": "Makes a graphic to the given sprite\n\r* `id` Sprite to make to\n\r* `width` Width of the graphic\n\r* `height` Height of the graphic\n\r* `color` Color of the graphic",
+			"args": "id:Int = -1, width:Int = 0, height:Int = 0, color:String = null",
+			"returns": "LuaMessage"
+		},
+		"getShared": {
+			"documentation": "Fetches the value associated with the given key in the shared space\n\r* `key` Key to look for\n\r@return Value found",
+			"args": "key:String = null",
+			"returns": "LuaMessage<Dynamic>"
+		},
+		"addAnimationByPrefix": {
+			"documentation": "Adds an animation with the given prefix\n\r* `id` Object to add to\n\r* `name` Name of the animation\n\r* `prefix` Prefix of the animation\n\r* `frameRate` Frame rate of the animation\n\r* `looped` Whether or not the animation is looped or just plays once",
+			"args": "id:Int = -1, name:String = \"anim\", prefix:String = \"anim\", frameRate:Int = 24, looped:Bool = true",
+			"returns": "LuaMessage"
+		},
+		"addScript": {
+			"documentation": "Opens a script with the given file\n\r* `file` File to open\n\r* `autoImport` Automatically imports all the built-in methods\n\r* `isRelated` Is the file related to the current script?",
+			"args": "file:String = null, autoImport:Bool = true, isRelated:Bool = true",
+			"returns": "LuaMessage"
+		},
+		"switchState": {
+			"documentation": "Switches to a new state powered by the given file\n\r* `file` File that manages the new state",
+			"args": "file:String = null",
+			"returns": "LuaMessage"
+		},
+		"getAllScripts": {
+			"documentation": "Fetches all the scripts loaded",
+			"args": "",
+			"returns": "LuaMessage<Array>"
+		}
+	}
+}

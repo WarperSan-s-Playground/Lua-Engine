@@ -1,3 +1,4 @@
 /.vscode
-/export/haxe
-/export/obj
+/export/linux/haxe
+/export/linux/obj
+/export/linux/bin/LuaEngine
