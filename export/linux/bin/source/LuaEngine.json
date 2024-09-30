@@ -11,9 +11,9 @@
 			"returns": "LuaMessage"
 		},
 		"getRaw": {
-			"documentation": "Fetches the raw value at the given path\n\r* `path` Path to the value request. If you want a specific class, use a `:` between the class and the variable",
+			"documentation": "Fetches the raw value at the given path\n\r* `path` Path to the value request.",
 			"args": "path:String = null",
-			"returns": "LuaMessage<Null>"
+			"returns": "LuaMessage<Dynamic>"
 		},
 		"fromJSON": {
 			"documentation": "Parses the given file as JSON\n\r* `file` File to parse\n\r@return Object created",
@@ -46,7 +46,7 @@
 			"returns": "LuaMessage"
 		},
 		"setRaw": {
-			"documentation": "Sets the raw value at the given path to the given value\n\r* `path` Path to the value request. If you want a specific class, use a `:` between the class and the variable\n\r* `value` Value to assign",
+			"documentation": "Sets the raw value at the given path to the given value\n\r* `path` Path to the value request.\n\r* `value` Value to assign",
 			"args": "path:String = null, value:Dynamic = null",
 			"returns": "LuaMessage"
 		},
@@ -79,6 +79,11 @@
 			"documentation": "Makes a graphic to the given sprite\n\r* `id` Sprite to make to\n\r* `width` Width of the graphic\n\r* `height` Height of the graphic\n\r* `color` Color of the graphic",
 			"args": "id:Int = -1, width:Int = 0, height:Int = 0, color:String = null",
 			"returns": "LuaMessage"
+		},
+		"callRaw": {
+			"documentation": "Calls the method at the given path\n\r* `path` Path to the value request.\n\r* `args` Arguments of the call\n\r@return Result of the call",
+			"args": "path:String = null, args:Dynamic = null",
+			"returns": "LuaMessage<Null>"
 		},
 		"getShared": {
 			"documentation": "Fetches the value associated with the given key in the shared space\n\r* `key` Key to look for\n\r@return Value found",
