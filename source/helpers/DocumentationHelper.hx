@@ -117,7 +117,7 @@ class DocumentationHelper
 				args += ", ";
 
 			// Add name
-			args += names[index].substring(1);
+			args += ~/^\?/g.replace(names[index], "");
 
 			// Add type
 			var type = current.get("path");

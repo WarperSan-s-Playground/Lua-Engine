@@ -78,6 +78,8 @@ class LuaScript
 		this.setFile(file);
 		this.setLua(autoImport);
 		LuaParenting.SetParent(this, parent);
+
+		// Set data
 		this.shared = new DataContainer(this);
 	}
 
@@ -150,9 +152,9 @@ class LuaScript
 
 	// #endregion
 	// #region DATA
-	public var shared:custom.DataContainer;
+	public var shared:DataContainer;
 
-	public static var global:custom.DataContainer = new custom.DataContainer(null);
+	public static var global:DataContainer = new DataContainer(null);
 
 	// #endregion
 	// #region EXECUTE
@@ -179,19 +181,19 @@ class LuaScript
 	}
 
 	/** Calls the given method in this script and it's children */
-	public function call(name:String, args:Array<Dynamic>, callInChildren:Bool):Array<Null<Dynamic>>
+	public function call(name:String, args:Array<Dynamic>, callInChildren:Bool):Map<String, Null<Dynamic>>
 	{
-		var results:Array<Null<Dynamic>> = [];
+		var results:Map<String, Null<Dynamic>> = [];
 
 		// Call in self
-		results.push(LuaHelper.call(this.lua, name, args));
+		results.set(this.file, LuaHelper.call(this.lua, name, args));
 
 		if (callInChildren)
 		{
 			for (child in LuaParenting.GetChildren(this))
 			{
 				for (r in child.call(name, args, callInChildren))
-					results.push(r);
+					results.set(child.file, r);
 			}
 		}
 

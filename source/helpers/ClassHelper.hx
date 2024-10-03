@@ -58,8 +58,8 @@ class ClassHelper
 			if (current == null)
 				throw('Could not continue the search from \'$path\', because \'${segments[counter - 1]}\' is null.');
 
-			// Stop when reaching the field
-			current = Reflect.field(current, i);
+			// Stop when reaching the property
+			current = Reflect.getProperty(current, i);
 			counter++;
 		}
 

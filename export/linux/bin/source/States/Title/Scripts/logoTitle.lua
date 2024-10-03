@@ -1,8 +1,14 @@
+require("source/utils/Raw");
+
 local data = getShared("TITLE_DATA").value;
-local msg = makeSprite(
+local ID = makeSprite(
     data["titleX"],
     data["titleY"]
-);
+).value;
 
-loadGraphic(msg.value, "../Images/logoBumpin.png", "../XML/logoBumpin.xml");
-addAnimationByPrefix(msg.value, "bump", "logo bumpin", 24, true);
+loadGraphic(ID, "../Images/logoBumpin.png", "../XML/logoBumpin.xml");
+addAnimationByPrefix(ID, "bump", "logo bumpin", 24, false);
+
+function OnBeat()
+    Raw.call("flixel.FlxSprite{" .. ID .. "}", "animation.play", "bump", true);
+end

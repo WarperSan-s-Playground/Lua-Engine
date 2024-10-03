@@ -1,16 +1,15 @@
 require("source/utils/Colors");
 require("source/utils/Raw");
-require("source/backend/Conductor");
 
 local data = getShared("TITLE_DATA").value;
 
 function OnCreate()
     LoadTitleEnter();
+    --addScript("musicState.lua");
 end
 
 function OnUpdate(elapsed)
     UpdateTimer(elapsed);
-    UpdateMusic();
 end
 
 --[[ TIMER ]]
@@ -68,35 +67,4 @@ function UpdateTitle(value)
     -- Set color
     local color = Colors.interpolate(COLORS[1], COLORS[2], value);
     Raw.set('flixel.FlxSprite', 'color', ID, color);
-end
-
-local curBeat = 0;
-local curStep = 0;
-
-function UpdateMusic()
-
-    local oldStep = curStep;
-    UpdateStep();
-    UpdateBeat();
-
-    -- If step didn't change, skip
-    if (oldStep == curStep) then
-        return;
-    end
-
-    if (curStep > 0) then
-        trace("STEP HIT");
-    end
-end
-
-function UpdateBeat()
-    curBeat = math.floor(curStep / 4);
-end
-
-function UpdateStep()
-    local songPosition = 0;
-    local lastChange = Conductor:getBPMFromSeconds(songPosition);
-
-    local shit = (songPosition - lastChange.songTime) / lastChange.stepCrochet;
-    curStep = lastChange.stepTime + math.floor(shit);
 end

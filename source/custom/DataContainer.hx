@@ -39,7 +39,11 @@ class DataContainer
 
 		// If not overwrite and key exists, error
 		if (!overwrite && this.data.exists(key))
-			throw('The key \'$key\' already exists in the shared space of \'${this.script.file}\'.');
+		{
+			if (this.script != null)
+				throw('The key \'$key\' already exists in the shared space of \'${this.script.file}\'.');
+			throw('The key \'$key\' already exists in the global space.');
+		}
 
 		this.data.set(key, value);
 	}

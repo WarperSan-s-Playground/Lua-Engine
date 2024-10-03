@@ -37,7 +37,7 @@
 		},
 		"trace": {
 			"documentation": "Prints a value to the debug console and in-game log\n\r* `value` Value to print",
-			"args": "alue:Dynamic, infos:haxe.PosInfos = null",
+			"args": "value:Dynamic, infos:haxe.PosInfos = null",
 			"returns": "LuaMessage"
 		},
 		"setGlobal": {
@@ -65,14 +65,14 @@
 			"args": "key:String = null",
 			"returns": "LuaMessage<Dynamic>"
 		},
-		"removeSprite": {
-			"documentation": "Removes a sprite with the given ID\n\r* `id` ID of the sprite to remove\n\r* `forceDestroy` Force the game to destroy the sprite",
-			"args": "id:Int = -1, forceDestroy:Bool = false",
-			"returns": "LuaMessage"
-		},
 		"removeShared": {
 			"documentation": "Removes in the shared space the value associated with the given key\n\r* `key` Key to remove",
 			"args": "key:String = null",
+			"returns": "LuaMessage"
+		},
+		"removeSprite": {
+			"documentation": "Removes a sprite with the given ID\n\r* `id` ID of the sprite to remove\n\r* `forceDestroy` Force the game to destroy the sprite",
+			"args": "id:Int = -1, forceDestroy:Bool = false",
 			"returns": "LuaMessage"
 		},
 		"makeGraphic": {
@@ -100,6 +100,11 @@
 			"args": "file:String = null, autoImport:Bool = true, isRelated:Bool = true",
 			"returns": "LuaMessage"
 		},
+		"addAnimationByIndices": {
+			"documentation": "Adds an animation with the given indices\n\r* `id` Object to add to\n\r* `name` Name of the animation\n\r* `indices` Indices of the animation\n\r* `frameRate` Frame rate of the animation\n\r* `looped` Whether or not the animation is looped or just plays once",
+			"args": "id:Int = -1, name:String = \"anim\", indices:Array = null, frameRate:Int = 24, looped:Bool = true",
+			"returns": "LuaMessage"
+		},
 		"switchState": {
 			"documentation": "Switches to a new state powered by the given file\n\r* `file` File that manages the new state",
 			"args": "file:String = null",
@@ -109,6 +114,11 @@
 			"documentation": "Fetches all the scripts loaded",
 			"args": "",
 			"returns": "LuaMessage<Array>"
+		},
+		"callMethod": {
+			"documentation": "Calls the given method in this script and its children\n\r* `name` Name of the method to call\n\r* `args` Arguments to use\n\r@return Array<Null<Dynamic>> Results of the calls",
+			"args": "name:String = null, args:Dynamic = null",
+			"returns": "LuaMessage<Map>"
 		}
 	}
 }

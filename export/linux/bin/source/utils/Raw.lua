@@ -23,3 +23,22 @@ function Raw.set(class, name, id, value)
 
     return setRaw(path, value).value;
 end
+
+-- Calls `getRaw` in the correct format
+function Raw.get(class, name, id)
+    local path = '';
+
+    if (id ~= nil) then
+        class = class .. '{' .. id .. '}';
+    end
+
+    if (class ~= nil) then
+        path = path .. class .. ':';
+    end
+
+    if (name ~= nil) then
+        path = path .. name;
+    end
+
+    return getRaw(path).value;
+end

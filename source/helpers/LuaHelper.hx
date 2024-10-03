@@ -1,5 +1,6 @@
 package helpers;
 
+import haxe.Exception;
 import llua.LuaL;
 import helpers.LogHelper;
 import llua.Convert;
@@ -166,9 +167,9 @@ class LuaHelper
 			result = LuaMessage.success(value);
 			Lua.pop(lua, 1);
 		}
-		catch (e:String)
+		catch (e:Exception)
 		{
-			LogHelper.error('Error while invoking \'$name\': $e');
+			LogHelper.error('Error while invoking \'$name\': ${e.message}');
 			result = LuaMessage.error(e);
 		}
 
@@ -218,7 +219,7 @@ class LuaHelper
 		}
 
 		// Remove padding
-		Lua.pop(lua, 1);
+		Lua.pop(lua, 0);
 
 		return hasOrder ? args : table;
 	}

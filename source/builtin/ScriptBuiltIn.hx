@@ -114,4 +114,27 @@ class ScriptBuiltIn
 
 		script.importFile(targetFile);
 	}
+
+	/**
+	 * Calls the given method in this script and its children
+	 * @param name Name of the method to call
+	 * @param args Arguments to use
+	 * @return Array<Null<Dynamic>> Results of the calls
+	 */
+	public static function callMethod(name:Null<String> = null, args:Dynamic = null):Map<String, Null<Dynamic>>
+	{
+		// If invalid
+		if (name == null)
+			throw('No function was given to call.');
+
+		var script:Null<LuaScript> = LuaCache.GetScript();
+
+		if (script == null)
+			throw('Tried to call a method from an invalid script.');
+
+		if (args == null)
+			args = [];
+
+		return script.call(name, args, true);
+	}
 }
