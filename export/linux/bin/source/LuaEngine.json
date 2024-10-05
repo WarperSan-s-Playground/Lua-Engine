@@ -83,7 +83,7 @@
 		"callRaw": {
 			"documentation": "Calls the method at the given path\n\r* `path` Path to the value request.\n\r* `args` Arguments of the call\n\r@return Result of the call",
 			"args": "path:String = null, args:Dynamic = null",
-			"returns": "LuaMessage<Null>"
+			"returns": "LuaMessage<Null<Dynamic>>"
 		},
 		"getShared": {
 			"documentation": "Fetches the value associated with the given key in the shared space\n\r* `key` Key to look for\n\r@return Value found",
@@ -98,7 +98,7 @@
 		"addScript": {
 			"documentation": "Opens a script with the given file\n\r* `file` File to open\n\r* `autoImport` Automatically imports all the built-in methods\n\r* `isRelated` Is the file related to the current script?",
 			"args": "file:String = null, autoImport:Bool = true, isRelated:Bool = true",
-			"returns": "LuaMessage<Null>"
+			"returns": "LuaMessage<Null<Dynamic>>"
 		},
 		"addAnimationByIndices": {
 			"documentation": "Adds an animation with the given indices\n\r* `id` Object to add to\n\r* `name` Name of the animation\n\r* `prefix` Prefix of the animation\n\r* `indices` Indices of the animation\n\r* `frameRate` Frame rate of the animation\n\r* `looped` Whether or not the animation is looped or just plays once",
@@ -113,12 +113,12 @@
 		"getAllScripts": {
 			"documentation": "Fetches all the scripts loaded",
 			"args": "",
-			"returns": "LuaMessage<Array>"
+			"returns": "LuaMessage<Array<String>>"
 		},
 		"callMethod": {
 			"documentation": "Calls the given method in this script and its children\n\r* `name` Name of the method to call\n\r* `args` Arguments to use\n\r@return Array<Null<Dynamic>> Results of the calls",
 			"args": "name:String = null, args:Dynamic = null",
-			"returns": "LuaMessage<Map>"
+			"returns": "LuaMessage<Map<String, Null<Dynamic>>>"
 		}
 	}
 }

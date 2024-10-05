@@ -143,15 +143,41 @@ class DocumentationHelper
 	private static function ProcessReturn(e:Xml):String
 	{
 		// Set return from last item
-		var type = e.get("path");
+		var type = ParseType(e);
 		var s = Type.getClassName(lua_bridge.LuaMessage).split(".").pop();
-
-		if (type == null && e.nodeName == "d")
-			type = "Dynamic";
 
 		if (type != "Void")
 			s += '<$type>';
 
 		return s;
+	}
+
+	private static function ParseType(e:Xml):String
+	{
+		var type = e.get("path");
+
+		if (type == null && e.nodeName == "d")
+			type = "Dynamic";
+
+		var it = e.elements();
+		var i = 0;
+		while (it.hasNext())
+		{
+			var c = it.next();
+
+			if (i == 0)
+				type += "<";
+
+			type += ParseType(c);
+
+			if (it.hasNext())
+				type += ", ";
+			else
+				type += ">";
+
+			i++;
+		}
+
+		return type;
 	}
 }
