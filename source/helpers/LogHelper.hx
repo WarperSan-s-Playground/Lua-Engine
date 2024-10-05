@@ -49,7 +49,8 @@ class LogHelper
 	 * Logs the given value as a notice
 	 * @param value Value to log
 	 */
-	public static function info(value:Dynamic):Void {
+	public static function info(value:Dynamic):Void
+	{
 		log(value, LogStyle.NOTICE);
 	}
 }

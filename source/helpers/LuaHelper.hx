@@ -1,7 +1,6 @@
 package helpers;
 
 import haxe.Exception;
-import llua.LuaL;
 import helpers.LogHelper;
 import llua.Convert;
 import llua.Lua;
@@ -111,7 +110,7 @@ class LuaHelper
 			var args:Array<Dynamic> = [];
 
 			for (i in 0...paramCount)
-				args[i] = fromLua(lua, i + 1);
+				args.push(fromLua(lua, i + 1, paramCount + 1));
 
 			// Call method
 			var value:Dynamic = Reflect.callMethod(null, callback, args);
@@ -159,7 +158,7 @@ class LuaHelper
 			// Call
 			var error:Int = Lua.pcall(lua, args.length, 1, 0);
 
-			var value:Dynamic = fromLua(lua, -1);
+			var value:Dynamic = fromLua(lua, -1, 0);
 
 			if (error != 0)
 				throw(value);
@@ -179,10 +178,11 @@ class LuaHelper
 	// #endregion
 	// #region Convert
 
-	private static function fromLua(lua:State, i:Int):Dynamic
+	private static function fromLua(lua:State, i:Int, offset:Int):Dynamic
 	{
 		var type:Int = Lua.type(lua, i);
 
+		// If null, return null
 		if (type == Lua.LUA_TNONE)
 			return null;
 
@@ -190,28 +190,29 @@ class LuaHelper
 		if (type != Lua.LUA_TTABLE)
 			return Convert.fromLua(lua, i);
 
-		var startIndex:Int = (i - Lua.gettop(lua)) - 2;
+		var orderArgs:Array<Dynamic> = [];
+		var unorderArgs:Map<Dynamic, Dynamic> = new Map<Dynamic, Dynamic>();
+		var hasOrder:Bool = true;
 
 		// Add padding
 		Lua.pushnil(lua);
 
-		// Load table
-		Lua.gettable(lua, -(i + 1));
-		var args:Array<Dynamic> = [];
-		var table:Map<Dynamic, Dynamic> = new Map<Dynamic, Dynamic>();
-		var hasOrder:Bool = true;
+		var start = i - offset;
+		start -= 1; // Offset from padding
 
-		// Load each element
-		while (Lua.next(lua, startIndex) != 0)
+		// Load table
+		Lua.gettable(lua, start);
+
+		while (Lua.next(lua, start) != 0)
 		{
-			var key:String = Std.string(fromLua(lua, -2));
-			var value:Dynamic = fromLua(lua, -1);
+			var key:String = Std.string(fromLua(lua, -2, 0));
+			var value:Dynamic = fromLua(lua, -1, 0);
 
 			// Set value
-			table.set(key, value);
-			args.push(value);
+			unorderArgs.set(key, value);
+			orderArgs.push(value);
 
-			if (key != Std.string(args.length))
+			if (hasOrder && key != Std.string(orderArgs.length))
 				hasOrder = false;
 
 			// Remove the value, keep the key for next iteration
@@ -221,7 +222,7 @@ class LuaHelper
 		// Remove padding
 		Lua.pop(lua, 0);
 
-		return hasOrder ? args : table;
+		return hasOrder ? orderArgs : unorderArgs;
 	}
 
 	// #endregion

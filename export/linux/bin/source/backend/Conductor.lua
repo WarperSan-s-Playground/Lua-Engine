@@ -1,4 +1,4 @@
-require("./source/utils/Raw");
+require("source/utils/Raw");
 
 --[[ Conductor ]]
 Conductor = {};

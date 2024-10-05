@@ -1,6 +1,6 @@
 package;
 
-import builtin.LogBuiltIn;
+import helpers.LogHelper;
 import flixel.FlxG;
 import flixel.FlxGame;
 import openfl.display.FPS;
@@ -18,7 +18,10 @@ class Main extends Sprite
 	{
 		super();
 
-		haxe.Log.trace = LogBuiltIn.trace;
+		haxe.Log.trace = function(value:Dynamic, ?infos:Null<haxe.PosInfos>)
+		{
+			LogHelper.debug(value);
+		};
 
 		// Set lua callback
 		var luaCallback = cpp.Callable.fromStaticFunction(helpers.LuaHelper.callback);
