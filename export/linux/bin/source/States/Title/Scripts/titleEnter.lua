@@ -58,10 +58,10 @@ function UpdateTitle(value)
     end
 
     -- Ease the value
-    value = Raw.call("flixel.tweens.FlxEase", "quadInOut", value);
+    value = Raw.call("flixel.tweens.FlxEase", "quadInOut", nil, value);
 
     -- Set alpha
-    local alpha = Raw.call("flixel.math.FlxMath", "lerp", ALPHAS[1], ALPHAS[2], value);
+    local alpha = Raw.call("flixel.math.FlxMath", "lerp", nil, ALPHAS[1], ALPHAS[2], value);
     Raw.set('flixel.FlxSprite', 'alpha', ID, alpha);
 
     -- Set color

@@ -1,5 +1,6 @@
 package lua_bridge;
 
+import custom.Tuple;
 import custom.DataContainer;
 import helpers.FileHelper;
 import helpers.LogHelper;
@@ -22,10 +23,11 @@ class LuaScript
 	 * @param autoImport Automatically imports all the built-in methods
 	 * @return Created script
 	 */
-	private static function create(file:String, parent:Null<LuaScript>, autoImport:Bool):Null<LuaScript>
+	private static function create(file:String, parent:Null<LuaScript>, autoImport:Bool):Tuple<Null<LuaScript>, Map<String, Null<Dynamic>>>
 	{
 		// Create script
 		var script:Null<LuaScript> = null;
+		var result:Map<String, Null<Dynamic>> = new Map<String, Null<Dynamic>>();
 
 		try
 		{
@@ -34,7 +36,7 @@ class LuaScript
 
 			// Callback
 			var hasParent:Bool = parent != null;
-			script.call("OnCreate", [hasParent], false);
+			result = script.call("OnCreate", [hasParent], false);
 		}
 		catch (e:String)
 		{
@@ -42,7 +44,7 @@ class LuaScript
 			script = null;
 		}
 
-		return script;
+		return new Tuple<Null<LuaScript>, Map<String, Null<Dynamic>>>(script, result);
 	}
 
 	/**
@@ -51,7 +53,7 @@ class LuaScript
 	 * @param autoImport Automatically imports all the built-in methods
 	 * @return Script created
 	 */
-	public static function openFile(file:String, autoImport:Bool):Null<LuaScript>
+	public static function openFile(file:String, autoImport:Bool):Tuple<Null<LuaScript>, Map<String, Null<Dynamic>>>
 	{
 		return LuaScript.create(file, null, autoImport);
 	}
@@ -62,7 +64,7 @@ class LuaScript
 	 * @param autoImport Automatically imports all the built-in methods
 	 * @return Script created
 	 */
-	public function openOther(file:String, autoImport:Bool):Null<LuaScript>
+	public function openOther(file:String, autoImport:Bool):Tuple<Null<LuaScript>, Map<String, Null<Dynamic>>>
 	{
 		return LuaScript.create(file, this, autoImport);
 	}

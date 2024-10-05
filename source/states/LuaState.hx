@@ -15,7 +15,7 @@ class LuaState extends flixel.FlxState
 
 	override function create()
 	{
-		root = LuaScript.openFile(this.file, true);
+		root = LuaScript.openFile(this.file, true).first;
 	}
 
 	override function update(elapsed:Float)

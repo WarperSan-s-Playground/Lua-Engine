@@ -98,11 +98,11 @@
 		"addScript": {
 			"documentation": "Opens a script with the given file\n\r* `file` File to open\n\r* `autoImport` Automatically imports all the built-in methods\n\r* `isRelated` Is the file related to the current script?",
 			"args": "file:String = null, autoImport:Bool = true, isRelated:Bool = true",
-			"returns": "LuaMessage"
+			"returns": "LuaMessage<Null>"
 		},
 		"addAnimationByIndices": {
-			"documentation": "Adds an animation with the given indices\n\r* `id` Object to add to\n\r* `name` Name of the animation\n\r* `indices` Indices of the animation\n\r* `frameRate` Frame rate of the animation\n\r* `looped` Whether or not the animation is looped or just plays once",
-			"args": "id:Int = -1, name:String = \"anim\", indices:Array = null, frameRate:Int = 24, looped:Bool = true",
+			"documentation": "Adds an animation with the given indices\n\r* `id` Object to add to\n\r* `name` Name of the animation\n\r* `prefix` Prefix of the animation\n\r* `indices` Indices of the animation\n\r* `frameRate` Frame rate of the animation\n\r* `looped` Whether or not the animation is looped or just plays once",
+			"args": "id:Int = -1, name:String = \"anim\", prefix:String = \"anim\", indices:Array = null, frameRate:Int = 24, looped:Bool = true",
 			"returns": "LuaMessage"
 		},
 		"switchState": {

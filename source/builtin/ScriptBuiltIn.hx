@@ -18,7 +18,7 @@ class ScriptBuiltIn
 	 * @param autoImport Automatically imports all the built-in methods
 	 * @param isRelated Is the file related to the current script?
 	 */
-	public static function addScript(file:Null<String> = null, autoImport:Bool = true, isRelated:Bool = true):Void
+	public static function addScript(file:Null<String> = null, autoImport:Bool = true, isRelated:Bool = true):Null<Dynamic>
 	{
 		var fixed:String = FileHelper.GetPath(file);
 
@@ -31,7 +31,7 @@ class ScriptBuiltIn
 		if (extension != "lua")
 			throw('Expected a LUA file. Received a \'$extension\' file.');
 
-		var child:Null<LuaScript> = null;
+		var createResult = null;
 
 		// Create the script as child
 		if (isRelated)
@@ -41,13 +41,28 @@ class ScriptBuiltIn
 			if (script == null)
 				throw('Tried to add a script from an invalid script.');
 
-			child = script.openOther(file, autoImport);
+			createResult = script.openOther(file, autoImport);
 		}
 		else
-			child = LuaScript.openFile(file, autoImport);
+			createResult = LuaScript.openFile(file, autoImport);
+
+		var child:Null<LuaScript> = createResult.first;
 
 		if (child == null)
 			throw('Failed to create a script for the file \'$file\'.');
+
+		var results:Map<String, Null<Dynamic>> = createResult.second;
+
+		// If empty, null
+		if (!results.keys().hasNext())
+			return null;
+
+		// Get first value
+		var value:Null<Dynamic> = results.get(results.keys().next());
+
+		if (value == null)
+			return null;
+		return value.value;
 	}
 
 	/**
@@ -99,7 +114,15 @@ class ScriptBuiltIn
 				break;
 			}
 
-			// If the target file is miswritten
+			// If the target file is miswritten (SHORTEN)
+			if (name == file + "BuiltIn")
+			{
+				LogHelper.warn('Please import the file as \'$name\' instead of \'$file\'.');
+				targetFile = _file;
+				break;
+			}
+
+			// If the target file is miswritten (CASE INSENSITIVE)
 			if (name.toLowerCase() == file.toLowerCase())
 			{
 				LogHelper.warn('Please import the file as \'$name\' instead of \'$file\'.');

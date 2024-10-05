@@ -1,19 +1,27 @@
--- importFile("DataBuiltIn");
--- importFile("SpriteBuiltIn");
--- importFile("AnimationBuiltIn");
 require("source/utils/Raw");
 
-local data = getShared("TITLE_DATA").value;
-local ID = makeSprite(
-    data["gfX"],
-    data["gfY"]
-).value;
-local danceLeft = false;
+-- Manual imports
+importFile("DataBuiltIn");
+importFile("SpriteBuiltIn");
+importFile("AnimationBuiltIn");
 
-loadGraphic(ID, "../Images/gfDanceTitle.png", "../XML/gfDanceTitle.xml");
-addAnimationByIndices(ID, "danceRight", "gfDance", { 30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }, 24, false);
-addAnimationByIndices(ID, "danceLeft", "gfDance", { 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 }, 24,
-    false);
+local danceLeft = false;
+local ID = -1;
+
+local DANCE_RIGHT_INDICES = { 30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
+local DANCE_LEFT_INDICES = { 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
+
+function OnCreate()
+    local data = getShared("TITLE_DATA").value;
+    ID = makeSprite(
+        data["gfX"],
+        data["gfY"]
+    ).value;
+
+    loadGraphic(ID, "../Images/gfDanceTitle.png", "../XML/gfDanceTitle.xml");
+    addAnimationByIndices(ID, "danceRight", "gfDance", DANCE_RIGHT_INDICES, 24, false);
+    addAnimationByIndices(ID, "danceLeft", "gfDance", DANCE_LEFT_INDICES, 24, false);
+end
 
 function OnBeat()
     danceLeft = not danceLeft;
@@ -25,5 +33,9 @@ function OnBeat()
         anim = 'danceLeft';
     end
 
-    Raw.call("flixel.FlxSprite{" .. ID .. "}", "animation.play", anim);
+    Raw.call("flixel.FlxSprite", "animation.play", ID, anim);
+end
+
+function OnDestroy()
+    removeSprite(ID);
 end
