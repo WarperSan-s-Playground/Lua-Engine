@@ -30,12 +30,12 @@ class LuaImport
 	public static var IMPORTABLE_BUILT_IN:Array<Dynamic> = [
 		builtin.RawBuiltIn,
 		builtin.SpriteBuiltIn,
-		builtin.AnimationBuiltIn,
 		builtin.LogBuiltIn,
 		builtin.FileBuiltIn,
 		builtin.DataBuiltIn,
 		builtin.StateBuiltIn,
 		builtin.DebugBuiltIn,
-		builtin.MusicBuiltIn
+		builtin.MusicBuiltIn,
+		builtin.GroupBuiltIn
 	];
 }

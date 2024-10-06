@@ -12,7 +12,14 @@ class RawBuiltIn
 	public static function getRaw(path:Null<String> = null):Dynamic
 	{
 		var result:Dynamic = ClassHelper.getClassFromPath(path);
-		return ClassHelper.getClassField(result.obj, result.path);
+		var obj:Null<Dynamic> = ClassHelper.getClassField(result.obj, result.path);
+
+		if (obj == null)
+			return null;
+
+		if (Reflect.isObject(obj))
+			return Std.string(obj);
+		return obj;
 	}
 
 	/**

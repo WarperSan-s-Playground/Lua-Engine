@@ -1,11 +1,11 @@
 package builtin;
 
+import helpers.FlxBasicHelper;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import helpers.FileHelper;
-import helpers.LuaHelper;
 
 /** Class holding every built-in methods for sprites */
 @:rtti
@@ -27,19 +27,18 @@ class SpriteBuiltIn
 		sprite.x = x;
 		sprite.y = y;
 		sprite.antialiasing = true;
-		state.add(sprite);
 
-		return sprite.ID;
+		return FlxBasicHelper.add(sprite);
 	}
 
 	/**
-	 * Removes a sprite with the given ID
+	 * Removes the sprite with the given ID
 	 * @param id ID of the sprite to remove
 	 * @param forceDestroy Force the game to destroy the sprite
 	 */
 	public static function removeSprite(id:Int = -1, forceDestroy:Bool = false):Void
 	{
-		var sprite:FlxSprite = cast LuaHelper.getObject(id, "flixel.FlxSprite");
+		var sprite:FlxSprite = cast FlxBasicHelper.getObject(id, FlxSprite);
 
 		if (forceDestroy || sprite.container == null)
 			sprite.destroy();
@@ -55,7 +54,7 @@ class SpriteBuiltIn
 	 */
 	public static function loadGraphic(id:Int = -1, path:String = "", xml:Null<String> = null):Void
 	{
-		var sprite:FlxSprite = cast LuaHelper.getObject(id, "flixel.FlxSprite");
+		var sprite:FlxSprite = cast FlxBasicHelper.getObject(id, FlxSprite);
 
 		// Check if path valid
 		var fixedPath:String = helpers.FileHelper.GetPath(path);
@@ -90,7 +89,7 @@ class SpriteBuiltIn
 	 */
 	public static function makeGraphic(id:Int = -1, width:Int = 0, height:Int = 0, color:Null<String> = null):Void
 	{
-		var sprite:FlxSprite = cast LuaHelper.getObject(id, "flixel.FlxSprite");
+		var sprite:FlxSprite = cast FlxBasicHelper.getObject(id, FlxSprite);
 
 		// Clamp width
 		if (width < 0)

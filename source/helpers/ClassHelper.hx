@@ -1,6 +1,5 @@
 package helpers;
 
-import flixel.util.FlxColor;
 import lua_bridge.LuaCache;
 
 class ClassHelper
@@ -27,7 +26,7 @@ class ClassHelper
 			if (parsedPath.type == null)
 				parsedPath.type = "flixel.FlxBasic";
 
-			obj = LuaHelper.getObject(parsedPath.id, parsedPath.type);
+			obj = FlxBasicHelper.getObject(parsedPath.id, parsedPath.type);
 		}
 		// PATH + TYPE
 		else if (parsedPath.path != null && parsedPath.type != null)

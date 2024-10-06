@@ -1,6 +1,6 @@
-require("source/utils/Raw");
+require("source.utils.Raw");
+require("source.utils.Animations");
 
-importFile("AnimationBuiltIn");
 importFile("DataBuiltIn");
 importFile("SpriteBuiltIn");
 
@@ -14,7 +14,7 @@ function OnCreate()
     ).value;
 
     loadGraphic(ID, "../Images/logoBumpin.png", "../XML/logoBumpin.xml");
-    addAnimationByPrefix(ID, "bump", "logo bumpin", 24, false);
+    Animations.addByPrefix(ID, "bump", "logo bumpin", 24, false);
 end
 
 function OnBeat()

@@ -1,11 +1,28 @@
-require("source/utils/Colors");
-require("source/utils/Raw");
+require("source.utils.Colors");
+require("source.utils.Raw");
+require("source.utils.Animations");
+
+importFile("SpriteBuiltIn");
+importFile("DataBuiltIn");
+importFile("LogBuiltIn");
 
 local data = getShared("TITLE_DATA").value;
 
+--[[ TITLE ENTER ]]
+local ID = -1;
+local ALPHAS = { 1, 0.64 };
+local COLORS = { 0x33FFFF, 0x3333CC };
+
+-- Loads the title graphic and animations
 function OnCreate()
-    LoadTitleEnter();
-    --addScript("musicState.lua");
+    ID = makeSprite(
+        data["startX"],
+        data["startY"]
+    ).value;
+
+    loadGraphic(ID, "../Images/titleEnter.png", "../XML/titleEnter.xml");
+    Animations.addByPrefix(ID, "idle", "ENTER IDLE", 24, true);
+    Animations.addByPrefix(ID, "press", "ENTER PRESSED", 24, true);
 end
 
 function OnUpdate(elapsed)
@@ -32,23 +49,6 @@ function UpdateTimer(elapsed)
     end
 
     UpdateTitle(timer);
-end
-
---[[ TITLE ENTER ]]
-local ID = -1;
-local ALPHAS = { 1, 0.64 };
-local COLORS = { 0x33FFFF, 0x3333CC };
-
--- Loads the title graphic and animations
-function LoadTitleEnter()
-    ID = makeSprite(
-        data["startX"],
-        data["startY"]
-    ).value;
-
-    loadGraphic(ID, "../Images/titleEnter.png", "../XML/titleEnter.xml");
-    addAnimationByPrefix(ID, "idle", "ENTER IDLE", 24, true);
-    addAnimationByPrefix(ID, "press", "ENTER PRESSED", 24, true);
 end
 
 -- Updates the color and alpha of the title

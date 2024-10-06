@@ -1,5 +1,8 @@
 package helpers;
 
+import haxe.Json;
+import llua.LuaL;
+import lua_bridge.LuaScript;
 import haxe.Exception;
 import helpers.LogHelper;
 import llua.Convert;
@@ -10,42 +13,6 @@ import lua_bridge.LuaMessage;
 
 class LuaHelper
 {
-	/**
-	 * Fetches the object with the given ID
-	 * @param id ID of the object
-	 * @param type Type of the object
-	 * @return Object fetched
-	 */
-	public static function getObject(id:Int, type:String):Dynamic
-	{
-		// If id invalid, skip
-		if (id < 0)
-			throw('The ID \'$id\' is not valid.');
-
-		var typeClass:Class<Dynamic> = Type.resolveClass(type);
-
-		// If type invalid, skip
-		if (typeClass == null)
-			throw('No class was found with the name \'$type\'.');
-
-		var state:flixel.FlxState = flixel.FlxG.state;
-
-		// If state invalid, skip
-		if (state == null)
-			throw('Invalid state.');
-
-		var basic:Null<flixel.FlxBasic> = state.getFirst((b:flixel.FlxBasic) ->
-		{
-			return b.ID == id && Std.isOfType(b, typeClass);
-		});
-
-		// If basic not found, skip
-		if (basic == null)
-			throw('Could not find a $typeClass with the ID \'$id\'.');
-
-		return basic;
-	}
-
 	// #region Add
 
 	/**
@@ -116,13 +83,19 @@ class LuaHelper
 			var value:Dynamic = Reflect.callMethod(null, callback, args);
 			result = LuaMessage.success(value);
 		}
-		catch (e:String)
+		catch (e:Exception)
 		{
-			LogHelper.error('Error while calling \'$name\': $e');
-			result = LuaMessage.error(e);
+			var script:Null<LuaScript> = LuaCache.GetScript();
+			var file:String = "undefined";
+
+			if (script != null)
+				file = script.file;
+
+			LogHelper.error('Error while calling \'$name\' in \'$file\': ${e.message}');
+			result = LuaMessage.error(e.message);
 		}
 
-		Convert.toLua(lua, result);
+		toLua(lua, result);
 		return 1; // Has return value
 	}
 
@@ -153,7 +126,7 @@ class LuaHelper
 
 			// Put arguments
 			for (arg in args)
-				Convert.toLua(lua, arg);
+				toLua(lua, arg);
 
 			// Call
 			var error:Int = Lua.pcall(lua, args.length, 1, 0);
@@ -168,8 +141,14 @@ class LuaHelper
 		}
 		catch (e:Exception)
 		{
-			LogHelper.error('Error while invoking \'$name\': ${e.message}');
-			result = LuaMessage.error(e);
+			var script:Null<LuaScript> = LuaCache.GetScript();
+			var file:String = "undefined";
+
+			if (script != null)
+				file = script.file;
+
+			LogHelper.error('Error while invoking \'$name\' in \'$file\': ${e.message}');
+			result = LuaMessage.error(e.message);
 		}
 
 		return result;
@@ -223,6 +202,52 @@ class LuaHelper
 		Lua.pop(lua, 0);
 
 		return hasOrder ? orderArgs : unorderArgs;
+	}
+
+	private static function toLua(lua:State, value:Dynamic):Void
+	{
+		// If value is null, return null
+		if (value == null)
+		{
+			Lua.pushnil(lua);
+			return;
+		}
+
+		var primitiveTypes:Array<Dynamic> = [Int, Float, Bool, String, Array, haxe.ds.StringMap];
+
+		for (i in primitiveTypes)
+		{
+			// If value is primitive type, return base value
+			if (Std.isOfType(value, i))
+			{
+				Convert.toLua(lua, value);
+				return;
+			}
+		}
+
+		// If not a class or an annonymous object, return null
+		if (Type.typeof(value) != Type.ValueType.TObject)
+		{
+			Lua.pushnil(lua);
+			return;
+		}
+
+		// If a class, return class name
+		if (Reflect.field(value.value, "__class__") != null)
+		{
+			Lua.pushstring(lua, Std.string(value.value));
+			return;
+		}
+
+		Lua.createtable(lua, 0, 0); // Create an empty table
+
+		// Iterate over the fields of the Haxe object
+		for (n in Reflect.fields(value))
+		{
+			Lua.pushstring(lua, n); // Push the field name as a key
+			toLua(lua, Reflect.field(value, n)); // Convert the field value to Lua
+			Lua.settable(lua, -3); // Set the key-value pair in the table
+		}
 	}
 
 	// #endregion

@@ -1,20 +1,25 @@
-require("source/backend/Conductor");
+require("source.backend.Conductor");
+require("source.backend.MusicalState");
 
 -- Load first
 local loadMSG = fromJSON("../gfDanceTitle.json");
 local data = loadMSG.value;
 setShared("TITLE_DATA", data);
 
+local CREDIT_GROUP_ID = -1;
 local NG_ID = -1;
 
 function OnCreate()
     -- Add children
     addScript("gfTitle.lua", false);
     addScript("logoTitle.lua", false);
-    addScript("titleEnter.lua");
-    NG_ID = addScript("newGroundsLogo.lua", false).value;
+    addScript("titleEnter.lua", false);
 
-    -- Set Music
+    CREDIT_GROUP_ID = createGroup().value;
+    CreateBlackScreen(CREDIT_GROUP_ID);
+    NG_ID = addScript("UI/newGroundsLogo.lua", false).value;
+
+    -- -- Set Music
     playMusic("../Music/freakyMenu.ogg", true, 0);
     Conductor.setBPM(data.bpm);
 end
@@ -23,44 +28,6 @@ function OnDestroy()
     closeScript("gfTitle.lua");
     closeScript("logoTitle.lua");
     closeScript("titleEnter.lua");
-end
-
-require("source/backend/Conductor");
-
-function OnUpdate(elapsed)
-    UpdateMusic();
-end
-
-local curBeat = 0;
-local curStep = 0;
-
-function UpdateMusic()
-    local oldStep = curStep;
-    UpdateStep();
-    UpdateBeat();
-
-    -- If step didn't change, skip
-    if (oldStep == curStep) then
-        return;
-    end
-
-    if (curStep > 0) then
-        if (curStep % 4 == 0) then
-            callMethod("OnBeat");
-        end
-    end
-end
-
-function UpdateStep()
-    local songPosition = Raw.get("flixel.FlxG", "sound.music.time");
-    local lastChange = Conductor.getBPMFromSeconds(songPosition);
-
-    local shit = (songPosition - lastChange.songTime) / lastChange.stepCrochet;
-    curStep = lastChange.stepTime + math.floor(shit);
-end
-
-function UpdateBeat()
-    curBeat = math.floor(curStep / 4);
 end
 
 local sickBeats = 0;
@@ -81,10 +48,10 @@ function OnBeat()
         -- createCoolText(['Not associated', 'with'], -40);
     elseif sickBeats == 8 then
         -- addMoreText('newgrounds', -40);
-        --Raw.set("flixel.FlxSprite", "visible", NG_ID, true);
+        Raw.set("flixel.FlxSprite", "visible", NG_ID, true);
     elseif sickBeats == 9 then
         -- deleteCoolText();
-        --Raw.set("flixel.FlxSprite", "visible", NG_ID, false);
+        Raw.set("flixel.FlxSprite", "visible", NG_ID, false);
     elseif sickBeats == 10 then
         -- createCoolText([curWacky[0]]);
     elseif sickBeats == 12 then
@@ -98,6 +65,29 @@ function OnBeat()
     elseif sickBeats == 16 then
         -- addMoreText('Funkin');
     elseif sickBeats == 17 then
-        -- skipIntro();
+        SkipIntro();
     end
+end
+
+function SkipIntro()
+    closeScript("UI/newGroundsLogo.lua");
+    removeGroup(CREDIT_GROUP_ID);
+
+    -- Flash
+    Raw.call("flixel.FlxG", "camera.flash", nil, 0xFFFFFF, 4);
+end
+
+-- Black Screen
+function CreateBlackScreen(group)
+    local blackScreenMSG = addScript("UI/blackScreen.lua", false);
+
+    -- If error occurred, skip
+    if (blackScreenMSG.isError) then
+        return;
+    end
+
+    closeScript("UI/blackScreen.lua");
+
+    -- Add to group
+    addToGroup(group, blackScreenMSG.value);
 end

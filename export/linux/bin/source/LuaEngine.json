@@ -10,20 +10,25 @@
 			"args": "path:String = \"\", overrideMusic:Bool = true, volume:Float = 1.0, looped:Bool = true",
 			"returns": "LuaMessage"
 		},
+		"removeFromGroup": {
+			"documentation": "Removes the given element from the given group\n\r* `groupID` ID of the group to remove from\n\r* `elementID` ID of the element to remove",
+			"args": "groupID:Int = -1, elementID:Int = -1",
+			"returns": "LuaMessage"
+		},
 		"getRaw": {
 			"documentation": "Fetches the raw value at the given path\n\r* `path` Path to the value request.",
 			"args": "path:String = null",
-			"returns": "LuaMessage<Dynamic>"
-		},
-		"fromJSON": {
-			"documentation": "Parses the given file as JSON\n\r* `file` File to parse\n\r@return Object created",
-			"args": "file:String = null",
 			"returns": "LuaMessage<Dynamic>"
 		},
 		"loadGraphic": {
 			"documentation": "Loads the given image to the given sprite\n\r* `id` Sprite to load to\n\r* `path` Image to load from\n\r* `xml` XML file to load frames from",
 			"args": "id:Int = -1, path:String = \"\", xml:String = null",
 			"returns": "LuaMessage"
+		},
+		"fromJSON": {
+			"documentation": "Parses the given file as JSON\n\r* `file` File to parse\n\r@return Object created",
+			"args": "file:String = null",
+			"returns": "LuaMessage<Dynamic>"
 		},
 		"closeScript": {
 			"documentation": "Closes the script associated with the given file\n\r* `file` File to close",
@@ -35,9 +40,19 @@
 			"args": "x:Float = 0, y:Float = 0",
 			"returns": "LuaMessage<Int>"
 		},
+		"createGroup": {
+			"documentation": "Creates a new `FlxGroup`\n\r* `maxSize` Maximum amount of members allowed\n\r@return Unique ID of the added element",
+			"args": "maxSize:Int = 0",
+			"returns": "LuaMessage<Int>"
+		},
+		"addToGroup": {
+			"documentation": "Adds the given element to the given group\n\r* `groupID` ID of the group to add to\n\r* `elementID` ID of the element to add",
+			"args": "groupID:Int = -1, elementID:Int = -1",
+			"returns": "LuaMessage"
+		},
 		"trace": {
 			"documentation": "Prints a value to the debug console and in-game log\n\r* `value` Value to print",
-			"args": "value:Dynamic, infos:haxe.PosInfos = null",
+			"args": "value:Dynamic",
 			"returns": "LuaMessage"
 		},
 		"setGlobal": {
@@ -60,20 +75,20 @@
 			"args": "key:String = null",
 			"returns": "LuaMessage"
 		},
-		"getGlobal": {
-			"documentation": "Fetches the value associated with the given key in the global space\n\r* `key` Key to look for\n\r@return Value found",
-			"args": "key:String = null",
-			"returns": "LuaMessage<Dynamic>"
-		},
 		"removeShared": {
 			"documentation": "Removes in the shared space the value associated with the given key\n\r* `key` Key to remove",
 			"args": "key:String = null",
 			"returns": "LuaMessage"
 		},
 		"removeSprite": {
-			"documentation": "Removes a sprite with the given ID\n\r* `id` ID of the sprite to remove\n\r* `forceDestroy` Force the game to destroy the sprite",
+			"documentation": "Removes the sprite with the given ID\n\r* `id` ID of the sprite to remove\n\r* `forceDestroy` Force the game to destroy the sprite",
 			"args": "id:Int = -1, forceDestroy:Bool = false",
 			"returns": "LuaMessage"
+		},
+		"getGlobal": {
+			"documentation": "Fetches the value associated with the given key in the global space\n\r* `key` Key to look for\n\r@return Value found",
+			"args": "key:String = null",
+			"returns": "LuaMessage<Dynamic>"
 		},
 		"makeGraphic": {
 			"documentation": "Makes a graphic to the given sprite\n\r* `id` Sprite to make to\n\r* `width` Width of the graphic\n\r* `height` Height of the graphic\n\r* `color` Color of the graphic",
@@ -90,20 +105,15 @@
 			"args": "key:String = null",
 			"returns": "LuaMessage<Dynamic>"
 		},
-		"addAnimationByPrefix": {
-			"documentation": "Adds an animation with the given prefix\n\r* `id` Object to add to\n\r* `name` Name of the animation\n\r* `prefix` Prefix of the animation\n\r* `frameRate` Frame rate of the animation\n\r* `looped` Whether or not the animation is looped or just plays once",
-			"args": "id:Int = -1, name:String = \"anim\", prefix:String = \"anim\", frameRate:Int = 24, looped:Bool = true",
+		"removeGroup": {
+			"documentation": "Removes the group with the given ID\n\r* `id` ID of the group to remove\n\r* `forceDestroy` Force the game to destroy the group",
+			"args": "id:Int = -1, forceDestroy:Bool = false",
 			"returns": "LuaMessage"
 		},
 		"addScript": {
 			"documentation": "Opens a script with the given file\n\r* `file` File to open\n\r* `autoImport` Automatically imports all the built-in methods\n\r* `isRelated` Is the file related to the current script?",
 			"args": "file:String = null, autoImport:Bool = true, isRelated:Bool = true",
 			"returns": "LuaMessage<Null<Dynamic>>"
-		},
-		"addAnimationByIndices": {
-			"documentation": "Adds an animation with the given indices\n\r* `id` Object to add to\n\r* `name` Name of the animation\n\r* `prefix` Prefix of the animation\n\r* `indices` Indices of the animation\n\r* `frameRate` Frame rate of the animation\n\r* `looped` Whether or not the animation is looped or just plays once",
-			"args": "id:Int = -1, name:String = \"anim\", prefix:String = \"anim\", indices:Array = null, frameRate:Int = 24, looped:Bool = true",
-			"returns": "LuaMessage"
 		},
 		"switchState": {
 			"documentation": "Switches to a new state powered by the given file\n\r* `file` File that manages the new state",

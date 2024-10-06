@@ -20,10 +20,10 @@ function FormatPath(class, name, id)
     return path;
 end
 
--- Calls `callRaw` in the correct format
-function Raw.call(class, name, id, ...)
+-- Calls `getRaw` in the correct format
+function Raw.get(class, name, id)
     local path = FormatPath(class, name, id);
-    return callRaw(path, { ... }).value;
+    return getRaw(path).value;
 end
 
 -- Calls `setRaw` in the correct format
@@ -32,8 +32,8 @@ function Raw.set(class, name, id, value)
     return setRaw(path, value).value;
 end
 
--- Calls `getRaw` in the correct format
-function Raw.get(class, name, id)
+-- Calls `callRaw` in the correct format
+function Raw.call(class, name, id, ...)
     local path = FormatPath(class, name, id);
-    return getRaw(path).value;
+    return callRaw(path, { ... }).value;
 end

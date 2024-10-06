@@ -1,9 +1,9 @@
-require("source/utils/Raw");
+require("source.utils.Raw");
+require("source.utils.Animations");
 
 -- Manual imports
 importFile("DataBuiltIn");
 importFile("SpriteBuiltIn");
-importFile("AnimationBuiltIn");
 
 local danceLeft = false;
 local ID = -1;
@@ -19,8 +19,8 @@ function OnCreate()
     ).value;
 
     loadGraphic(ID, "../Images/gfDanceTitle.png", "../XML/gfDanceTitle.xml");
-    addAnimationByIndices(ID, "danceRight", "gfDance", DANCE_RIGHT_INDICES, 24, false);
-    addAnimationByIndices(ID, "danceLeft", "gfDance", DANCE_LEFT_INDICES, 24, false);
+    Animations.addByIndices(ID, "danceRight", "gfDance", DANCE_RIGHT_INDICES, 24, false);
+    Animations.addByIndices(ID, "danceLeft", "gfDance", DANCE_LEFT_INDICES, 24, false);
 end
 
 function OnBeat()
