@@ -2,7 +2,7 @@ package builtin;
 
 import flixel.FlxG;
 import helpers.FileHelper;
-import states.LuaState;
+import states.ScriptState;
 
 /** Class holding every built-in methods for states */
 @:rtti
@@ -21,7 +21,7 @@ class StateBuiltIn
 			throw('Tried to create a state from a missing file.');
 
 		// Create state
-		var state:LuaState = new LuaState(file);
+		var state:ScriptState = new ScriptState(file);
 
 		// Switch state
 		FlxG.switchState(state);

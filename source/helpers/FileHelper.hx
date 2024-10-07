@@ -1,11 +1,10 @@
 package helpers;
 
-import lua_bridge.LuaParenting;
+import engine.ScriptCache;
+import engine.Script;
 import openfl.media.Sound;
 import flixel.graphics.FlxGraphic;
 import haxe.io.Path;
-import lua_bridge.LuaCache;
-import lua_bridge.LuaScript;
 import openfl.display.BitmapData;
 import sys.FileSystem;
 import sys.io.File;
@@ -54,30 +53,30 @@ class FileHelper
 		// Search path from running script
 		if (firstChar == '.')
 		{
-			var script:Null<LuaScript> = LuaCache.GetScript();
+			var script:Null<Script> = ScriptCache.GetScript();
 
 			// File from script => File from executable
 			if (script != null)
-				file = Path.directory(script.file) + "/" + file;
+				file = Path.directory(script.getFile()) + "/" + file;
 		}
 		// Search path from root script
 		else if (firstChar == '^')
 		{
-			var script:Null<LuaScript> = LuaCache.GetScript();
+			var script:Null<Script> = ScriptCache.GetScript();
 
 			// File from script => File from executable
 			if (script != null)
 			{
-				var parent:Null<LuaScript> = script;
+				var parent:Null<Script> = script;
 				while (parent != null)
 				{
-					parent = LuaParenting.GetParent(script);
+					parent = script.getParent();
 
 					if (parent != null)
 						script = parent;
 				}
 
-				file = Path.directory(script.file) + file.substring(1);
+				file = Path.directory(script.getFile()) + file.substring(1);
 			}
 		}
 		// Search path from the executable

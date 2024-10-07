@@ -1,12 +1,13 @@
 package builtin;
 
+import engine.ScriptParenting;
+import engine.ScriptCache;
+import engine.Script;
+import engine.LuaScript;
 import lua_bridge.LuaImport;
 import helpers.LogHelper;
-import lua_bridge.LuaCache;
 import haxe.io.Path;
 import helpers.FileHelper;
-import lua_bridge.LuaParenting;
-import lua_bridge.LuaScript;
 
 /** Class holding every built-in methods for scripts */
 @:rtti
@@ -18,7 +19,7 @@ class ScriptBuiltIn
 	 * @param autoImport Automatically imports all the built-in methods
 	 * @param isRelated Is the file related to the current script?
 	 */
-	public static function addScript(file:Null<String> = null, autoImport:Bool = true, isRelated:Bool = true):Null<Dynamic>
+	public static function addScript(file:Null<String> = null, autoImport:Bool = true, isRelated:Bool = true):Dynamic
 	{
 		var fixed:String = FileHelper.GetPath(file);
 
@@ -26,43 +27,30 @@ class ScriptBuiltIn
 		if (fixed == null)
 			throw('Could not find a file at \'$file\'.');
 
-		// Check for extension
-		var extension:Null<String> = Path.extension(fixed);
-		if (extension != "lua")
-			throw('Expected a LUA file. Received a \'$extension\' file.');
-
-		var createResult = null;
+		var child:Null<Script> = null;
 
 		// Create the script as child
 		if (isRelated)
 		{
-			var script:Null<LuaScript> = LuaCache.GetScript();
+			var script:Null<Script> = ScriptCache.GetScript();
 
 			if (script == null)
 				throw('Tried to add a script from an invalid script.');
 
-			createResult = script.openOther(file, autoImport);
+			child = script.openOther(file, autoImport);
 		}
 		else
-			createResult = LuaScript.openFile(file, autoImport);
-
-		var child:Null<LuaScript> = createResult.first;
+			child = Script.openFile(file, autoImport);
 
 		if (child == null)
 			throw('Failed to create a script for the file \'$file\'.');
 
-		var results:Map<String, Null<Dynamic>> = createResult.second;
+		var it = Script.LastCallResult.iterator();
 
-		// If empty, null
-		if (!results.keys().hasNext())
+		if (!it.hasNext())
 			return null;
 
-		// Get first value
-		var value:Null<Dynamic> = results.get(results.keys().next());
-
-		if (value == null)
-			return null;
-		return value.value;
+		return it.next().value;
 	}
 
 	/**
@@ -75,7 +63,7 @@ class ScriptBuiltIn
 		if (file == null)
 			return;
 
-		var script:Null<LuaScript> = LuaParenting.Find(file);
+		var script:Null<Script> = ScriptParenting.Find(file);
 
 		if (script == null)
 			throw('Could not find an instance of \'$file\'.');
@@ -93,7 +81,7 @@ class ScriptBuiltIn
 		if (file == null)
 			throw('No file was given to import.');
 
-		var script:Null<LuaScript> = LuaCache.GetScript();
+		var script:Null<Script> = ScriptCache.GetScript();
 
 		if (script == null)
 			throw('Tried to import a file to an invalid script.');
@@ -150,7 +138,7 @@ class ScriptBuiltIn
 		if (name == null)
 			throw('No function was given to call.');
 
-		var script:Null<LuaScript> = LuaCache.GetScript();
+		var script:Null<Script> = ScriptCache.GetScript();
 
 		if (script == null)
 			throw('Tried to call a method from an invalid script.');

@@ -1,7 +1,7 @@
 package builtin;
 
-import lua_bridge.LuaCache;
-import lua_bridge.LuaScript;
+import engine.ScriptCache;
+import engine.Script;
 
 /** Class holding every built-in methods for data */
 @:rtti
@@ -18,16 +18,16 @@ class DataBuiltIn
 	{
 		// If key invalid, skip
 		if (key == null)
-			throw('Tried to set a global value without providing a key.');
+			throw('Tried to set a shared value without providing a key.');
 
 		// Get root
-		var script:LuaScript = LuaCache.GetScript();
+		var script:Script = ScriptCache.GetScript();
 
 		if (script == null)
-			throw('Tried to set a global value to an invalid script.');
+			throw('Tried to set a shared value to an invalid script.');
 
 		// Set data
-		script.shared.set(key, value, overwrite, inRoot);
+		script.setShared(key, value, overwrite, inRoot);
 	}
 
 	/**
@@ -39,16 +39,16 @@ class DataBuiltIn
 	{
 		// If key invalid, skip
 		if (key == null)
-			throw('Tried to get a global value without providing a key.');
+			throw('Tried to get a shared value without providing a key.');
 
 		// Get root
-		var script:LuaScript = LuaCache.GetScript();
+		var script:Script = ScriptCache.GetScript();
 
 		if (script == null)
-			throw('Tried to get a global value to an invalid script.');
+			throw('Tried to get a shared value to an invalid script.');
 
 		// Get data
-		return script.shared.get(key);
+		return script.getShared(key);
 	}
 
 	/**
@@ -59,15 +59,15 @@ class DataBuiltIn
 	{
 		// If key invalid, skip
 		if (key == null)
-			throw('Tried to remove a global value without providing a key.');
+			throw('Tried to remove a shared value without providing a key.');
 
 		// Get root
-		var script:LuaScript = LuaCache.GetScript();
+		var script:Script = ScriptCache.GetScript();
 
 		if (script == null)
-			throw('Tried to remove a global value to an invalid script.');
+			throw('Tried to remove a shared value to an invalid script.');
 
-		script.shared.remove(key);
+		script.removeShared(key);
 	}
 
 	/**
@@ -83,7 +83,7 @@ class DataBuiltIn
 			throw('Tried to set a global value without providing a key.');
 
 		// Set data
-		LuaScript.global.set(key, value, overwrite);
+		Script.setGlobal(key, value, overwrite);
 	}
 
 	/**
@@ -98,7 +98,7 @@ class DataBuiltIn
 			throw('Tried to get a global value without providing a key.');
 
 		// Get data
-		return LuaScript.global.get(key);
+		return Script.getGlobal(key);
 	}
 
 	/**
@@ -112,6 +112,6 @@ class DataBuiltIn
 			throw('Tried to remove a global value without providing a key.');
 
 		// Remove data
-		LuaScript.global.remove(key);
+		Script.removeGlobal(key);
 	}
 }

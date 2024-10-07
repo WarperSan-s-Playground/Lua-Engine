@@ -1,11 +1,12 @@
 package;
 
+import engine.LuaScript;
 import helpers.LogHelper;
 import flixel.FlxG;
 import flixel.FlxGame;
 import openfl.display.FPS;
 import openfl.display.Sprite;
-import states.LuaState;
+import states.ScriptState;
 
 // MENUS TO ADD:
 // - Title Menu
@@ -28,7 +29,7 @@ class Main extends Sprite
 		llua.Lua.set_callbacks_function(luaCallback);
 
 		// Create starting state
-		addChild(new FlxGame(0, 0, () -> new LuaState("~/start.lua"), 60, 60, true));
+		addChild(new FlxGame(0, 0, () -> new ScriptState("~/start.lua"), 60, 60, true));
 
 		var fps:FPS = new FPS(0, 0, 0xffffff);
 		addChild(fps);

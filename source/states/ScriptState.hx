@@ -1,10 +1,10 @@
 package states;
 
-import lua_bridge.LuaScript;
+import engine.Script;
 
-class LuaState extends flixel.FlxState
+class ScriptState extends flixel.FlxState
 {
-	private var root:LuaScript;
+	private var root:Script;
 	private var file:String;
 
 	public function new(file:String)
@@ -15,7 +15,7 @@ class LuaState extends flixel.FlxState
 
 	override function create()
 	{
-		root = LuaScript.openFile(this.file, true).first;
+		root = Script.openFile(this.file, true);
 	}
 
 	override function update(elapsed:Float)

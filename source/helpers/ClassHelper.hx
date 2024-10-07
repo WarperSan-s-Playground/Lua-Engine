@@ -1,6 +1,6 @@
 package helpers;
 
-import lua_bridge.LuaCache;
+import engine.ScriptCache;
 
 class ClassHelper
 {
@@ -89,7 +89,7 @@ class ClassHelper
 			path = path.split(s).join("");
 		}
 		else
-			type = LuaCache.GetScript();
+			type = ScriptCache.GetScript();
 
 		return {
 			type: type,

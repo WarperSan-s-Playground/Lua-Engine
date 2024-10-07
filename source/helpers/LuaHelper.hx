@@ -1,14 +1,12 @@
 package helpers;
 
-import haxe.Json;
-import llua.LuaL;
-import lua_bridge.LuaScript;
+import engine.Script;
+import engine.ScriptCache;
 import haxe.Exception;
 import helpers.LogHelper;
 import llua.Convert;
 import llua.Lua;
 import llua.State;
-import lua_bridge.LuaCache;
 import lua_bridge.LuaMessage;
 
 class LuaHelper
@@ -60,7 +58,7 @@ class LuaHelper
 	public static function callback(lua:State, name:String):Int
 	{
 		// Update the last script
-		LuaCache.SetLastScript(lua);
+		ScriptCache.SetLastScript(lua);
 
 		var result:Dynamic = null;
 
@@ -85,11 +83,11 @@ class LuaHelper
 		}
 		catch (e:Exception)
 		{
-			var script:Null<LuaScript> = LuaCache.GetScript();
+			var script:Null<Script> = ScriptCache.GetScript();
 			var file:String = "undefined";
 
 			if (script != null)
-				file = script.file;
+				file = script.getFile();
 
 			LogHelper.error('Error while calling \'$name\' in \'$file\': ${e.message}');
 			result = LuaMessage.error(e.message);
@@ -141,11 +139,11 @@ class LuaHelper
 		}
 		catch (e:Exception)
 		{
-			var script:Null<LuaScript> = LuaCache.GetScript();
+			var script:Null<Script> = ScriptCache.GetScript();
 			var file:String = "undefined";
 
 			if (script != null)
-				file = script.file;
+				file = script.getFile();
 
 			LogHelper.error('Error while invoking \'$name\' in \'$file\': ${e.message}');
 			result = LuaMessage.error(e.message);

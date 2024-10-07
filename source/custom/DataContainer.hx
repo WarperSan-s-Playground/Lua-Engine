@@ -1,17 +1,14 @@
 package custom;
 
-import lua_bridge.LuaParenting;
-import lua_bridge.LuaScript;
+import engine.Script;
 
-/**
- * Class that manages the data sharing between scripts
- */
+/** Class that manages the data sharing between scripts */
 class DataContainer
 {
 	private var data:Map<String, Dynamic> = new Map<String, Dynamic>();
-	private var script:Null<LuaScript>;
+	private var script:Null<Script>;
 
-	public function new(script:Null<LuaScript>)
+	public function new(script:Null<Script>)
 	{
 		this.script = script;
 	}
@@ -28,12 +25,12 @@ class DataContainer
 		var parent = null;
 
 		if (this.script != null)
-			parent = LuaParenting.GetParent(this.script);
+			parent = this.script.getParent();
 
 		// If in root and has parent, continue
 		if (inRoot && parent != null)
 		{
-			parent.shared.set(key, value, overwrite, true);
+			parent.setShared(key, value, overwrite, true);
 			return;
 		}
 
@@ -41,7 +38,7 @@ class DataContainer
 		if (!overwrite && this.data.exists(key))
 		{
 			if (this.script != null)
-				throw('The key \'$key\' already exists in the shared space of \'${this.script.file}\'.');
+				throw('The key \'$key\' already exists in the shared space of \'${this.script.getFile()}\'.');
 			throw('The key \'$key\' already exists in the global space.');
 		}
 
@@ -62,13 +59,13 @@ class DataContainer
 		var parent = null;
 
 		if (this.script != null)
-			parent = LuaParenting.GetParent(this.script);
+			parent = this.script.getParent();
 
 		// If no parent, error
 		if (parent == null)
 			throw('No data in the shared space is associated with the key \'$key\'.');
 
-		return parent.shared.get(key);
+		return parent.getShared(key);
 	}
 
 	/**
@@ -84,12 +81,12 @@ class DataContainer
 		var parent = null;
 
 		if (this.script != null)
-			parent = LuaParenting.GetParent(this.script);
+			parent = this.script.getParent();
 
 		// If no parent, error
 		if (parent == null)
 			return;
 
-		parent.shared.remove(key);
+		parent.removeShared(key);
 	}
 }
