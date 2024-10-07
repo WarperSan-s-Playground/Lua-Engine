@@ -1,36 +1,26 @@
 require("source.utils.Colors");
 require("source.utils.Raw");
-require("source.utils.Animations");
 
-importFile("SpriteBuiltIn");
+Sprite = require("source.objects.Sprite");
+
 importFile("DataBuiltIn");
-importFile("LogBuiltIn");
 
-local data = getShared("TITLE_DATA").value;
+local sprite;
+local timer = 0;
 
---[[ TITLE ENTER ]]
-local ID = -1;
-local ALPHAS = { 1, 0.64 };
-local COLORS = { 0x33FFFF, 0x3333CC };
-
--- Loads the title graphic and animations
 function OnCreate()
-    ID = makeSprite(
-        data["startX"],
-        data["startY"]
-    ).value;
+    local data = getShared("TITLE_DATA").value;
 
-    loadGraphic(ID, "../Images/titleEnter.png", "../XML/titleEnter.xml");
-    Animations.addByPrefix(ID, "idle", "ENTER IDLE", 24, true);
-    Animations.addByPrefix(ID, "press", "ENTER PRESSED", 24, true);
+    sprite = Sprite:new(data["startX"], data["startY"]);
+
+    sprite:loadGraphic("../Images/titleEnter.png", "../XML/titleEnter.xml");
+    sprite:addByPrefix("idle", "ENTER IDLE", 24, true);
+    sprite:addByPrefix("press", "ENTER PRESSED", 24, true);
 end
 
 function OnUpdate(elapsed)
     UpdateTimer(elapsed);
 end
-
---[[ TIMER ]]
-local timer = 0;
 
 -- Updates the title timer
 function UpdateTimer(elapsed)
@@ -61,10 +51,10 @@ function UpdateTitle(value)
     value = Raw.call("flixel.tweens.FlxEase", "quadInOut", nil, value);
 
     -- Set alpha
-    local alpha = Raw.call("flixel.math.FlxMath", "lerp", nil, ALPHAS[1], ALPHAS[2], value);
-    Raw.set('flixel.FlxSprite', 'alpha', ID, alpha);
+    local alpha = Raw.call("flixel.math.FlxMath", "lerp", nil, 1, 0.64, value);
+    sprite:setAlpha(alpha);
 
     -- Set color
-    local color = Colors.interpolate(COLORS[1], COLORS[2], value);
-    Raw.set('flixel.FlxSprite', 'color', ID, color);
+    local color = Colors.interpolate(0x33FFFF, 0x3333CC, value);
+    sprite:setColor(color);
 end

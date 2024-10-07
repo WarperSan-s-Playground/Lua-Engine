@@ -169,6 +169,9 @@ class LuaScript
 			// Open standard libraries
 			LuaL.openlibs(this.lua);
 
+			// Default config
+			LuaL.dostring(this.lua, "print = function(...) trace(...); end");
+
 			// Load file
 			LuaCache.LinkScript(this.lua, this);
 			var status:Int = LuaL.dofile(this.lua, this.file);

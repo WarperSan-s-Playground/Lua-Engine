@@ -1,29 +1,31 @@
 require("source.utils.Raw");
 
+Sprite = require("source.objects.Sprite");
+
 importFile("SpriteBuiltIn");
 
-local ID = -1;
+local sprite;
 
 function OnCreate()
-    ID = makeSprite(
+    sprite = Sprite:new(
         0,
         Raw.get("flixel.FlxG", "height", nil) * 0.52
-    ).value;
+    );
 
-    loadGraphic(ID, "^/../Images/newgrounds_logo.png");
-    Raw.set("flixel.FlxSprite", "visible", ID, false);
+    sprite:loadGraphic("^/../Images/newgrounds_logo.png");
+    Raw.set("flixel.FlxSprite", "visible", sprite.ID, false);
     Raw.call(
         "flixel.FlxSprite",
         "setGraphicSize",
-        ID,
-        tonumber(Raw.get("flixel.FlxSprite", "width", ID)) * 0.8
+        sprite.ID,
+        tonumber(Raw.get("flixel.FlxSprite", "width", sprite.ID)) * 0.8
     );
-    Raw.call("flixel.FlxSprite", "updateHitbox", ID);
-    Raw.call("flixel.FlxSprite", "screenCenter", ID, 0x01);
+    Raw.call("flixel.FlxSprite", "updateHitbox", sprite.ID);
+    Raw.call("flixel.FlxSprite", "screenCenter", sprite.ID, 0x01);
 
-    return ID;
+    return sprite.ID;
 end
 
 function OnDestroy()
-    removeSprite(ID);
+    sprite:destroy();
 end

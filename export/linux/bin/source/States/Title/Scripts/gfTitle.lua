@@ -1,26 +1,21 @@
 require("source.utils.Raw");
-require("source.utils.Animations");
+
+Sprite = require("source.objects.Sprite");
 
 -- Manual imports
 importFile("DataBuiltIn");
-importFile("SpriteBuiltIn");
 
 local danceLeft = false;
-local ID = -1;
-
-local DANCE_RIGHT_INDICES = { 30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
-local DANCE_LEFT_INDICES = { 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
+local sprite;
 
 function OnCreate()
     local data = getShared("TITLE_DATA").value;
-    ID = makeSprite(
-        data["gfX"],
-        data["gfY"]
-    ).value;
 
-    loadGraphic(ID, "../Images/gfDanceTitle.png", "../XML/gfDanceTitle.xml");
-    Animations.addByIndices(ID, "danceRight", "gfDance", DANCE_RIGHT_INDICES, 24, false);
-    Animations.addByIndices(ID, "danceLeft", "gfDance", DANCE_LEFT_INDICES, 24, false);
+    sprite = Sprite:new(data["gfX"], data["gfY"]);
+
+    sprite:loadGraphic("../Images/gfDanceTitle.png", "../XML/gfDanceTitle.xml");
+    sprite:addByIndices("danceRight", "gfDance", { 30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }, 24, false);
+    sprite:addByIndices("danceLeft", "gfDance", { 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 }, 24, false);
 end
 
 function OnBeat()
@@ -33,9 +28,9 @@ function OnBeat()
         anim = 'danceLeft';
     end
 
-    Raw.call("flixel.FlxSprite", "animation.play", ID, anim);
+    sprite:playAnimation(anim, true);
 end
 
 function OnDestroy()
-    removeSprite(ID);
+    sprite:destroy();
 end

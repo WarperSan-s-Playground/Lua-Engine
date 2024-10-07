@@ -22,13 +22,13 @@ class FlxBasicHelper
 		if (type == null)
 			throw('No class was found with the name \'$type\'.');
 
-		var state:flixel.FlxState = flixel.FlxG.state;
+		var state:FlxState = FlxG.state;
 
 		// If state invalid, skip
 		if (state == null)
 			throw('Invalid state.');
 
-		var basic:Null<flixel.FlxBasic> = state.getFirst((b:flixel.FlxBasic) ->
+		var basic:Null<FlxBasic> = state.getFirst((b:FlxBasic) ->
 		{
 			return b.ID == id && Std.isOfType(b, type);
 		});
@@ -37,7 +37,7 @@ class FlxBasicHelper
 		if (basic == null)
 			throw('Could not find a $type with the ID \'$id\'.');
 
-        var result:T = cast basic;
+		var result:T = cast basic;
 		return result;
 	}
 
@@ -54,8 +54,6 @@ class FlxBasicHelper
 		if (state == null)
 			throw('Invalid state.');
 
-		state.add(basic);
-
-		return basic.ID;
+		return state.add(basic).ID;
 	}
 }

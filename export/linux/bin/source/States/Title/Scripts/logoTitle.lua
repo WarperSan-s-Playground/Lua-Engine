@@ -1,26 +1,28 @@
 require("source.utils.Raw");
-require("source.utils.Animations");
 
 importFile("DataBuiltIn");
-importFile("SpriteBuiltIn");
 
-local ID = -1;
+Sprite = require("source.objects.Sprite");
+
+local sprite;
 
 function OnCreate()
     local data = getShared("TITLE_DATA").value;
-    ID = makeSprite(
+
+    sprite = Sprite:new(
         data["titleX"],
         data["titleY"]
-    ).value;
+    );
 
-    loadGraphic(ID, "../Images/logoBumpin.png", "../XML/logoBumpin.xml");
-    Animations.addByPrefix(ID, "bump", "logo bumpin", 24, false);
+    sprite:loadGraphic("../Images/logoBumpin.png", "../XML/logoBumpin.xml");
+    sprite:addByPrefix("bump", "logo bumpin", 24, false);
 end
 
 function OnBeat()
-    Raw.call("flixel.FlxSprite", "animation.play", ID, "bump", true);
+    print("BEAT LOGO");
+    sprite:playAnimation("bump", true);
 end
 
 function OnDestroy()
-    removeSprite(ID);
+    sprite:destroy();
 end

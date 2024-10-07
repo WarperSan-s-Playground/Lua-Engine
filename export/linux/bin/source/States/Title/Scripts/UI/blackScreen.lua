@@ -1,15 +1,15 @@
 require("source.utils.Raw");
 
+Sprite = require("source.objects.Sprite");
+
 importFile("SpriteBuiltIn");
 
 function OnCreate()
-    local ID = makeSprite(0, 0).value;
-
-    makeGraphic(
-        ID,
+    local sprite = Sprite:new(0, 0);
+    sprite:makeGraphic(
         Raw.get("flixel.FlxG", "width", nil),
         Raw.get("flixel.FlxG", "height", nil),
-        'BLACK'
+        "black"
     );
-    return ID;
+    return sprite.ID;
 end

@@ -21,7 +21,7 @@ function Conductor.getBPMFromSeconds(time)
 
     -- Check if NaN
     if (time == nil) then
-        trace("Tried to get the BPM without giving a time.");
+        print("Tried to get the BPM without giving a time.");
         return lastChange;
     end
 
@@ -42,7 +42,7 @@ function Conductor.setBPM(bpm)
 
     -- If bpm not valid, don't change
     if (bpm == nil) then
-        trace("Tried to set the BPM to '" .. (bpm or "null") .. "'.");
+        print("Tried to set the BPM to '" .. (bpm or "null") .. "'.");
         return;
     end
 
@@ -59,7 +59,7 @@ function Conductor.setSongPosition(songPosition)
 
     -- If songPosition not valid, don't change
     if (songPosition == nil) then
-        trace("Tried to set the song position to '" .. (songPosition or "null") .. "'.");
+        print("Tried to set the song position to '" .. (songPosition or "null") .. "'.");
         return;
     end
 
@@ -92,6 +92,6 @@ Conductor.setBPM(100);
 -- 			totalSteps += deltaSteps;
 -- 			totalPos += ((60 / curBPM) * 1000 / 4) * deltaSteps;
 -- 		}
--- 		trace("new BPM map BUDDY " + bpmChangeMap);
+-- 		print("new BPM map BUDDY " + bpmChangeMap);
 -- 	}
 -- }

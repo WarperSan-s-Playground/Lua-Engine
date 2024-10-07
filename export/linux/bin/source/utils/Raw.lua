@@ -20,20 +20,49 @@ function FormatPath(class, name, id)
     return path;
 end
 
--- Calls `getRaw` in the correct format
+---Calls `getRaw()` with the correct format
+---@param class string Full name of the class
+---@param name string Path to the value to get
+---@param id nil|integer ID of the object to get (optional)
+---@return any value Value fetched
 function Raw.get(class, name, id)
     local path = FormatPath(class, name, id);
-    return getRaw(path).value;
+    local getMessage = getRaw(path);
+
+    if (getMessage.isError) then
+        error("Error while getting '" .. path .. "': " .. getMessage.message);
+    end
+
+    return getMessage.value;
 end
 
--- Calls `setRaw` in the correct format
+---Calls `setRaw()` with the correct format
+---@param class string Full name of the class
+---@param name string Path to the value to get
+---@param id nil|integer ID of the object to get (optional)
+---@param value any Value to set to
 function Raw.set(class, name, id, value)
     local path = FormatPath(class, name, id);
-    return setRaw(path, value).value;
+    local setMessage = setRaw(path, value);
+
+    if (setMessage.isError) then
+        error("Error while setting '" .. path .. "': " .. setMessage.message);
+    end
 end
 
--- Calls `callRaw` in the correct format
+--- Calls `callRaw()` with the correct format
+---@param class string Full name of the class
+---@param name string Path to the value to get
+---@param id nil|integer ID of the object to get (optional)
+---@param ... any Arguments of the call
+---@return any value Return value
 function Raw.call(class, name, id, ...)
     local path = FormatPath(class, name, id);
-    return callRaw(path, { ... }).value;
+    local callMessage = callRaw(path, { ... });
+
+    if (callMessage.isError) then
+        error("Error while calling '" .. path .. "': " .. callMessage.message);
+    end
+
+    return callMessage.value;
 end

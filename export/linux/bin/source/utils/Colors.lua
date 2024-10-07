@@ -16,7 +16,11 @@ function HEX2ARGB(hex)
     };
 end
 
--- Interpolates between two HEX colors in the ARGB format
+---Interpolates between two HEX colors
+---@param startColor integer Start color in ARGB
+---@param endColor integer End color in ARGB
+---@param time number Percentage of lerp
+---@return integer color Interpolated color
 function Colors.interpolate(startColor, endColor, time)
     local color1 = HEX2ARGB(startColor);
     local color2 = HEX2ARGB(endColor);
