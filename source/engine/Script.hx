@@ -19,6 +19,7 @@ abstract class Script
 	// #region File
 	private var file:String;
 
+	/** Gets the file from which this script was created from */
 	public function getFile():String
 	{
 		return this.file;
@@ -103,13 +104,12 @@ abstract class Script
 
 	// #endregion
 	// #region Execute
-
 	public static var LastCallResult:Map<String, Null<Dynamic>> = [];
 
 	/** Executes this script */
 	public abstract function execute():Void;
 
-	/** Calls the given method in this script and it's children */
+	/** Calls the given method in this script */
 	public function call(name:String, args:Array<Dynamic>, callInChildren:Bool):Map<String, Null<Dynamic>>
 	{
 		var results:Map<String, Null<Dynamic>> = [];
@@ -152,16 +152,19 @@ abstract class Script
 	// #region Data
 	private var shared:DataContainer;
 
+	/** Gets the data with the given key in the shared space */
 	public function getShared(key:String):Dynamic
 	{
 		return this.shared.get(key);
 	}
 
+	/** Sets the data with the given key in the shared space */
 	public function setShared(key:String, value:Dynamic, overwrite:Bool = false, inRoot:Bool = true):Void
 	{
 		this.shared.set(key, value, overwrite, inRoot);
 	}
 
+	/** Removes the data with the given key in the shared space */
 	public function removeShared(key:String):Void
 	{
 		this.shared.remove(key);
@@ -169,16 +172,19 @@ abstract class Script
 
 	private static var global:DataContainer = new DataContainer(null);
 
-	public static function setGlobal(key:String, value:Dynamic, overwrite:Bool = false):Void
-	{
-		global.set(key, value, overwrite, false);
-	}
-
+	/** Gets the data with the given key in the global space */
 	public static function getGlobal(key:String):Dynamic
 	{
 		return global.get(key);
 	}
 
+	/** Sets the data with the given key in the global space */
+	public static function setGlobal(key:String, value:Dynamic, overwrite:Bool = false):Void
+	{
+		global.set(key, value, overwrite, false);
+	}
+
+	/** Removes the data with the given key in the global space */
 	public static function removeGlobal(key:String):Void
 	{
 		global.remove(key);
@@ -187,6 +193,7 @@ abstract class Script
 	// #endregion
 	// #region Link
 
+	/** Fetches the unique key that allows to find this script */
 	public abstract function getLinkKey():Dynamic;
 
 	// #endregion
