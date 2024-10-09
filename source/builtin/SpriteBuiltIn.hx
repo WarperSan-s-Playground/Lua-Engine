@@ -2,35 +2,13 @@ package builtin;
 
 import helpers.FlxBasicHelper;
 import flixel.util.FlxColor;
-import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.FlxState;
 import helpers.FileHelper;
 
 /** Class holding every built-in methods for sprites */
 @:rtti
 class SpriteBuiltIn
 {
-	/**
-	 * Creates a new sprite for this state
-	 * @return ID of the sprite
-	 */
-	public static function makeSprite(x:Float = 0, y:Float = 0):Int
-	{
-		var state:FlxState = FlxG.state;
-
-		// If state invalid, skip
-		if (state == null)
-			throw('Invalid state.');
-
-		var sprite:FlxSprite = new FlxSprite();
-		sprite.x = x;
-		sprite.y = y;
-		sprite.antialiasing = true;
-
-		return FlxBasicHelper.add(sprite);
-	}
-
 	/**
 	 * Removes the sprite with the given ID
 	 * @param id ID of the sprite to remove

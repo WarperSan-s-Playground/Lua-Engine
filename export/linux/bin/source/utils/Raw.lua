@@ -66,3 +66,17 @@ function Raw.call(class, name, id, ...)
 
     return callMessage.value;
 end
+
+---Calls `createRaw()` with the correct format
+---@param class string Name of the class
+---@param ... any Arguments of the constructor
+---@return integer|nil ID ID used to cache this instance
+function Raw.create(class, ...)
+    local createMessage = createRaw(class, { ... });
+
+    if (createMessage.isError) then
+        error("Error while creating an instance of '" .. class .. "': " .. createMessage.message);
+    end
+
+    return createMessage.value;
+end

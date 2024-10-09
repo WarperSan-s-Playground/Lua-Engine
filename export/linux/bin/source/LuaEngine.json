@@ -75,14 +75,14 @@
 			"args": "key:String = null",
 			"returns": "LuaMessage"
 		},
-		"removeShared": {
-			"documentation": "Removes in the shared space the value associated with the given key\n\r* `key` Key to remove",
-			"args": "key:String = null",
-			"returns": "LuaMessage"
-		},
 		"removeSprite": {
 			"documentation": "Removes the sprite with the given ID\n\r* `id` ID of the sprite to remove\n\r* `forceDestroy` Force the game to destroy the sprite",
 			"args": "id:Int = -1, forceDestroy:Bool = false",
+			"returns": "LuaMessage"
+		},
+		"removeShared": {
+			"documentation": "Removes in the shared space the value associated with the given key\n\r* `key` Key to remove",
+			"args": "key:String = null",
 			"returns": "LuaMessage"
 		},
 		"getGlobal": {
@@ -110,10 +110,15 @@
 			"args": "id:Int = -1, forceDestroy:Bool = false",
 			"returns": "LuaMessage"
 		},
+		"createRaw": {
+			"documentation": "Creates an instance of the given type from the given arguments\n\r* `name` Full name of the class\n\r* `args` Arguments for the constructor\n\r@return Null<Int> Unique identifier of this instance used for caching it",
+			"args": "name:String = null, args:Dynamic = null",
+			"returns": "LuaMessage<Null<Int>>"
+		},
 		"addScript": {
 			"documentation": "Opens a script with the given file\n\r* `file` File to open\n\r* `autoImport` Automatically imports all the built-in methods\n\r* `isRelated` Is the file related to the current script?",
 			"args": "file:String = null, autoImport:Bool = true, isRelated:Bool = true",
-			"returns": "LuaMessage<Null<Dynamic>>"
+			"returns": "LuaMessage<Dynamic>"
 		},
 		"switchState": {
 			"documentation": "Switches to a new state powered by the given file\n\r* `file` File that manages the new state",

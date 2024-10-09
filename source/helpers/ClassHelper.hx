@@ -1,5 +1,7 @@
 package helpers;
 
+import flixel.group.FlxGroup;
+import haxe.macro.Context;
 import engine.ScriptCache;
 
 class ClassHelper
@@ -65,6 +67,22 @@ class ClassHelper
 		return current;
 	}
 
+	/**
+	 * Fetches the class from the given name
+	 * @param name Full name of the class
+	 * @return Null<Class<Dynamic>> Class found
+	 */
+	public static function getClassFromName(name:String):Null<Class<Dynamic>>
+	{
+		var type:Null<Class<Dynamic>> = Type.resolveClass(name);
+
+		// If already found, skip
+		if (type != null)
+			return type;
+
+		return null;
+	}
+
 	private static function parsePath(path:String):Dynamic
 	{
 		// Find ID
@@ -85,7 +103,7 @@ class ClassHelper
 		if (typeRegex.match(path))
 		{
 			var s:String = typeRegex.matched(0);
-			type = Type.resolveClass(s.substr(0, s.length - 1));
+			type = getClassFromName(s.substr(0, s.length - 1));
 			path = path.split(s).join("");
 		}
 		else

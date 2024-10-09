@@ -1,59 +1,26 @@
 require("source.utils.Raw");
 importFile("SpriteBuiltIn");
 
-Sprite = {};
+FlxObject = require("source.objects.flixel.FlxObject");
+Sprite = setmetatable({}, FlxObject);
 Sprite.__index = Sprite;
 
 ---Creates a new sprite
 ---@param x number X Position
 ---@param y number Y Position
 function Sprite:new(x, y)
-    local sprite = setmetatable({}, Sprite);
-    sprite.__index = Sprite;
+    local sprite = FlxObject.new(self, "flixel.FlxSprite");
 
-    -- Set values
-    sprite.ID = -1;
-    sprite.x = tonumber(x) or 0;
-    sprite.y = tonumber(y) or 0;
+    -- Create
+    sprite:setPosition(
+        tonumber(x) or 0,
+        tonumber(y) or 0
+    );
     sprite._alpha = 1;
     sprite._color = 0xFFFFFF;
 
-    -- Create actual sprite
-    local message = Raw.call(
-        "builtin.SpriteBuiltIn",
-        "makeSprite",
-        nil,
-        sprite.x,
-        sprite.y
-    );
-
-    -- Set ID
-    sprite.ID = message;
-
     return sprite;
 end
-
----Removes this sprite
----@param forceDestroy ?boolean Force the game to destroy the sprite
-function Sprite:destroy(forceDestroy)
-    removeSprite(self.ID, forceDestroy)
-end
-
---#region Raw
-
-function Sprite:call(name, ...)
-    return Raw.call("flixel.FlxSprite", name, self.ID, ...);
-end
-
-function Sprite:get(name)
-    return Raw.get("flixel.FlxSprite", name, self.ID);
-end
-
-function Sprite:set(name, value)
-    return Raw.set("flixel.FlxSprite", name, self.ID, value);
-end
-
---#endregion
 
 --#region Graphics
 
@@ -87,11 +54,15 @@ function Sprite:makeGraphic(width, height, color)
     end
 
     -- Parse color
-    color = color or 'white';--Raw.call("flixel.util.FlxColor", "fromString", nil, color or "#FFFFFF");
+    color = color or 'white'; --Raw.call("flixel.util.FlxColor", "fromString", nil, color or "#FFFFFF");
 
     -- Make graphic
     makeGraphic(self.ID, width, height, color);
 end
+
+--#endregion
+
+--#region Properties
 
 ---Sets the alpha of this sprite
 ---@param alpha number Alpha value

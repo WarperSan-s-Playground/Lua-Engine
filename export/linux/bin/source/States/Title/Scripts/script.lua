@@ -1,12 +1,15 @@
 require("source.backend.Conductor");
 require("source.backend.MusicalState");
 
+-- Types
+FlxGroup = require("source.objects.flixel.FlxGroup");
+
 -- Load first
 local loadMSG = fromJSON("../gfDanceTitle.json");
 local data = loadMSG.value;
 setShared("TITLE_DATA", data);
 
-local CREDIT_GROUP_ID = -1;
+local CREDIT_GROUP = FlxGroup:new();
 local NG_ID = -1;
 
 function OnCreate()
@@ -15,8 +18,7 @@ function OnCreate()
     addScript("logoTitle.lua", false);
     addScript("titleEnter.lua", false);
 
-    CREDIT_GROUP_ID = createGroup().value;
-    CreateBlackScreen(CREDIT_GROUP_ID);
+    CreateBlackScreen();
     NG_ID = addScript("UI/newGroundsLogo.lua", false).value;
 
     -- -- Set Music
@@ -71,23 +73,25 @@ end
 
 function SkipIntro()
     closeScript("UI/newGroundsLogo.lua");
-    removeGroup(CREDIT_GROUP_ID);
+
+    -- Remove credit group
+    CREDIT_GROUP:destroy();
+    CREDIT_GROUP = nil;
 
     -- Flash
     Raw.call("flixel.FlxG", "camera.flash", nil, 0xFFFFFF, 4);
 end
 
 -- Black Screen
-function CreateBlackScreen(group)
+function CreateBlackScreen()
     local blackScreenMSG = addScript("UI/blackScreen.lua", false);
+    closeScript("UI/blackScreen.lua");
 
     -- If error occurred, skip
     if (blackScreenMSG.isError) then
         return;
     end
 
-    closeScript("UI/blackScreen.lua");
-
     -- Add to group
-    addToGroup(group, blackScreenMSG.value);
+    CREDIT_GROUP:add(blackScreenMSG.value);
 end

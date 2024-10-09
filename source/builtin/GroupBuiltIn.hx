@@ -41,7 +41,7 @@ class GroupBuiltIn
 	 */
 	public static function addToGroup(groupID:Int = -1, elementID:Int = -1):Void
 	{
-		var group:FlxGroup = cast FlxBasicHelper.getObject(groupID, FlxGroup);
+		var group:FlxTypedGroup<FlxBasic> = cast FlxBasicHelper.getObject(groupID, FlxTypedGroup);
 		var element:FlxBasic = cast FlxBasicHelper.getObject(elementID, FlxBasic);
 
 		// If already inside, skip
@@ -58,7 +58,7 @@ class GroupBuiltIn
 	 */
 	public static function removeFromGroup(groupID:Int = -1, elementID:Int = -1):Void
 	{
-		var group:FlxGroup = cast FlxBasicHelper.getObject(groupID, FlxGroup);
+		var group:FlxTypedGroup<FlxBasic> = cast FlxBasicHelper.getObject(groupID, FlxTypedGroup);
 		var element:FlxBasic = cast FlxBasicHelper.getObject(elementID, FlxBasic);
 
 		group.remove(element, true);

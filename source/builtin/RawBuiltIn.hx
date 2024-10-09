@@ -1,5 +1,9 @@
 package builtin;
 
+import flixel.ui.FlxBar;
+import flixel.FlxSprite;
+import helpers.FlxBasicHelper;
+import flixel.FlxBasic;
 import helpers.ClassHelper;
 
 @:rtti
@@ -63,5 +67,76 @@ class RawBuiltIn
 			args = [];
 
 		return Reflect.callMethod(result.obj, method, args);
+	}
+
+	/**
+	 * Creates an instance of the given type from the given arguments
+	 * @param name Full name of the class
+	 * @param args Arguments for the constructor
+	 * @return Null<Int> Unique identifier used to cache this instance
+	 */
+	public static function createRaw(name:Null<String> = null, args:Dynamic = null):Null<Int>
+	{
+		if (name == null)
+			throw('Could not create an instance if no class was given.');
+
+		// Find class
+		var classType:Null<Class<Dynamic>> = ClassHelper.getClassFromName(name);
+
+		if (classType == null)
+			throw('Could not find the class for the type \'$name\'.');
+
+		// Create instance
+		var instance:Null<Dynamic> = Type.createInstance(classType, args);
+
+		if (instance == null)
+			throw('Could not create an instance of the type \'$name\'.');
+
+		// Cache instance
+		if (Std.isOfType(instance, FlxBasic))
+			return FlxBasicHelper.add(instance);
+		return null;
+	}
+
+	/**
+	 * Destroys the instance with the given ID
+	 * @param name Full name of the class
+	 * @param id ID of the instance to remove
+	 * @param forceDestroy Force the game to immediately destroy the instance
+	 */
+	public static function destroyRaw(name:Null<String> = null, id:Null<Int> = null, forceDestroy:Bool = false):Void
+	{
+		if (id == null)
+			throw('Could not destroy an instance if no ID was given.');
+
+		if (name == null)
+			throw('Could not destroy an instance if no class was given.');
+
+		// Find class
+		var classType:Null<Class<Dynamic>> = ClassHelper.getClassFromName(name);
+
+		// Manage basics
+		while (true)
+		{
+			classType = Type.getSuperClass(classType);
+
+			// If reached end, exit
+			if (classType == null)
+				break;
+
+			// If class is FlxBasic, destroy
+			if (classType == FlxBasic)
+			{
+				var obj:FlxBasic = FlxBasicHelper.getObject(id, FlxBasic);
+
+				if (forceDestroy || obj.container == null)
+					obj.destroy();
+				else
+					obj.kill();
+				return;
+			}
+		}
+
+		throw('Could not find the class for the type \'$name\'.');
 	}
 }

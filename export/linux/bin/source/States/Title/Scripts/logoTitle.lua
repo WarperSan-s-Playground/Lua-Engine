@@ -19,7 +19,6 @@ function OnCreate()
 end
 
 function OnBeat()
-    print("BEAT LOGO");
     sprite:playAnimation("bump", true);
 end
 
