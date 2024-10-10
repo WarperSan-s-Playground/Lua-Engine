@@ -1,6 +1,7 @@
 package;
 
-import engine.LuaScript;
+import sys.FileSystem;
+import sys.thread.Thread;
 import helpers.LogHelper;
 import flixel.FlxG;
 import flixel.FlxGame;
@@ -31,13 +32,17 @@ class Main extends Sprite
 		// Create starting state
 		addChild(new FlxGame(0, 0, () -> new ScriptState("~/start.lua"), 60, 60, true));
 
+		// FPS counter
 		var fps:FPS = new FPS(0, 0, 0xffffff);
 		addChild(fps);
 
+		// Target FPS
 		FlxG.updateFramerate = 250;
 		FlxG.drawFramerate = 250;
 
-		// Print doc if necessary
-		helpers.DocumentationHelper.PrintDoc("source/LuaEngine.json");
+		// If documentation doesn't exist, create
+		var docFile:String = "source/LuaEngine.json";
+		if (!FileSystem.exists(docFile))
+			Thread.create(() -> helpers.DocumentationHelper.PrintDoc(docFile));
 	}
 }

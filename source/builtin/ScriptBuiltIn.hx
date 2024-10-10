@@ -3,10 +3,8 @@ package builtin;
 import engine.ScriptParenting;
 import engine.ScriptCache;
 import engine.Script;
-import engine.LuaScript;
 import lua_bridge.LuaImport;
 import helpers.LogHelper;
-import haxe.io.Path;
 import helpers.FileHelper;
 
 /** Class holding every built-in methods for scripts */

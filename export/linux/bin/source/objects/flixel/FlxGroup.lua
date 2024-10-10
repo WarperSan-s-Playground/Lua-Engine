@@ -4,13 +4,17 @@ importFile("GroupBuiltIn");
 FlxSprite = require("source.objects.flixel.FlxSprite");
 FlxGroup = setmetatable({}, FlxSprite);
 FlxGroup.__index = FlxGroup;
+FlxGroup.__type = "flixel.group.FlxTypedGroup";
 
-function FlxGroup:new(x, y)
-    self.__type = self.__type or "flixel.group.FlxTypedGroup";
-    local group = FlxSprite.new(self, x, y);
+function FlxGroup:new()
+    local group = FlxSprite.new(self);
+
+    group.__initialized = false;
 
     -- Create
     group.members = {};
+
+    group.__initialized = true;
 
     return group;
 end

@@ -1,7 +1,6 @@
 package helpers;
 
 import lua_bridge.LuaImport;
-import sys.FileSystem;
 
 /** Class that creates the documentation for this engine to be compatible with https://github.com/Snirozu/Funkin-Script-AutoComplete */
 class DocumentationHelper
@@ -9,10 +8,6 @@ class DocumentationHelper
 	/** Prints the documentation of the built-in methods */
 	public static function PrintDoc(file:String):Void
 	{
-		// Skip if already exist
-		if (FileSystem.exists(file))
-			return;
-
 		var generated:Map<String, Dynamic> = [];
 		var functions:Map<String, Dynamic> = [];
 

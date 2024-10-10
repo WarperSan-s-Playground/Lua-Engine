@@ -24,7 +24,11 @@ class LuaImport
 	}
 
 	/** All the files that are always imported to this script */
-	private static var DEFAULT_BUILT_IN:Array<Dynamic> = [builtin.ScriptBuiltIn, builtin.LogBuiltIn];
+	private static var DEFAULT_BUILT_IN:Array<Dynamic> = [
+		builtin.ScriptBuiltIn, 
+		builtin.LogBuiltIn,
+		builtin.ObjectBuiltIn
+	];
 
 	/** All the files that can be manually imported to this script */
 	public static var IMPORTABLE_BUILT_IN:Array<Dynamic> = [

@@ -87,7 +87,10 @@ class LuaHelper
 			var file:String = "undefined";
 
 			if (script != null)
+			{
 				file = script.getFile();
+				script.hasErrored = true;
+			}
 
 			LogHelper.error('Error while calling \'$name\' in \'$file\': ${e.message}');
 			result = LuaMessage.error(e.message);
@@ -143,7 +146,10 @@ class LuaHelper
 			var file:String = "undefined";
 
 			if (script != null)
+			{
 				file = script.getFile();
+				script.hasErrored = true;
+			}
 
 			LogHelper.error('Error while invoking \'$name\' in \'$file\': ${e.message}');
 			result = LuaMessage.error(e.message);

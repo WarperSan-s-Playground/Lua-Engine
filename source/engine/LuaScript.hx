@@ -2,7 +2,6 @@ package engine;
 
 import lua_bridge.LuaImport;
 import custom.DataContainer;
-import helpers.LogHelper;
 import helpers.LuaHelper;
 import llua.Lua;
 import llua.LuaL;
@@ -63,8 +62,8 @@ class LuaScript extends engine.Script
 		// Open standard libraries
 		LuaL.openlibs(this.lua);
 
-		// Default config
-		LuaL.dostring(this.lua, "print = function(...) trace(...); end");
+		// Make print use trace
+		LuaL.dostring(this.lua, "print = trace;");
 
 		// Load file
 		var status:Int = LuaL.dofile(this.lua, this.file);

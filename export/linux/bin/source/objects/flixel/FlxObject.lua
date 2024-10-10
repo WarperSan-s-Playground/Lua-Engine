@@ -1,56 +1,57 @@
-require("source.utils.Raw");
+require("source.utils.Class");
 
-FlxBasic = require("source.objects.flixel.FlxBasic");
-FlxObject = setmetatable({}, FlxBasic);
-FlxObject.__index = FlxObject;
+FlxObject = CreateClass("flixel.FlxObject", "source.objects.flixel.FlxBasic");
+FlxObject.x = 0;
+FlxObject.y = 0;
+FlxObject.width = 0;
+FlxObject.height = 0;
 
 function FlxObject:new(...)
-    self.__type = self.__type or 'flixel.FlxObject';
-    local obj = FlxBasic.new(self, ...);
-
-    -- Create
-    obj.width = 0;
-    obj.height = 0;
-    obj.x = 0;
-    obj.y = 0;
-
-    return obj;
+    return FlxBasic.new(self, ...);
 end
 
----Sets the position of this object
----@param x ?number X position of this object
----@param y ?number Y position of this object
-function FlxObject:setPosition(x, y)
-    x = tonumber(x) or self.x or 0;
-    y = tonumber(y) or self.y or 0;
+--#region Setters
 
-    if (x ~= self.x) then
-        self:set("x", x);
-        self.x = x;
+function FlxObject:set_x(x)
+    x = tonumber(x);
+
+    if (x == nil) then
+        return self.x;
     end
 
-    if (y ~= self.y) then
-        self:set("y", y);
-        self.y = y;
-    end
+    return x;
 end
 
----Sets the size of this object
----@param width ?number Width of this object's hitbox
----@param height ?number Height of this object's hitbox
-function FlxObject:setSize(width, height)
-    width = tonumber(width) or self.width or 0;
-    height = tonumber(height) or self.height or 0;
+function FlxObject:set_y(y)
+    y = tonumber(y);
 
-    if (width ~= self.width) then
-        self:set("width", width);
-        self.width = width;
+    if (y == nil) then
+        return self.y;
     end
 
-    if (height ~= self.height) then
-        self:set("height", height);
-        self.height = height;
-    end
+    return y;
 end
+
+function FlxObject:set_width(width)
+    width = tonumber(width);
+
+    if (width == nil) then
+        return self.width;
+    end
+
+    return width;
+end
+
+function FlxObject:set_height(height)
+    height = tonumber(height);
+
+    if (height == nil) then
+        return self.height;
+    end
+
+    return height;
+end
+
+--#endregion
 
 return FlxObject;

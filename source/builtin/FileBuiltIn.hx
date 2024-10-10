@@ -33,4 +33,14 @@ class FileBuiltIn
 
 		return Json.parse(content);
 	}
+
+	/**
+	 * Converts the path to an usable path
+	 * @param file User given path
+	 * @return Null<String> Path to use or null if invalid
+	 */
+	public static function getPath(file:Null<String> = null):Null<String>
+	{
+		return FileHelper.GetPath(file);
+	}
 }

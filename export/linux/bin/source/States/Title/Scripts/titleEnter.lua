@@ -1,4 +1,4 @@
-require("source.utils.Colors");
+require("source.utils.Color");
 require("source.utils.Raw");
 
 FlxSprite = require("source.objects.flixel.FlxSprite");
@@ -11,7 +11,10 @@ local timer = 0;
 function OnCreate()
     local data = getShared("TITLE_DATA").value;
 
-    sprite = FlxSprite:new(data["startX"], data["startY"]);
+    sprite = FlxSprite:new();
+    sprite.x = tonumber(data["startX"]);
+    sprite.y = tonumber(data["startY"]);
+    sprite:submit();
 
     sprite:loadGraphic("../Images/titleEnter.png", "../XML/titleEnter.xml");
     sprite:addByPrefix("idle", "ENTER IDLE", 24, true);
@@ -50,11 +53,11 @@ function UpdateTitle(value)
     -- Ease the value
     value = Raw.call("flixel.tweens.FlxEase", "quadInOut", nil, value);
 
-    -- Set alpha
-    local alpha = Raw.call("flixel.math.FlxMath", "lerp", nil, 1, 0.64, value);
-    sprite:setAlpha(alpha);
+    -- Set values
+    sprite.alpha = nil;
+    sprite.alpha = Raw.call("flixel.math.FlxMath", "lerp", nil, 1, 0.64, value);
 
-    -- Set color
-    local color = Colors.interpolate(0x33FFFF, 0x3333CC, value);
-    sprite:setColor(color);
+    sprite.color = nil;
+    sprite.color = Color.interpolate(0xFF33FFFF, 0xFF3333CC, value);
+    sprite:submit();
 end

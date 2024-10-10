@@ -4,16 +4,20 @@ FlxGroup = require("source.objects.flixel.FlxGroup");
 Alphabet = setmetatable({}, FlxGroup);
 Alphabet.__index = Alphabet;
 
-function Alphabet:new(x, y, text, bold)
-    local alphabet = FlxGroup.new(self, x, y);
+function Alphabet:new(text, bold)
+    local alphabet = FlxGroup.new(self);
+
+    alphabet.__initialized = false;
 
     -- Create
     alphabet.startX = alphabet.x;
     alphabet.startY = alphabet.y;
     alphabet.bold = bold == true;
-    alphabet._letters = {};
+    alphabet.__letters = {};
     ClearLetters(alphabet);
     alphabet:setText(text);
+
+    alphabet.__initialized = true;
 
     return alphabet;
 end
@@ -119,7 +123,8 @@ function CreateLetters(alphabet, newText)
         rows = rows + 1;
     end
 
-    alphabet._rows = rows;
+    alphabet.__letters = letters;
+    alphabet.__rows = rows;
 end
 
 return Alphabet;

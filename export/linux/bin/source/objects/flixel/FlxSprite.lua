@@ -1,24 +1,25 @@
 require("source.utils.Raw");
+require("source.utils.Color");
 importFile("SpriteBuiltIn");
 
-FlxObject = require("source.objects.flixel.FlxObject");
-FlxSprite = setmetatable({}, FlxObject);
-FlxSprite.__index = FlxSprite;
+require("source.objects.flixel.FlxObject");
+FlxSprite = CreateClass("flixel.FlxSprite", "source.objects.flixel.FlxObject");
+FlxSprite.alpha = 1;
+FlxSprite.color = 0xFFFFFF;
 
 ---Creates a new sprite
----@param x number X Position
----@param y number Y Position
-function FlxSprite:new(x, y)
-    self.__type = self.__type or "flixel.FlxSprite";
+function FlxSprite:new()
     local sprite = FlxObject.new(self);
 
+    sprite.__initialized = false;
+
     -- Create
-    sprite:setPosition(
-        tonumber(x) or 0,
-        tonumber(y) or 0
-    );
-    sprite._alpha = 1;
-    sprite._color = 0xFFFFFF;
+    sprite.x = x;
+    sprite.y = y;
+    sprite.alpha = 1;
+    sprite.color = 0xFFFFFF;
+
+    sprite.__initialized = true;
 
     return sprite;
 end
@@ -34,8 +35,9 @@ function FlxSprite:loadGraphic(path, xml)
 
     loadGraphic(self.ID, path, xml);
 
-    self.width = tonumber(self:get("width")) or 0;
-    self.height = tonumber(self:get("height")) or 0;
+    self.width = -1;
+    self.height = -1;
+    self:request();
 end
 
 ---Makes a graphic for this sprite
@@ -57,41 +59,11 @@ function FlxSprite:makeGraphic(width, height, color)
         height = 0;
     end
 
-    -- Parse color
-    color = color or 'white'; --Raw.call("flixel.util.FlxColor", "fromString", nil, color or "#FFFFFF");
+    -- Parse color + add alpha
+    color = Color.parseColor(color);
 
     -- Make graphic
-    makeGraphic(self.ID, width, height, color);
-end
-
---#endregion
-
---#region Properties
-
----Sets the alpha of this sprite
----@param alpha number Alpha value
-function FlxSprite:setAlpha(alpha)
-    -- If NaN, skip
-    if (tonumber(alpha) == nil) then
-        return;
-    end
-
-    -- Keep it between 0 and 1
-    if (alpha > 1) then
-        alpha = 1;
-    elseif (alpha < 0) then
-        alpha = 0;
-    end
-
-    self:set('alpha', alpha);
-    self._alpha = alpha;
-end
-
----Sets the color of this sprite
----@param color number Color of this sprite in HEX in the format ARGB
-function FlxSprite:setColor(color)
-    self:set('color', color);
-    self._color = color;
+    self:call("makeGraphic", width, height, color);
 end
 
 --#endregion
@@ -165,6 +137,27 @@ function FlxSprite:playAnimation(name, force)
     end
 
     self:call("animation.play", name, force);
+end
+
+--#endregion
+
+--#region Setters
+
+function FlxSprite:set_alpha(alpha)
+    alpha = tonumber(alpha);
+
+    if (alpha == nil) then
+        return self.alpha;
+    end
+
+    -- Keep it between 0 and 1
+    if (alpha > 1) then
+        alpha = 1;
+    elseif (alpha < 0) then
+        alpha = 0;
+    end
+
+    return alpha;
 end
 
 --#endregion

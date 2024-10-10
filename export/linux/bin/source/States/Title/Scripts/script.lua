@@ -86,12 +86,12 @@ end
 
 -- Black Screen
 function CreateBlackScreen()
-    local blackScreen = FlxSprite:new(0, 0);
+    local blackScreen = FlxSprite:new();
 
     blackScreen:makeGraphic(
         Raw.get("flixel.FlxG", "width", nil),
         Raw.get("flixel.FlxG", "height", nil),
-        "black"
+        Color.BLACK
     );
 
     -- Add to group
@@ -101,10 +101,9 @@ end
 -- NewGrounds Logo
 local newGroundsLogo;
 function CreateNewGroundsLogo()
-    local logo = FlxSprite:new(
-        0,
-        Raw.get("flixel.FlxG", "height", nil) * 0.52
-    );
+    local logo = FlxSprite:new();
+    logo.y = Raw.get("flixel.FlxG", "height", nil) * 0.52;
+    logo:submit();
 
     logo:loadGraphic("^/../Images/newgrounds_logo.png");
     logo:set("visible", false);
