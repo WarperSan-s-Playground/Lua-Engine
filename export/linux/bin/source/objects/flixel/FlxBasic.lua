@@ -2,14 +2,13 @@
 FlxBasic = {};
 FlxBasic.__index = FlxBasic;
 
-function FlxBasic:new(type, ...)
+function FlxBasic:new(...)
+    self.__type = self.__type or 'flixel.FlxBasic';
     local basic = setmetatable({}, self);
 
     -- Create object
-    basic.ID = Raw.create(type, ...);
-
-    -- Set values
-    basic.__type = type;
+    basic.ID = Raw.create(self.__type, ...);
+    basic.__type = self.__type;
 
     return basic;
 end

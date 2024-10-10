@@ -1,6 +1,6 @@
 require("source.utils.Raw");
 
-Sprite = require("source.objects.Sprite");
+FlxSprite = require("source.objects.flixel.FlxSprite");
 
 -- Manual imports
 importFile("DataBuiltIn");
@@ -11,7 +11,7 @@ local sprite;
 function OnCreate()
     local data = getShared("TITLE_DATA").value;
 
-    sprite = Sprite:new(data["gfX"], data["gfY"]);
+    sprite = FlxSprite:new(data["gfX"], data["gfY"]);
 
     sprite:loadGraphic("../Images/gfDanceTitle.png", "../XML/gfDanceTitle.xml");
     sprite:addByIndices("danceRight", "gfDance", { 30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }, 24, false);

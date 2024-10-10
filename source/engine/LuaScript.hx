@@ -60,24 +60,17 @@ class LuaScript extends engine.Script
 	/** Executes this script */
 	public function execute():Void
 	{
-		try
-		{
-			// Open standard libraries
-			LuaL.openlibs(this.lua);
+		// Open standard libraries
+		LuaL.openlibs(this.lua);
 
-			// Default config
-			LuaL.dostring(this.lua, "print = function(...) trace(...); end");
+		// Default config
+		LuaL.dostring(this.lua, "print = function(...) trace(...); end");
 
-			// Load file
-			var status:Int = LuaL.dofile(this.lua, this.file);
+		// Load file
+		var status:Int = LuaL.dofile(this.lua, this.file);
 
-			if (status != Lua.LUA_OK)
-				throw(Lua.tostring(this.lua, status));
-		}
-		catch (e:String)
-		{
-			LogHelper.error('Error while executing \'${this.file}\': $e');
-		}
+		if (status != Lua.LUA_OK)
+			throw(Lua.tostring(this.lua, status));
 	}
 
 	public function callMethod(name:String, args:Array<Dynamic>):Null<Dynamic>

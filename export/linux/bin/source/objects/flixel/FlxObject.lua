@@ -4,8 +4,9 @@ FlxBasic = require("source.objects.flixel.FlxBasic");
 FlxObject = setmetatable({}, FlxBasic);
 FlxObject.__index = FlxObject;
 
-function FlxObject:new(type, ...)
-    local obj = FlxBasic.new(self, type, ...);
+function FlxObject:new(...)
+    self.__type = self.__type or 'flixel.FlxObject';
+    local obj = FlxBasic.new(self, ...);
 
     -- Create
     obj.width = 0;

@@ -1,7 +1,7 @@
 require("source.utils.Colors");
 require("source.utils.Raw");
 
-Sprite = require("source.objects.Sprite");
+FlxSprite = require("source.objects.flixel.FlxSprite");
 
 importFile("DataBuiltIn");
 
@@ -11,7 +11,7 @@ local timer = 0;
 function OnCreate()
     local data = getShared("TITLE_DATA").value;
 
-    sprite = Sprite:new(data["startX"], data["startY"]);
+    sprite = FlxSprite:new(data["startX"], data["startY"]);
 
     sprite:loadGraphic("../Images/titleEnter.png", "../XML/titleEnter.xml");
     sprite:addByPrefix("idle", "ENTER IDLE", 24, true);

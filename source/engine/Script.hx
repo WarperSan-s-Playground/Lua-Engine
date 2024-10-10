@@ -88,7 +88,16 @@ abstract class Script
 		{
 			script = Type.createInstance(cls, [file, parent, autoImport]); // new LuaScript(file, parent, autoImport);
 			ScriptCache.LinkScript(script.getLinkKey(), script);
-			script.execute();
+
+			try
+			{
+				script.execute();
+			}
+			catch (e:String)
+			{
+				script.hasErrored = true;
+				LogHelper.error('Error while executing \'${script.getFile()}\': $e');
+			}
 
 			// Callback
 			var hasParent:Bool = parent != null;
@@ -106,12 +115,18 @@ abstract class Script
 	// #region Execute
 	public static var LastCallResult:Map<String, Null<Dynamic>> = [];
 
+	public var hasErrored:Bool = false;
+
 	/** Executes this script */
 	public abstract function execute():Void;
 
 	/** Calls the given method in this script */
 	public function call(name:String, args:Array<Dynamic>, callInChildren:Bool):Map<String, Null<Dynamic>>
 	{
+		// If the script has errored, skip all call
+		if (this.hasErrored)
+			return [];
+
 		var results:Map<String, Null<Dynamic>> = [];
 
 		// Call in self

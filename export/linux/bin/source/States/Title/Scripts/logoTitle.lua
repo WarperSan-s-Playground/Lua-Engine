@@ -2,14 +2,14 @@ require("source.utils.Raw");
 
 importFile("DataBuiltIn");
 
-Sprite = require("source.objects.Sprite");
+FlxSprite = require("source.objects.flixel.FlxSprite");
 
 local sprite;
 
 function OnCreate()
     local data = getShared("TITLE_DATA").value;
 
-    sprite = Sprite:new(
+    sprite = FlxSprite:new(
         data["titleX"],
         data["titleY"]
     );

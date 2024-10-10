@@ -1,13 +1,13 @@
 require("source.utils.Raw");
-
 importFile("GroupBuiltIn");
 
-FlxBasic = require("source.objects.flixel.FlxBasic");
-FlxGroup = setmetatable({}, { __index = FlxBasic });
+FlxSprite = require("source.objects.flixel.FlxSprite");
+FlxGroup = setmetatable({}, FlxSprite);
 FlxGroup.__index = FlxGroup;
 
-function FlxGroup:new()
-    local group = FlxBasic.new(self, "flixel.group.FlxTypedGroup");
+function FlxGroup:new(x, y)
+    self.__type = self.__type or "flixel.group.FlxTypedGroup";
+    local group = FlxSprite.new(self, x, y);
 
     -- Create
     group.members = {};

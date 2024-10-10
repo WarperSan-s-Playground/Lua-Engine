@@ -2,7 +2,9 @@ require("source.backend.Conductor");
 require("source.backend.MusicalState");
 
 -- Types
+FlxSprite = require("source.objects.flixel.FlxSprite");
 FlxGroup = require("source.objects.flixel.FlxGroup");
+--Alphabet = require("source.objects.Alphabet");
 
 -- Load first
 local loadMSG = fromJSON("../gfDanceTitle.json");
@@ -10,7 +12,7 @@ local data = loadMSG.value;
 setShared("TITLE_DATA", data);
 
 local CREDIT_GROUP = FlxGroup:new();
-local NG_ID = -1;
+--local text = Alphabet:new(0, 0, "TEST", true);
 
 function OnCreate()
     -- Add children
@@ -19,7 +21,7 @@ function OnCreate()
     addScript("titleEnter.lua", false);
 
     CreateBlackScreen();
-    NG_ID = addScript("UI/newGroundsLogo.lua", false).value;
+    CreateNewGroundsLogo();
 
     -- -- Set Music
     playMusic("../Music/freakyMenu.ogg", true, 0);
@@ -50,10 +52,10 @@ function OnBeat()
         -- createCoolText(['Not associated', 'with'], -40);
     elseif sickBeats == 8 then
         -- addMoreText('newgrounds', -40);
-        Raw.set("flixel.FlxSprite", "visible", NG_ID, true);
+        SetNGLogoVisibility(true);
     elseif sickBeats == 9 then
         -- deleteCoolText();
-        Raw.set("flixel.FlxSprite", "visible", NG_ID, false);
+        SetNGLogoVisibility(false);
     elseif sickBeats == 10 then
         -- createCoolText([curWacky[0]]);
     elseif sickBeats == 12 then
@@ -72,7 +74,7 @@ function OnBeat()
 end
 
 function SkipIntro()
-    closeScript("UI/newGroundsLogo.lua");
+    DestroyNGLogo();
 
     -- Remove credit group
     CREDIT_GROUP:destroy();
@@ -84,14 +86,40 @@ end
 
 -- Black Screen
 function CreateBlackScreen()
-    local blackScreenMSG = addScript("UI/blackScreen.lua", false);
-    closeScript("UI/blackScreen.lua");
+    local blackScreen = FlxSprite:new(0, 0);
 
-    -- If error occurred, skip
-    if (blackScreenMSG.isError) then
-        return;
-    end
+    blackScreen:makeGraphic(
+        Raw.get("flixel.FlxG", "width", nil),
+        Raw.get("flixel.FlxG", "height", nil),
+        "black"
+    );
 
     -- Add to group
-    CREDIT_GROUP:add(blackScreenMSG.value);
+    CREDIT_GROUP:add(blackScreen);
+end
+
+-- NewGrounds Logo
+local newGroundsLogo;
+function CreateNewGroundsLogo()
+    local logo = FlxSprite:new(
+        0,
+        Raw.get("flixel.FlxG", "height", nil) * 0.52
+    );
+
+    logo:loadGraphic("^/../Images/newgrounds_logo.png");
+    logo:set("visible", false);
+    logo:call("setGraphicSize", logo.width * 0.8);
+    logo:call("updateHitbox");
+    logo:call("screenCenter", 0x01);
+
+    newGroundsLogo = logo;
+end
+
+function SetNGLogoVisibility(visible)
+    newGroundsLogo:set("visible", visible == true);
+end
+
+function DestroyNGLogo()
+    newGroundsLogo:destroy();
+    newGroundsLogo = nil;
 end
