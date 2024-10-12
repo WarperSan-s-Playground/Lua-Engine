@@ -1,40 +1,44 @@
 require("source.utils.Raw");
 
-FlxGroup = require("source.objects.flixel.FlxGroup");
-Alphabet = setmetatable({}, FlxGroup);
-Alphabet.__index = Alphabet;
+require("source.objects.flixel.FlxObject");
+Alphabet = CreateClass("flixel.group.FlxTypedSpriteGroup", "source.objects.flixel.FlxGroup");
 
-function Alphabet:new(text, bold)
-    local alphabet = FlxGroup.new(self);
+function Alphabet:new(x, y, text, bold)
+    local alphabet = FlxGroup.new(self, x, y);
 
     alphabet.__initialized = false;
 
     -- Create
-    alphabet.startX = alphabet.x;
-    alphabet.startY = alphabet.y;
+    alphabet.__startPosition = {
+        x = alphabet.x,
+        y = alphabet.y
+    };
     alphabet.bold = bold == true;
     alphabet.__letters = {};
-    ClearLetters(alphabet);
-    alphabet:setText(text);
+    alphabet.__excludedFields[#alphabet.__excludedFields+1] = "bold";
+    alphabet.__excludedFields[#alphabet.__excludedFields+1] = "text";
 
     alphabet.__initialized = true;
+
+    alphabet.text = text;
 
     return alphabet;
 end
 
-function Alphabet:setText(text)
+function Alphabet:set_text(text)
     text = tostring(text):gsub('\\n', '\n');
     ClearLetters(self);
     CreateLetters(self, text);
+    return text;
 end
 
 function ClearLetters(alphabet)
-    for key, value in pairs(alphabet._letters) do
+    for key, value in pairs(alphabet.__letters) do
         value:destroy();
     end
 
-    alphabet._letters = {};
-    alphabet._rows = 0;
+    alphabet.__letters = {};
+    alphabet.__rows = 0;
 end
 
 function CreateLetters(alphabet, newText)
@@ -88,8 +92,17 @@ function CreateLetters(alphabet, newText)
 
         consecutiveSpaces = 0;
 
-        local letter = FlxSprite:new();
-        letter:loadGraphic("~/source/States/Title/Images/gfDanceTitle.png", "~/source/States/Title/XML/gfDanceTitle.xml");
+        local anim = string.lower(c);
+
+        if (bold) then
+            anim = anim .. " bold";
+        end
+
+        local letter = FlxSprite:new(xPos, rows * 85);
+        letter:loadGraphic("~/source/shared/Images/alphabet.png", "~/source/shared/XML/alphabet.xml");
+        letter:addByPrefix("idle", anim, 24, true);
+
+        alphabet:add(letter, false);
 
         -- var letter:AlphaCharacter = cast recycle(AlphaCharacter, true);
         -- letter.scale.x = scaleX;
@@ -106,7 +119,7 @@ function CreateLetters(alphabet, newText)
             offset = 2;
         end
 
-        xPos = xPos + letter.width;-- + (letter.letterOffset[0] + offset);
+        xPos = xPos + letter.width; -- + (letter.letterOffset[0] + offset);
         rowData[rows] = xPos;
 
         letters[#letters + 1] = letter;

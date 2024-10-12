@@ -9,7 +9,10 @@ function FlxBasic:new(...)
     -- Create object
     basic.ID = Raw.create(self.__type, ...);
     basic.__type = self.__type;
-    basic.__dirtyFields = {};
+    basic.__dirtyFields = {};    -- Fields that are marked as dirty
+    basic.__excludedFields = {
+        "ID"
+    }; -- Fields not private, but not submittable
     basic.__initialized = true;
 
     return basic;
@@ -52,8 +55,14 @@ end
 function FlxBasic:submit()
     -- If nothing to submit, skip
     if (next(self.__dirtyFields) == nil) then
-        warn('Tried to submit changes of an object that has no changes.');
+        print('Warning: Tried to submit without doing any changes.');
+        print(self);
         return;
+    end
+
+    -- Remove excluded fields
+    for key, value in pairs(self.__excludedFields) do
+        self.__dirtyFields[value] = nil;
     end
 
     submitChanges(self.ID, self.__dirtyFields);

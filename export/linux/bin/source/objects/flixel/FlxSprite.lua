@@ -4,18 +4,14 @@ importFile("SpriteBuiltIn");
 
 require("source.objects.flixel.FlxObject");
 FlxSprite = CreateClass("flixel.FlxSprite", "source.objects.flixel.FlxObject");
-FlxSprite.alpha = 1;
-FlxSprite.color = 0xFFFFFF;
 
 ---Creates a new sprite
-function FlxSprite:new()
-    local sprite = FlxObject.new(self);
+function FlxSprite:new(x, y)
+    local sprite = FlxObject.new(self, x, y);
 
     sprite.__initialized = false;
 
     -- Create
-    sprite.x = x;
-    sprite.y = y;
     sprite.alpha = 1;
     sprite.color = 0xFFFFFF;
 
@@ -35,7 +31,9 @@ function FlxSprite:loadGraphic(path, xml)
 
     loadGraphic(self.ID, path, xml);
 
+    self.width = nil;
     self.width = -1;
+    self.height = nil;
     self.height = -1;
     self:request();
 end

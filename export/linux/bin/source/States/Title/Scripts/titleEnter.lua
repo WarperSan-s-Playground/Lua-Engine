@@ -11,10 +11,10 @@ local timer = 0;
 function OnCreate()
     local data = getShared("TITLE_DATA").value;
 
-    sprite = FlxSprite:new();
-    sprite.x = tonumber(data["startX"]);
-    sprite.y = tonumber(data["startY"]);
-    sprite:submit();
+    sprite = FlxSprite:new(
+        tonumber(data["startX"]),
+        tonumber(data["startY"])
+    );
 
     sprite:loadGraphic("../Images/titleEnter.png", "../XML/titleEnter.xml");
     sprite:addByPrefix("idle", "ENTER IDLE", 24, true);

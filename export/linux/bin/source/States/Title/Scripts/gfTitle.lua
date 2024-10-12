@@ -11,10 +11,10 @@ local sprite;
 function OnCreate()
     local data = getShared("TITLE_DATA").value;
 
-    sprite = FlxSprite:new();
-    sprite.x = tonumber(data["gfX"]);
-    sprite.y = tonumber(data["gfY"]);
-    sprite:submit();
+    sprite = FlxSprite:new(
+        tonumber(data["gfX"]),
+        tonumber(data["gfY"])
+    );
 
     sprite:loadGraphic("../Images/gfDanceTitle.png", "../XML/gfDanceTitle.xml");
     sprite:addByIndices("danceRight", "gfDance", { 30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }, 24, false);

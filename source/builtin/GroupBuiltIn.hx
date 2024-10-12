@@ -1,5 +1,7 @@
 package builtin;
 
+import flixel.FlxObject;
+import flixel.group.FlxSpriteGroup;
 import flixel.FlxBasic;
 import helpers.FlxBasicHelper;
 import flixel.group.FlxGroup;
@@ -41,8 +43,18 @@ class GroupBuiltIn
 	 */
 	public static function addToGroup(groupID:Int = -1, elementID:Int = -1):Void
 	{
-		var group:FlxTypedGroup<FlxBasic> = cast FlxBasicHelper.getObject(groupID, FlxTypedGroup);
+		var basic:Dynamic = FlxBasicHelper.getObject(groupID, FlxBasic);
 		var element:FlxBasic = cast FlxBasicHelper.getObject(elementID, FlxBasic);
+
+		// If not a group, skip
+		if (!Std.isOfType(basic, FlxTypedGroup) && !Std.isOfType(basic, FlxSpriteGroup))
+			throw('Could not find a group with the ID \'$groupID\'.');
+
+		var group:Dynamic = basic;
+
+		// Special case for FlxSpriteGroup
+		if (Std.isOfType(basic, FlxSpriteGroup))
+			group = basic.group;
 
 		// If already inside, skip
 		if (group.members.indexOf(element) != -1)

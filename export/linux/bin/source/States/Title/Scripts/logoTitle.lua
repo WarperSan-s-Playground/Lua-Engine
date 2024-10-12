@@ -9,10 +9,10 @@ local sprite;
 function OnCreate()
     local data = getShared("TITLE_DATA").value;
 
-    sprite = FlxSprite:new();
-    sprite.x = tonumber(data["titleX"]);
-    sprite.y = tonumber(data["titleY"]);
-    sprite:submit();
+    sprite = FlxSprite:new(
+        tonumber(data["titleX"]),
+        tonumber(data["titleY"])
+    );
 
     sprite:loadGraphic("../Images/logoBumpin.png", "../XML/logoBumpin.xml");
     sprite:addByPrefix("bump", "logo bumpin", 24, false);

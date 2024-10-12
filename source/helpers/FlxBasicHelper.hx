@@ -35,7 +35,7 @@ class FlxBasicHelper
 
 		// If basic not found, skip
 		if (basic == null)
-			throw('Could not find a $type with the ID \'$id\'.');
+			throw('Could not find an instance of \'$type\' with the ID \'$id\'.');
 
 		var result:T = cast basic;
 		return result;

@@ -25,7 +25,7 @@ class ObjectBuiltIn
 		if (!Std.isOfType(args, StringMap))
 			throw('Could not submit changes when changes are in the type of \'${Type.typeof(args)}\'.');
 
-		var basic:FlxBasic = FlxBasicHelper.getObject(id, FlxBasic);
+		var basic:Dynamic = FlxBasicHelper.getObject(id, FlxBasic);
 
 		// Apply changes
 		var changes:StringMap<Dynamic> = cast args;
