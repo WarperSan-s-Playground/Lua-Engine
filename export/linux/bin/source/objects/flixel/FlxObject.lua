@@ -59,23 +59,11 @@ function FlxObject:set_y(y)
 end
 
 function FlxObject:set_width(width)
-    width = tonumber(width);
-
-    if (width == nil) then
-        return self.width;
-    end
-
-    return width;
+    return tonumber(width) or self.width;
 end
 
 function FlxObject:set_height(height)
-    height = tonumber(height);
-
-    if (height == nil) then
-        return self.height;
-    end
-
-    return height;
+    return tonumber(height) or self.height;
 end
 
 --#endregion

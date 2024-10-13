@@ -6,13 +6,13 @@ function CreateText(texts, offset)
     offset = tonumber(offset) or 0;
 
     for i, value in ipairs(texts) do
-        AddMoreText(value, offset, i);
+        AddMoreText(value, offset, i - 1);
     end
 end
 
 function AddMoreText(text, offset, pos)
     offset = tonumber(offset) or 0;
-    pos = tonumber(pos) or (#TEXT_GROUP:getMembers() + 1);
+    pos = tonumber(pos) or #TEXT_GROUP:getMembers();
 
     offset = (pos * 60) + 200 + offset;
 
@@ -38,10 +38,9 @@ end
 
 function OnSickBeat(beat)
     if beat == 2 then
-        CreateText({ 'Psych Engine by' }, 40);
+        CreateText({ 'Lua Engine by' }, 40);
     elseif beat == 4 then
-        AddMoreText("Shadow Mario", 40);
-        AddMoreText("Riveren", 40);
+        AddMoreText("WarperSan", 40);
     elseif beat == 5 then
         DeleteText();
     elseif beat == 6 then
@@ -52,10 +51,10 @@ function OnSickBeat(beat)
         DeleteText();
     elseif beat == 10 then
         -- createCoolText([curWacky[0]]);
-        CreateText({ "WACKY " }, 0);
+        CreateText({ "I WUV " }, 0);
     elseif beat == 12 then
         -- addMoreText(curWacky[1]);
-        AddMoreText("WACKY 2");
+        AddMoreText("PANCAKES");
     elseif beat == 13 then
         DeleteText();
     elseif beat == 14 then

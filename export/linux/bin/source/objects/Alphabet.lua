@@ -15,8 +15,8 @@ function Alphabet:new(x, y, text, bold)
     };
     alphabet.bold = bold == true;
     alphabet.__letters = {};
-    alphabet.__excludedFields[#alphabet.__excludedFields+1] = "bold";
-    alphabet.__excludedFields[#alphabet.__excludedFields+1] = "text";
+    alphabet.__excludedFields[#alphabet.__excludedFields + 1] = "bold";
+    alphabet.__excludedFields[#alphabet.__excludedFields + 1] = "text";
 
     alphabet.__initialized = true;
 
@@ -101,6 +101,11 @@ function CreateLetters(alphabet, newText)
         local letter = FlxSprite:new(xPos, rows * 85);
         letter:loadGraphic("~/source/shared/Images/alphabet.png", "~/source/shared/XML/alphabet.xml");
         letter:addByPrefix("idle", anim, 24, true);
+        letter:call("updateHitbox");
+
+        letter.width = nil;
+        letter.width = -1;
+        letter:request();
 
         alphabet:add(letter, false);
 
