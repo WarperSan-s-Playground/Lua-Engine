@@ -1,13 +1,13 @@
 package;
 
+import objects.FPSCounter;
 import sys.FileSystem;
 import sys.thread.Thread;
 import helpers.LogHelper;
-import flixel.FlxG;
 import flixel.FlxGame;
-import openfl.display.FPS;
 import openfl.display.Sprite;
 import states.ScriptState;
+import flixel.FlxG;
 
 // MENUS TO ADD:
 // - Title Menu
@@ -33,7 +33,7 @@ class Main extends Sprite
 		addChild(new FlxGame(0, 0, () -> new ScriptState("~/start.lua"), 60, 60, true));
 
 		// FPS counter
-		var fps:FPS = new FPS(0, 0, 0xffffff);
+		var fps:FPSCounter = new FPSCounter(10, 3, 0xFFFFFF);
 		addChild(fps);
 
 		// Target FPS

@@ -246,6 +246,12 @@ abstract class Script
 	// #region Close
 	private var isClosed:Bool = false;
 
+	/** Checks if this script is marked as closed */
+	public function IsClosed():Bool
+	{
+		return this.isClosed;
+	}
+
 	/** Closes this script and the related scripts */
 	public function close()
 	{

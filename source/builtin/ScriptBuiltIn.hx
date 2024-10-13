@@ -48,7 +48,12 @@ class ScriptBuiltIn
 		if (!it.hasNext())
 			return null;
 
-		return it.next().value;
+		var value = it.next();
+
+		if (value == null)
+			return value;
+
+		return value.value;
 	}
 
 	/**

@@ -1,11 +1,12 @@
 package helpers;
 
-import flixel.group.FlxGroup;
-import haxe.macro.Context;
 import engine.ScriptCache;
 
 class ClassHelper
 {
+	private static var ID_REGEX:EReg = ~/{\d*}/g;
+	private static var TYPE_REGEX:EReg = ~/.*:/g;
+
 	/**
 	 * Fetches the class at the given path 
 	 * @param path Path to the class
@@ -86,23 +87,21 @@ class ClassHelper
 	private static function parsePath(path:String):Dynamic
 	{
 		// Find ID
-		var idRegex = ~/{\d*}/g;
 		var id:Null<Int> = null;
 
-		if (idRegex.match(path))
+		if (ID_REGEX.match(path))
 		{
-			var s:String = idRegex.matched(0);
+			var s:String = ID_REGEX.matched(0);
 			id = Std.parseInt(s.substring(1, s.length - 1));
 			path = path.split(s).join("");
 		}
 
 		// Find type
-		var typeRegex:EReg = ~/.*:/g;
 		var type:Null<Dynamic> = null;
 
-		if (typeRegex.match(path))
+		if (TYPE_REGEX.match(path))
 		{
-			var s:String = typeRegex.matched(0);
+			var s:String = TYPE_REGEX.matched(0);
 			type = getClassFromName(s.substr(0, s.length - 1));
 			path = path.split(s).join("");
 		}

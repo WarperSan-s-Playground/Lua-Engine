@@ -1,14 +1,14 @@
 require("source.utils.Color");
 require("source.utils.Raw");
 
-FlxSprite = require("source.objects.flixel.FlxSprite");
-
+-- Manual import
 importFile("DataBuiltIn");
 
-local sprite;
 local timer = 0;
+local sprite;
 
 function OnCreate()
+    local FlxSprite = require("source.objects.flixel.FlxSprite");
     local data = getShared("TITLE_DATA").value;
 
     sprite = FlxSprite:new(
@@ -16,7 +16,7 @@ function OnCreate()
         tonumber(data["startY"])
     );
 
-    sprite:loadGraphic("../Images/titleEnter.png", "../XML/titleEnter.xml");
+    sprite:loadGraphic("^/../Images/titleEnter.png", "^/../XML/titleEnter.xml");
     sprite:addByPrefix("idle", "ENTER IDLE", 24, true);
     sprite:addByPrefix("press", "ENTER PRESSED", 24, true);
 end
@@ -60,4 +60,9 @@ function UpdateTitle(value)
     sprite.color = nil;
     sprite.color = Color.interpolate(0xFF33FFFF, 0xFF3333CC, value);
     sprite:submit();
+end
+
+function OnDestroy()
+    sprite:destroy();
+    sprite = nil;
 end

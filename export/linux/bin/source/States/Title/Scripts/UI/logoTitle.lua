@@ -1,12 +1,12 @@
 require("source.utils.Raw");
 
+-- Manual import
 importFile("DataBuiltIn");
-
-FlxSprite = require("source.objects.flixel.FlxSprite");
 
 local sprite;
 
 function OnCreate()
+    local FlxSprite = require("source.objects.flixel.FlxSprite");
     local data = getShared("TITLE_DATA").value;
 
     sprite = FlxSprite:new(
@@ -14,7 +14,7 @@ function OnCreate()
         tonumber(data["titleY"])
     );
 
-    sprite:loadGraphic("../Images/logoBumpin.png", "../XML/logoBumpin.xml");
+    sprite:loadGraphic("^/../Images/logoBumpin.png", "^/../XML/logoBumpin.xml");
     sprite:addByPrefix("bump", "logo bumpin", 24, false);
 end
 
@@ -24,4 +24,5 @@ end
 
 function OnDestroy()
     sprite:destroy();
+    sprite = nil;
 end
