@@ -139,7 +139,7 @@ class DocumentationHelper
 	{
 		// Set return from last item
 		var type = ParseType(e);
-		var s = Type.getClassName(lua_bridge.LuaMessage).split(".").pop();
+		var s = "LuaMessage";
 
 		if (type != "Void")
 			s += '<$type>';

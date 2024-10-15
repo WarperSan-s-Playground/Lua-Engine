@@ -1,11 +1,11 @@
 package helpers;
 
-import openfl.display.Preloader.DefaultPreloader;
 import haxe.Constraints.IMap;
 import interfaces.IMeasurable;
 import engine.ScriptParenting;
 import engine.Script;
 
+/** Handles debug methods */
 class DebugHelper
 {
 	public static function printState():String

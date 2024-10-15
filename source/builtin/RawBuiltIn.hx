@@ -125,12 +125,7 @@ class RawBuiltIn
 			// If class is FlxBasic, destroy
 			if (classType == FlxBasic)
 			{
-				var obj:FlxBasic = FlxBasicHelper.getObject(id, FlxBasic);
-
-				if (forceDestroy || obj.container == null)
-					obj.destroy();
-				else
-					obj.kill();
+				FlxBasicHelper.remove(id, forceDestroy);
 				return;
 			}
 		}

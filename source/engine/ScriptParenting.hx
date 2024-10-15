@@ -64,31 +64,6 @@ class ScriptParenting
 		return children;
 	}
 
-	/** Finds the first script that is the given file */
-	public static function Find(file:String):Null<Script>
-	{
-		var fixed:Null<String> = FileHelper.GetPath(file);
-
-		if (fixed == null)
-			throw('Could not find the file at \'$file\'.');
-
-		// Search in roots
-		for (root in roots)
-		{
-			if (root.File == fixed)
-				return root;
-		}
-
-		// Search in children
-		for (child in parentMap.keys())
-		{
-			if (child.File == fixed)
-				return child;
-		}
-
-		return null;
-	}
-
 	/** Fetches all the scripts */
 	public static function GetAll(getChildren:Bool):Array<Script>
 	{
@@ -114,4 +89,29 @@ class ScriptParenting
 	}
 
 	// #endregion
+
+	/** Finds the first script that is the given file */
+	public static function Find(file:String):Null<Script>
+	{
+		var fixed:Null<String> = FileHelper.GetPath(file);
+
+		if (fixed == null)
+			throw('Could not find the file at \'$file\'.');
+
+		// Search in roots
+		for (root in roots)
+		{
+			if (root.File == fixed)
+				return root;
+		}
+
+		// Search in children
+		for (child in parentMap.keys())
+		{
+			if (child.File == fixed)
+				return child;
+		}
+
+		return null;
+	}
 }

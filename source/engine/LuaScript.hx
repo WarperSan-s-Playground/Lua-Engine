@@ -1,7 +1,6 @@
 package engine;
 
 import llua.Convert;
-import lua_bridge.LuaMessage;
 import helpers.LogHelper;
 import haxe.Exception;
 import lua_bridge.LuaImport;
@@ -9,6 +8,13 @@ import custom.DataContainer;
 import llua.Lua;
 import llua.LuaL;
 import llua.State;
+
+typedef LuaMessage =
+{
+	var message:String;
+	var value:Null<Dynamic>;
+	var isError:Bool;
+}
 
 /** Class that represents an instance of a Lua script */
 class LuaScript extends engine.Script
@@ -139,7 +145,7 @@ class LuaScript extends engine.Script
 
 			// Call method
 			var value:Dynamic = Reflect.callMethod(null, callback, args);
-			result = LuaMessage.success(value);
+			result = success(value);
 		}
 		catch (e:Exception)
 		{
@@ -153,7 +159,7 @@ class LuaScript extends engine.Script
 			}
 
 			LogHelper.error('Error while calling \'$name\' in \'$file\': ${e.message}');
-			result = LuaMessage.error(e.message);
+			result = error(e.message);
 		}
 
 		toLua(lua, result);
@@ -196,7 +202,7 @@ class LuaScript extends engine.Script
 			if (error != 0)
 				throw(value);
 
-			result = LuaMessage.success(value);
+			result = success(value);
 			Lua.pop(lua, 1);
 		}
 		catch (e:Exception)
@@ -211,11 +217,26 @@ class LuaScript extends engine.Script
 			}
 
 			LogHelper.error('Error while invoking \'$name\' in \'$file\': ${e.message}');
-			result = LuaMessage.error(e.message);
+			result = error(e.message);
 		}
 
 		return result;
 	}
+
+	/**
+	 * Creates a success
+	 * @param value Value of the success
+	 */
+	private inline static function success(value:Null<Dynamic>):LuaMessage
+		return {message: "Success.", value: value, isError: false};
+
+	/**
+	 * Creates an error
+	 * @param message Message of the error
+	 * @param value Value of the error
+	 */
+	private inline static function error(message:String = "Message undefined", value:Null<Dynamic> = false):LuaMessage
+		return {message: message, value: value, isError: true};
 
 	// #endregion
 	// #region Convert

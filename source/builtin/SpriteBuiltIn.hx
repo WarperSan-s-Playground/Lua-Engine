@@ -1,5 +1,6 @@
 package builtin;
 
+import helpers.ResourceHelper;
 import helpers.FlxBasicHelper;
 import flixel.FlxSprite;
 import helpers.FileHelper;
@@ -19,7 +20,7 @@ class SpriteBuiltIn
 		var sprite:FlxSprite = cast FlxBasicHelper.getObject(id, FlxSprite);
 
 		// Load grahic
-		var graphic:Null<flixel.graphics.FlxGraphic> = FileHelper.Load(path);
+		var graphic:Null<flixel.graphics.FlxGraphic> = ResourceHelper.Load(path);
 
 		if (graphic == null)
 			throw('Could not create the request graphic.');
@@ -29,7 +30,7 @@ class SpriteBuiltIn
 		// Load animations
 		if (xml != null)
 		{
-			var xmlContent:Null<Dynamic> = FileHelper.Load(xml);
+			var xmlContent:Null<Dynamic> = ResourceHelper.Load(xml);
 
 			if (xmlContent != null)
 				sprite.frames = flixel.graphics.frames.FlxAtlasFrames.fromSparrow(graphic, xmlContent);

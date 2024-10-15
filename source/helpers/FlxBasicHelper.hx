@@ -4,8 +4,11 @@ import flixel.FlxG;
 import flixel.FlxState;
 import flixel.FlxBasic;
 
+/** Handles the FlxBasic */
 class FlxBasicHelper
 {
+	private static var cachedObjects:Map<Int, FlxBasic> = new Map<Int, FlxBasic>();
+
 	/**
 	 * Fetches the object with the given ID
 	 * @param id ID of the object
@@ -22,16 +25,22 @@ class FlxBasicHelper
 		if (type == null)
 			throw('No class was found with the name \'$type\'.');
 
-		var state:FlxState = FlxG.state;
+		var basic:Null<FlxBasic> = null;
 
-		// If state invalid, skip
-		if (state == null)
-			throw('Invalid state.');
-
-		var basic:Null<FlxBasic> = state.getFirst((b:FlxBasic) ->
+		if (cachedObjects.exists(id))
 		{
-			return b.ID == id && Std.isOfType(b, type);
-		});
+			var cached:Null<FlxBasic> = cachedObjects.get(id);
+
+			if (Std.isOfType(cached, type))
+				basic = cached;
+		}
+		else
+		{
+			basic = FlxG.state.getFirst((b:FlxBasic) ->
+			{
+				return b.ID == id && Std.isOfType(b, type);
+			});
+		}
 
 		// If basic not found, skip
 		if (basic == null)
@@ -54,6 +63,32 @@ class FlxBasicHelper
 		if (state == null)
 			throw('Invalid state.');
 
-		return state.add(basic).ID;
+		state.add(basic);
+		cachedObjects.set(basic.ID, basic);
+
+		return basic.ID;
+	}
+
+	/**
+	 * Removes the element with the given ID
+	 * @param id ID of the element to destroy
+	 * @param forceDestroy Force the game to immediately destroy the element
+	 */
+	public static function remove(id:Int, forceDestroy:Bool):Void
+	{
+		var obj:Null<FlxBasic> = null;
+
+		if (cachedObjects.exists(id))
+		{
+			obj = cachedObjects.get(id);
+			cachedObjects.remove(id);
+		}
+		else
+			obj = FlxBasicHelper.getObject(id, FlxBasic);
+
+		if (forceDestroy || obj.container == null)
+			obj.destroy();
+		else
+			obj.kill();
 	}
 }

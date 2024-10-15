@@ -1,11 +1,14 @@
 package helpers;
 
+import haxe.ds.StringMap;
 import engine.ScriptCache;
 
 class ClassHelper
 {
 	private static var ID_REGEX:EReg = ~/{\d*}/g;
 	private static var TYPE_REGEX:EReg = ~/.*:/g;
+
+	private static var cachedTypes:StringMap<Null<Class<Dynamic>>> = new StringMap<Null<Class<Dynamic>>>();
 
 	/**
 	 * Fetches the class at the given path 
@@ -75,13 +78,14 @@ class ClassHelper
 	 */
 	public static function getClassFromName(name:String):Null<Class<Dynamic>>
 	{
+		// If type cached, skip
+		if (cachedTypes.exists(name))
+			return cachedTypes.get(name);
+
 		var type:Null<Class<Dynamic>> = Type.resolveClass(name);
 
-		// If already found, skip
-		if (type != null)
-			return type;
-
-		return null;
+		cachedTypes.set(name, type);
+		return type;
 	}
 
 	private static function parsePath(path:String):Dynamic

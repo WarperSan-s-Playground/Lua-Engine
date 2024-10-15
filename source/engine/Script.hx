@@ -265,6 +265,9 @@ enum State
 	/** The script is currently running */
 	Running;
 
+	/** The script is currently stale */
+	Stale;
+
 	/** The script has errored */
 	Errored;
 

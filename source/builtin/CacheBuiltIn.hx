@@ -1,6 +1,6 @@
 package builtin;
 
-import helpers.FileHelper;
+import helpers.ResourceHelper;
 
 @:rtti
 class CacheBuiltIn
@@ -10,7 +10,7 @@ class CacheBuiltIn
 		if (file == null)
 			throw('Cannot cache a resource without specifying it\'s path.');
 
-		FileHelper.Load(file);
+		ResourceHelper.Load(file);
 	}
 
 	public static function releaseResource(file:Null<String> = null):Void
@@ -18,6 +18,6 @@ class CacheBuiltIn
 		if (file == null)
 			throw('Cannot release a resource without specifying it\'s path.');
 
-		FileHelper.Release(file);
+		ResourceHelper.Release(file);
 	}
 }

@@ -2,6 +2,7 @@ package helpers;
 
 import flixel.system.debug.log.LogStyle;
 
+/** Handles logging given values */
 class LogHelper
 {
 	/**
@@ -11,11 +12,22 @@ class LogHelper
 	 */
 	private static function log(value:Dynamic, level:LogStyle):Void
 	{
-		if (value == null)
-			value = "null";
+		value = Std.string(value);
 
-		Sys.println(value);
 		flixel.FlxG.log.advanced(value, level);
+
+		var prefix:String = "";
+
+		if (level == LogStyle.CONSOLE)
+			prefix = "[DEBUG] ";
+		else if (level == LogStyle.NOTICE)
+			prefix = "[NOTICE] ";
+		else if (level == LogStyle.WARNING)
+			prefix = "[WARN] ";
+		else if (level == LogStyle.ERROR)
+			prefix = "[ERROR] ";
+
+		Sys.println(prefix + value);
 	}
 
 	/**

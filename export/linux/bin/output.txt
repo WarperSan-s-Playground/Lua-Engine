@@ -1,0 +1,5 @@
+Roots
+└── source/States/Title/Scripts/script.lua (Mem: 88B | Status: O)
+    ├── source/States/Title/Scripts/UI/gfTitle.lua (Mem: 96B | Status: O)
+    ├── source/States/Title/Scripts/UI/logoTitle.lua (Mem: 100B | Status: O)
+    └── source/States/Title/Scripts/UI/titleEnter.lua (Mem: 102B | Status: O)

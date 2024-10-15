@@ -1,5 +1,6 @@
 package builtin;
 
+import helpers.ResourceHelper;
 import flixel.FlxG;
 
 @:rtti
@@ -18,7 +19,7 @@ class MusicBuiltIn
 			throw('Tried to play a music while another music was playing.');
 		
 		// Load sound
-		var data:Null<Dynamic> = helpers.FileHelper.Load(path);
+		var data:Null<Dynamic> = ResourceHelper.Load(path);
 
 		if (data == null)
 			throw('Could not play the request music.');
