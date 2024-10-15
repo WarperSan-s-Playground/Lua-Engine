@@ -18,27 +18,21 @@ class SpriteBuiltIn
 	{
 		var sprite:FlxSprite = cast FlxBasicHelper.getObject(id, FlxSprite);
 
-		// Check if path valid
-		var fixedPath:String = FileHelper.GetPath(path);
-
-		if (fixedPath == null)
-			throw('The path \'$path\' is invalid.');
-
 		// Load grahic
-		var graphic:Null<flixel.graphics.FlxGraphic> = FileHelper.LoadGraphic(fixedPath);
+		var graphic:Null<flixel.graphics.FlxGraphic> = FileHelper.Load(path);
 
 		if (graphic == null)
 			throw('Could not create the request graphic.');
 
-		sprite.loadGraphic(graphic, true);
+		sprite.loadGraphic(graphic, xml != null);
 
-		if (xml == null)
+		// Load animations
+		if (xml != null)
 		{
-			var path:Array<String> = fixedPath.split('.');
-			path[path.length - 1] = "xml";
-			xml = path.join('.');
-		}
+			var xmlContent:Null<Dynamic> = FileHelper.Load(xml);
 
-		sprite.frames = FileHelper.LoadFrames(sprite.graphic, xml);
+			if (xmlContent != null)
+				sprite.frames = flixel.graphics.frames.FlxAtlasFrames.fromSparrow(graphic, xmlContent);
+		}
 	}
 }

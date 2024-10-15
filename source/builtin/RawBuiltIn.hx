@@ -1,7 +1,5 @@
 package builtin;
 
-import flixel.ui.FlxBar;
-import flixel.FlxSprite;
 import helpers.FlxBasicHelper;
 import flixel.FlxBasic;
 import helpers.ClassHelper;

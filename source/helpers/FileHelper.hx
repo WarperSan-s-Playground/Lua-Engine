@@ -1,5 +1,7 @@
 package helpers;
 
+import flixel.FlxG;
+import haxe.ds.StringMap;
 import engine.ScriptCache;
 import engine.Script;
 import openfl.media.Sound;
@@ -11,8 +13,8 @@ import sys.io.File;
 
 class FileHelper
 {
+	private static var loaded:StringMap<Dynamic> = new StringMap<Dynamic>();
 	private static var loadedGraphics:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
-	private static var loadedSounds:Map<String, Sound> = new Map<String, Sound>();
 
 	/**
 	 * Converts the path to an usable path
@@ -57,7 +59,7 @@ class FileHelper
 
 			// File from script => File from executable
 			if (script != null)
-				file = Path.directory(script.getFile()) + "/" + file;
+				file = Path.directory(script.File) + "/" + file;
 		}
 		// Search path from root script
 		else if (firstChar == '^')
@@ -70,13 +72,13 @@ class FileHelper
 				var parent:Null<Script> = script;
 				while (parent != null)
 				{
-					parent = script.getParent();
+					parent = script.Parent;
 
 					if (parent != null)
 						script = parent;
 				}
 
-				file = Path.directory(script.getFile()) + file.substring(1);
+				file = Path.directory(script.File) + file.substring(1);
 			}
 		}
 		// Search path from the executable
@@ -107,76 +109,86 @@ class FileHelper
 	}
 
 	/**
-	 * Loads the graphic from the given file
-	 * @param file File of the resource
-	 * @return Graphic for this file
+	 * Loads and cache the resource at the given path
+	 * @param path Path to the resource
+	 * @return Object loaded
 	 */
-	public static function LoadGraphic(file:String):Null<FlxGraphic>
+	public static function Load(path:String):Null<Dynamic>
 	{
-		// If cached, return value
-		if (loadedGraphics.exists(file))
-			return loadedGraphics.get(file);
+		var fixed:Null<String> = GetPath(path);
 
-		var data:BitmapData = BitmapData.fromFile(file);
+		if (fixed == null)
+			throw('Could not find the resource at \'$path\'.');
 
-		// If data invalid, skip
+		// If already loaded, return cached
+		if (loaded.exists(fixed))
+			return loaded.get(fixed);
+
+		var extension:String = Path.extension(fixed);
+		var data:Null<Dynamic> = null;
+
+		switch (extension)
+		{
+			// Sounds
+			case "mp3", "ogg", "wav":
+				data = Sound.fromFile(fixed);
+			// Animations
+			case "xml":
+				data = ReadFile(fixed);
+			// Sprites
+			case "png", "jpg", "jpeg":
+				var bit:BitmapData = BitmapData.fromFile(fixed);
+
+				// If valid
+				if (bit != null)
+				{
+					var graphic:FlxGraphic = FlxGraphic.fromBitmapData(bit, false, fixed);
+
+					// If loaded
+					if (graphic != null)
+					{
+						data = graphic;
+						graphic.persist = true;
+					}
+				}
+			default:
+				throw('The extension \'$extension\' is not a supported file.');
+		}
+
 		if (data == null)
 			return null;
 
-		var graphic:FlxGraphic = FlxGraphic.fromBitmapData(data, false, file);
-
-		// If graphic invalid, skip
-		if (graphic == null)
-			return null;
-
-		// Add to cache
-		loadedGraphics.set(file, graphic);
-		graphic.persist = true;
-
-		return graphic;
-	}
-
-	/**
-	 * Loads the frames from the given file
-	 * @param graphic Graphic to add the animation to
-	 * @param file File of the resource
-	 * @return Animation for this file
-	 */
-	public static function LoadFrames(graphic:flixel.graphics.FlxGraphic, file:String):Null<flixel.graphics.frames.FlxFramesCollection>
-	{
-		// If graphic invalid, skip
-		if (graphic == null)
-			return null;
-
-		// If content not found, skip
-		var content:Null<String> = ReadFile(file);
-
-		if (content == null)
-			return null;
-
-		return flixel.graphics.frames.FlxAtlasFrames.fromSparrow(graphic, content);
-	}
-
-	/**
-	 * Loads the sound from the given file
-	 * @param file File of the resource
-	 * @return Sound for this file
-	 */
-	public static function LoadSound(file:String):Null<Sound>
-	{
-		// If cached, return value
-		if (loadedSounds.exists(file))
-			return loadedSounds.get(file);
-
-		var data:Sound = Sound.fromFile(file);
-
-		// If data invalid, skip
-		if (data == null)
-			return null;
-
-		// Add to cache
-		loadedSounds.set(file, data);
-
+		loaded.set(fixed, data);
 		return data;
+	}
+
+	/**
+	 * Releases the resource at the given path
+	 * @param path Path to the resource 
+	 * @return Succeed to release the resource
+	 */
+	public static function Release(path:String):Bool
+	{
+		var fixed:Null<String> = GetPath(path);
+
+		if (fixed == null)
+			throw('Could not find the resource at \'$path\'.');
+
+		// If not loaded, skip
+		if (!loaded.exists(fixed))
+			return true;
+
+		var data = loaded.get(fixed);
+		loaded.remove(fixed);
+
+		// Release graphic
+		if (Std.isOfType(data, FlxGraphic))
+		{
+			var g = cast(data, FlxGraphic);
+			g.persist = false;
+			FlxG.bitmap.remove(g);
+		}
+
+		return true;
 	}
 }

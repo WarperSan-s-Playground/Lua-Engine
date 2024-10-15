@@ -2,6 +2,7 @@ package states;
 
 import engine.Script;
 
+/** State that is created from a script */
 class ScriptState extends flixel.FlxState
 {
 	private var root:Script;

@@ -39,10 +39,4 @@ class LuaMessage
 	{
 		return create("Success.", value, false);
 	}
-
-	/** Checks if the given message is an error */
-	public static function isError(message:Dynamic):Bool
-	{
-		return message == null || message.isError;
-	}
 }

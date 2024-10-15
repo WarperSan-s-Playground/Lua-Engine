@@ -17,7 +17,7 @@ class ScriptBuiltIn
 	 * @param autoImport Automatically imports all the built-in methods
 	 * @param isRelated Is the file related to the current script?
 	 */
-	public static function addScript(file:Null<String> = null, autoImport:Bool = true, isRelated:Bool = true):Dynamic
+	public static function addScript(file:Null<String> = null, autoImport:Bool = true, isRelated:Bool = true):Void
 	{
 		var fixed:String = FileHelper.GetPath(file);
 
@@ -42,18 +42,6 @@ class ScriptBuiltIn
 
 		if (child == null)
 			throw('Failed to create a script for the file \'$file\'.');
-
-		var it = Script.LastCallResult.iterator();
-
-		if (!it.hasNext())
-			return null;
-
-		var value = it.next();
-
-		if (value == null)
-			return value;
-
-		return value.value;
 	}
 
 	/**

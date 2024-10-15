@@ -1,29 +1,25 @@
 package engine;
 
+import helpers.DebugHelper;
+import interfaces.IMeasurable;
 import haxe.io.Path;
 import helpers.LogHelper;
 import helpers.FileHelper;
 import custom.DataContainer;
 
 /** Class that represents an instance of a script */
-abstract class Script
+abstract class Script implements IMeasurable
 {
-	// #region Constructor
 	public function new(file:String, parent:Null<Script>)
 	{
 		this.setFile(file);
 		ScriptParenting.SetParent(this, parent);
 	}
 
-	// #endregion
-	// #region File
-	private var file:String;
+	// #region Properties
 
-	/** Gets the file from which this script was created from */
-	public function getFile():String
-	{
-		return this.file;
-	}
+	/** File from which this script was created */
+	public var File(default, null):String;
 
 	/** Sets the current file to the given file */
 	private function setFile(file:String):Void
@@ -33,11 +29,43 @@ abstract class Script
 		if (fixed == null)
 			throw('Could not find the file at \'$file\'.');
 
-		this.file = fixed;
+		this.File = fixed;
 	}
 
+	// --- PARENTING ---
+
+	/** Parent of this script */
+	public var Parent(get, null):Null<Script>;
+
+	inline function get_Parent():Null<Script>
+		return ScriptParenting.GetParent(this);
+
+	/** Children of this script */
+	public var Children(get, null):Array<Script>;
+
+	inline function get_Children():Array<Script>
+		return ScriptParenting.GetChildren(this);
+
+	// --- DATA ---
+
+	/** Data shared by this script */
+	public var Shared(default, null):DataContainer;
+
+	/** Data shared across all scripts */
+	public static var Global(default, null):DataContainer = new DataContainer(null);
+
+	// --- LINK ---
+
+	/** Key used to find this script */
+	public var LinkKey(default, null):Dynamic;
+
+	// --- STATE ---
+
+	/** Current state of this script */
+	public var State(default, default):State = Running;
+
 	// #endregion
-	// #region Open
+	// #region Creation of scripts
 
 	/**
 	 * Opens another file that is related to this one. If this script closes, the other script closes too.
@@ -87,16 +115,19 @@ abstract class Script
 		try
 		{
 			script = Type.createInstance(cls, [file, parent, autoImport]); // new LuaScript(file, parent, autoImport);
-			ScriptCache.LinkScript(script.getLinkKey(), script);
+			ScriptCache.LinkScript(script.LinkKey, script);
+			script.State = Open;
 
 			try
 			{
+				script.State = Running;
 				script.execute();
+				script.State = Open;
 			}
 			catch (e:String)
 			{
-				script.hasErrored = true;
-				LogHelper.error('Error while executing \'${script.getFile()}\': $e');
+				script.State = Errored;
+				LogHelper.error('Error while executing \'${script.File}\': $e');
 			}
 
 			// Callback
@@ -112,10 +143,7 @@ abstract class Script
 	}
 
 	// #endregion
-	// #region Execute
-	public static var LastCallResult:Map<String, Null<Dynamic>> = [];
-
-	public var hasErrored:Bool = false;
+	// #region Execution
 
 	/** Executes this script */
 	public abstract function execute():Void;
@@ -124,24 +152,22 @@ abstract class Script
 	public function call(name:String, args:Array<Dynamic>, callInChildren:Bool):Map<String, Null<Dynamic>>
 	{
 		// If the script has errored, skip all call
-		if (this.hasErrored)
+		if (this.State == Errored)
 			return [];
 
 		var results:Map<String, Null<Dynamic>> = [];
 
 		// Call in self
-		results.set(this.file, this.callMethod(name, args));
+		results.set(this.File, this.callMethod(name, args));
 
 		if (callInChildren)
 		{
-			for (child in this.getChildren())
+			for (child in this.Children)
 			{
 				for (r in child.call(name, args, callInChildren))
-					results.set(child.file, r);
+					results.set(child.File, r);
 			}
 		}
-
-		LastCallResult = results;
 
 		return results;
 	}
@@ -149,70 +175,7 @@ abstract class Script
 	private abstract function callMethod(name:String, args:Array<Dynamic>):Null<Dynamic>;
 
 	// #endregion
-	// #region Parent
-
-	/** Gets the parent of this script */
-	public function getParent():Null<Script>
-	{
-		return ScriptParenting.GetParent(this);
-	}
-
-	/** Gets the children of this script */
-	public function getChildren():Array<Script>
-	{
-		return ScriptParenting.GetChildren(this);
-	}
-
-	// #endregion
-	// #region Data
-	private var shared:DataContainer;
-
-	/** Gets the data with the given key in the shared space */
-	public function getShared(key:String):Dynamic
-	{
-		return this.shared.get(key);
-	}
-
-	/** Sets the data with the given key in the shared space */
-	public function setShared(key:String, value:Dynamic, overwrite:Bool = false, inRoot:Bool = true):Void
-	{
-		this.shared.set(key, value, overwrite, inRoot);
-	}
-
-	/** Removes the data with the given key in the shared space */
-	public function removeShared(key:String):Void
-	{
-		this.shared.remove(key);
-	}
-
-	private static var global:DataContainer = new DataContainer(null);
-
-	/** Gets the data with the given key in the global space */
-	public static function getGlobal(key:String):Dynamic
-	{
-		return global.get(key);
-	}
-
-	/** Sets the data with the given key in the global space */
-	public static function setGlobal(key:String, value:Dynamic, overwrite:Bool = false):Void
-	{
-		global.set(key, value, overwrite, false);
-	}
-
-	/** Removes the data with the given key in the global space */
-	public static function removeGlobal(key:String):Void
-	{
-		global.remove(key);
-	}
-
-	// #endregion
-	// #region Link
-
-	/** Fetches the unique key that allows to find this script */
-	public abstract function getLinkKey():Dynamic;
-
-	// #endregion
-	// #region Import
+	// #region Importing
 
 	/**
 	 * Imports a single method to this script
@@ -243,29 +206,22 @@ abstract class Script
 	}
 
 	// #endregion
-	// #region Close
-	private var isClosed:Bool = false;
-
-	/** Checks if this script is marked as closed */
-	public function IsClosed():Bool
-	{
-		return this.isClosed;
-	}
+	// #region Closing
 
 	/** Closes this script and the related scripts */
 	public function close()
 	{
 		// If already closed, skip
-		if (this.isClosed)
+		if (this.State == Closed)
 			return;
 
-		this.isClosed = true;
+		this.State = Closed;
 
 		// Close children
 		for (child in ScriptParenting.GetChildren(this))
 		{
 			// If invalid or already closed, skip
-			if (child == null || child.isClosed)
+			if (child == null || child.State == Closed)
 				continue;
 
 			child.close();
@@ -276,7 +232,7 @@ abstract class Script
 
 		// Close self
 		ScriptParenting.RemoveParent(this);
-		ScriptCache.UnlinkScript(this.getLinkKey(), this);
+		ScriptCache.UnlinkScript(this.LinkKey, this);
 		this.destroy();
 	}
 
@@ -284,4 +240,34 @@ abstract class Script
 	private abstract function destroy():Void;
 
 	// #endregion
+	// #region Size Measurement
+
+	public function getSize():Int
+	{
+		var size = 0;
+
+		size += DebugHelper.getSize(this.File);
+		size += DebugHelper.getSize(this.LinkKey);
+		size += DebugHelper.getSize(this.Shared);
+		size += DebugHelper.getSize(this.State);
+
+		return size;
+	}
+
+	// #endregion
+}
+
+enum State
+{
+	/** The script is opened */
+	Open;
+
+	/** The script is currently running */
+	Running;
+
+	/** The script has errored */
+	Errored;
+
+	/** The script is closed */
+	Closed;
 }

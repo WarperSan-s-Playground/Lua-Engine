@@ -1,6 +1,5 @@
 package builtin;
 
-import flixel.FlxObject;
 import flixel.group.FlxSpriteGroup;
 import flixel.FlxBasic;
 import helpers.FlxBasicHelper;

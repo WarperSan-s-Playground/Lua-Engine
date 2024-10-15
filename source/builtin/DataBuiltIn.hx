@@ -27,7 +27,7 @@ class DataBuiltIn
 			throw('Tried to set a shared value to an invalid script.');
 
 		// Set data
-		script.setShared(key, value, overwrite, inRoot);
+		script.Shared.set(key, value, overwrite, inRoot);
 	}
 
 	/**
@@ -48,7 +48,7 @@ class DataBuiltIn
 			throw('Tried to get a shared value to an invalid script.');
 
 		// Get data
-		return script.getShared(key);
+		return script.Shared.get(key);
 	}
 
 	/**
@@ -67,7 +67,7 @@ class DataBuiltIn
 		if (script == null)
 			throw('Tried to remove a shared value to an invalid script.');
 
-		script.removeShared(key);
+		script.Shared.remove(key);
 	}
 
 	/**
@@ -83,7 +83,7 @@ class DataBuiltIn
 			throw('Tried to set a global value without providing a key.');
 
 		// Set data
-		Script.setGlobal(key, value, overwrite);
+		Script.Global.set(key, value, overwrite);
 	}
 
 	/**
@@ -98,7 +98,7 @@ class DataBuiltIn
 			throw('Tried to get a global value without providing a key.');
 
 		// Get data
-		return Script.getGlobal(key);
+		return Script.Global.get(key);
 	}
 
 	/**
@@ -112,6 +112,6 @@ class DataBuiltIn
 			throw('Tried to remove a global value without providing a key.');
 
 		// Remove data
-		Script.removeGlobal(key);
+		Script.Global.remove(key);
 	}
 }

@@ -1,5 +1,6 @@
 package;
 
+import engine.LuaScript;
 import objects.FPSCounter;
 import sys.FileSystem;
 import sys.thread.Thread;
@@ -26,7 +27,7 @@ class Main extends Sprite
 		};
 
 		// Set lua callback
-		var luaCallback = cpp.Callable.fromStaticFunction(helpers.LuaHelper.callback);
+		var luaCallback = cpp.Callable.fromStaticFunction(LuaScript.callback);
 		llua.Lua.set_callbacks_function(luaCallback);
 
 		// Create starting state

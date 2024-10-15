@@ -1,8 +1,6 @@
 package lua_bridge;
 
-/**
- * Class that manages the built-in for scripts
- */
+/** Class that manages the built-in for scripts */
 class LuaImport
 {
 	/** Fetches all the imports */
@@ -27,7 +25,8 @@ class LuaImport
 	private static var DEFAULT_BUILT_IN:Array<Dynamic> = [
 		builtin.ScriptBuiltIn, 
 		builtin.LogBuiltIn,
-		builtin.ObjectBuiltIn
+		builtin.ObjectBuiltIn,
+		builtin.CacheBuiltIn
 	];
 
 	/** All the files that can be manually imported to this script */

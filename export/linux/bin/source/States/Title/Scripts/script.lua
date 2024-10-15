@@ -4,14 +4,14 @@ require("source.backend.MusicalState");
 -- Types
 FlxGroup = require("source.objects.flixel.FlxGroup");
 
--- Load first
-local loadMSG = fromJSON("../gfDanceTitle.json");
-local data = loadMSG.value;
-setShared("TITLE_DATA", data);
-
 local CREDIT_GROUP = FlxGroup:new();
 
 function OnCreate()
+    -- Load first
+    local loadMSG = fromJSON("../gfDanceTitle.json");
+    local data = loadMSG.value;
+    setShared("TITLE_DATA", data);
+
     -- Add children
     addScript("UI/gfTitle.lua", false);
     addScript("UI/logoTitle.lua", false);
@@ -25,6 +25,9 @@ function OnCreate()
     -- -- Set Music
     playMusic("../Music/freakyMenu.ogg", true, 0);
     Conductor.setBPM(data.bpm);
+
+    -- Clear data
+    removeShared("TITLE_DATA");
 end
 
 local sickBeats = 0;
@@ -52,6 +55,8 @@ function SkipIntro()
 
     -- Flash
     Raw.call("flixel.FlxG", "camera.flash", nil, 0xFFFFFF, 4);
+
+    printState();
 end
 
 -- Black Screen

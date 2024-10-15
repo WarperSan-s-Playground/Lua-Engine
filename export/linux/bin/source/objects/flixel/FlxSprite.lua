@@ -27,7 +27,10 @@ end
 ---@param xml ?string XML file to load frames from
 function FlxSprite:loadGraphic(path, xml)
     path = tostring(path);
-    xml = tostring(xml);
+
+    if (xml ~= nil) then
+        xml = tostring(xml);
+    end
 
     loadGraphic(self.ID, path, xml);
 

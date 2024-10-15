@@ -24,7 +24,7 @@ class ScriptParenting
 		if (parent != null)
 			return parent;
 
-		throw('The script \'${child.getFile()}\' is not a root nor a child of any script.');
+		throw('The script \'${child.File}\' is not a root nor a child of any script.');
 	}
 
 	/** Sets the parent of the given child to the given parent */
@@ -75,14 +75,14 @@ class ScriptParenting
 		// Search in roots
 		for (root in roots)
 		{
-			if (root.getFile() == fixed)
+			if (root.File == fixed)
 				return root;
 		}
 
 		// Search in children
 		for (child in parentMap.keys())
 		{
-			if (child.getFile() == fixed)
+			if (child.File == fixed)
 				return child;
 		}
 
@@ -103,8 +103,11 @@ class ScriptParenting
 			var current:Script = remaining.pop();
 			results.push(current);
 
-			for (child in current.getChildren())
-				remaining.push(child);
+			if (getChildren)
+			{
+				for (child in current.Children)
+					remaining.push(child);
+			}
 		}
 
 		return results;
