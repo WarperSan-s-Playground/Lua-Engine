@@ -222,9 +222,9 @@ class DebugHelper
 		}
 
 		result += "By Size:\n";
-		// entries.sort(function(a, b):Int {
-		// 	return Std.int(b[1] - a[1]);
-		// });
+		entries.sort(function(a, b):Int {
+			return Std.int(b[1] - a[1]);
+		});
 
 		for (i in entries)
 			result += i[2];
