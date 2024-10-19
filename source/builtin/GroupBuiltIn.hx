@@ -9,33 +9,6 @@ import flixel.group.FlxGroup;
 class GroupBuiltIn
 {
 	/**
-	 * Creates a new `FlxGroup`
-	 * @param maxSize Maximum amount of members allowed
-	 * @return Unique ID of the added element
-	 */
-	public static function createGroup(maxSize:Int = 0):Int
-	{
-		var newGroup:FlxGroup = new FlxGroup(maxSize);
-
-		return FlxBasicHelper.add(newGroup);
-	}
-
-	/**
-	 * Removes the group with the given ID
-	 * @param id ID of the group to remove
-	 * @param forceDestroy Force the game to destroy the group
-	 */
-	public static function removeGroup(id:Int = -1, forceDestroy:Bool = false):Void
-	{
-		var group:FlxGroup = cast FlxBasicHelper.getObject(id, FlxGroup);
-
-		if (forceDestroy || group.container == null)
-			group.destroy();
-		else
-			group.kill();
-	}
-
-	/**
 	 * Adds the given element to the given group
 	 * @param groupID ID of the group to add to
 	 * @param elementID ID of the element to add

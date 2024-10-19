@@ -10,7 +10,7 @@ import haxe.ds.StringMap;
 /** Handles the caching of resources */
 class ResourceHelper
 {
-	private static var loaded:StringMap<Dynamic> = new StringMap<Dynamic>();
+	public static var loaded(default, null):StringMap<Dynamic> = new StringMap<Dynamic>();
 
 	/**
 	 * Loads and cache the resource at the given path
@@ -31,6 +31,8 @@ class ResourceHelper
 		var extension:String = Path.extension(fixed);
 		var data:Null<Dynamic> = null;
 
+		LogHelper.verbose('Starting to load the resource \'$fixed\'.');
+
 		switch (extension)
 		{
 			// Sounds
@@ -46,8 +48,10 @@ class ResourceHelper
 				throw('The extension \'$extension\' is not a supported file.');
 		}
 
-		if (data == null)
-			return null;
+		if (data != null)
+			LogHelper.verbose('Finished to load the resource \'$fixed\'.');
+		else
+			LogHelper.verbose('Failed to load the resource \'$fixed\'.');
 
 		loaded.set(fixed, data);
 		return data;
@@ -69,17 +73,27 @@ class ResourceHelper
 		if (!loaded.exists(fixed))
 			return true;
 
+		LogHelper.verbose('Starting to release the resource \'$fixed\'.');
 		var data = loaded.get(fixed);
 		loaded.remove(fixed);
+		var succeed:Bool;
 
-		// Release graphic
-		if (Std.isOfType(data, FlxGraphic))
-			return ReleaseSprite(data);
+		switch (data)
+		{
+			case FlxGraphic:
+				succeed = ReleaseSprite(data);
+			case Sound:
+				succeed = ReleaseSound(data);
+			default:
+				succeed = true;
+		}
 
-		if (Std.isOfType(data, Sound))
-			return ReleaseSound(data);
+		if (succeed)
+			LogHelper.verbose('Finished to release the resource \'$fixed\'.');
+		else
+			LogHelper.verbose('Failedto release the resource \'$fixed\'.');
 
-		return true;
+		return succeed;
 	}
 
 	// #region Sound

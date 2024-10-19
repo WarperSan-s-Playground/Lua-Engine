@@ -36,6 +36,7 @@ class FlxBasicHelper
 		}
 		else
 		{
+			LogHelper.verbose('Manually searches for a \'$type\' with the ID \'$id\'.');
 			basic = FlxG.state.getFirst((b:FlxBasic) ->
 			{
 				return b.ID == id && Std.isOfType(b, type);
@@ -66,15 +67,16 @@ class FlxBasicHelper
 		state.add(basic);
 		cachedObjects.set(basic.ID, basic);
 
+		LogHelper.verbose('Added a \'${Type.getClassName(Type.getClass(basic))}\' with the ID \'${basic.ID}\'.');
+
 		return basic.ID;
 	}
 
 	/**
 	 * Removes the element with the given ID
 	 * @param id ID of the element to destroy
-	 * @param forceDestroy Force the game to immediately destroy the element
 	 */
-	public static function remove(id:Int, forceDestroy:Bool):Void
+	public static function remove(id:Int):Void
 	{
 		var obj:Null<FlxBasic> = null;
 
@@ -86,9 +88,10 @@ class FlxBasicHelper
 		else
 			obj = FlxBasicHelper.getObject(id, FlxBasic);
 
-		if (forceDestroy || obj.container == null)
-			obj.destroy();
-		else
-			obj.kill();
+		if (obj.container != null)
+			obj.container.remove(obj, true);
+		obj.destroy();
+
+		LogHelper.verbose('Removed a \'${Type.getClassName(Type.getClass(obj))}\' with the ID \'${id}\'.');
 	}
 }

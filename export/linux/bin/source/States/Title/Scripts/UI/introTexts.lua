@@ -31,8 +31,8 @@ function DeleteText()
     local members = TEXT_GROUP:getMembers();
     for i = #members, 1, -1 do
         local value = members[i];
-        value:destroy();
         TEXT_GROUP:remove(value);
+        value:destroy();
     end
 end
 

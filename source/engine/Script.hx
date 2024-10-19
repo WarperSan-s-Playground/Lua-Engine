@@ -247,7 +247,6 @@ abstract class Script implements IMeasurable
 		var size = 0;
 
 		size += DebugHelper.getSize(this.File);
-		size += DebugHelper.getSize(this.LinkKey);
 		size += DebugHelper.getSize(this.Shared);
 		size += DebugHelper.getSize(this.State);
 

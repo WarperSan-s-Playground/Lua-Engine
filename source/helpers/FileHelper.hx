@@ -16,18 +16,18 @@ class FileHelper
 	 */
 	public static function GetPath(file:Null<String>):Null<String>
 	{
-		file = ParsePath(file);
-
 		// If file not given, skip
 		if (file == null)
 			return null;
 
+		var fixed:String = ParsePath(file);
+
 		// Normalize the path
-		file = haxe.io.Path.normalize(file);
+		fixed = haxe.io.Path.normalize(fixed);
 
 		// If path is an existing file, return path
-		if (FileSystem.exists(file) && !FileSystem.isDirectory(file))
-			return file;
+		if (FileSystem.exists(fixed) && !FileSystem.isDirectory(fixed))
+			return fixed;
 
 		return null;
 	}
@@ -37,12 +37,8 @@ class FileHelper
 	 * @param file User given path
 	 * @return Path to use or null if invalid
 	 */
-	public static function ParsePath(file:Null<String>):Null<String>
+	private static function ParsePath(file:String):String
 	{
-		// If file not given, skip
-		if (file == null)
-			return null;
-
 		var firstChar:String = file.charAt(0);
 
 		// Search path from running script

@@ -1,5 +1,10 @@
 {
 	"functions": {
+		"cacheResource": {
+			"documentation": "Caches the given resource\n\r* `file` Path to the resource\n\r@return Succeed to cache the resource asked",
+			"args": "file:String = null",
+			"returns": "LuaMessage<Bool>"
+		},
 		"importFile": {
 			"documentation": "Imports the given file to this script\n\r* `file` File to import",
 			"args": "file:String = null",
@@ -35,20 +40,25 @@
 			"args": "file:String = null",
 			"returns": "LuaMessage"
 		},
-		"createGroup": {
-			"documentation": "Creates a new `FlxGroup`\n\r* `maxSize` Maximum amount of members allowed\n\r@return Unique ID of the added element",
-			"args": "maxSize:Int = 0",
-			"returns": "LuaMessage<Int>"
-		},
 		"addToGroup": {
 			"documentation": "Adds the given element to the given group\n\r* `groupID` ID of the group to add to\n\r* `elementID` ID of the element to add",
 			"args": "groupID:Int = -1, elementID:Int = -1",
+			"returns": "LuaMessage"
+		},
+		"printState": {
+			"documentation": "Prints the current state of the game into the given file\n\r* `file` File to print to",
+			"args": "file:String = null",
 			"returns": "LuaMessage"
 		},
 		"trace": {
 			"documentation": "Prints a value to the debug console and in-game log\n\r* `value` Value to print",
 			"args": "value:Dynamic",
 			"returns": "LuaMessage"
+		},
+		"releaseResource": {
+			"documentation": "Releases the given resource\n\r* `file` Path to the resource\n\r@return Succeed to release the resource specified",
+			"args": "file:String = null",
+			"returns": "LuaMessage<Bool>"
 		},
 		"setGlobal": {
 			"documentation": "Stores the given value at the given key in the global space\n\r* `key` Key to store at\n\r* `value` Value to store\n\r* `overwrite` Overwrites the value if already found",
@@ -70,40 +80,35 @@
 			"args": "key:String = null",
 			"returns": "LuaMessage"
 		},
-		"getGlobal": {
-			"documentation": "Fetches the value associated with the given key in the global space\n\r* `key` Key to look for\n\r@return Value found",
-			"args": "key:String = null",
-			"returns": "LuaMessage<Dynamic>"
-		},
 		"removeShared": {
 			"documentation": "Removes in the shared space the value associated with the given key\n\r* `key` Key to remove",
 			"args": "key:String = null",
 			"returns": "LuaMessage"
+		},
+		"getGlobal": {
+			"documentation": "Fetches the value associated with the given key in the global space\n\r* `key` Key to look for\n\r@return Value found",
+			"args": "key:String = null",
+			"returns": "LuaMessage<Dynamic>"
 		},
 		"callRaw": {
 			"documentation": "Calls the method at the given path\n\r* `path` Path to the value request.\n\r* `args` Arguments of the call\n\r@return Result of the call",
 			"args": "path:String = null, args:Dynamic = null",
 			"returns": "LuaMessage<Null<Dynamic>>"
 		},
-		"getPath": {
-			"documentation": "Converts the path to an usable path\n\r* `file` User given path\n\r@return Null<String> Path to use or null if invalid",
-			"args": "file:String = null",
-			"returns": "LuaMessage<Null<String>>"
-		},
 		"submitChanges": {
 			"documentation": "Submits the given changes to the instance with the given ID\n\r* `id` ID of the instance\n\r* `args` Changes to submit",
 			"args": "id:Int = null, args:Dynamic = null",
 			"returns": "LuaMessage"
 		},
+		"getPath": {
+			"documentation": "Converts the path to an usable path\n\r* `file` User given path\n\r@return Null<String> Path to use or null if invalid",
+			"args": "file:String = null",
+			"returns": "LuaMessage<Null<String>>"
+		},
 		"getShared": {
 			"documentation": "Fetches the value associated with the given key in the shared space\n\r* `key` Key to look for\n\r@return Value found",
 			"args": "key:String = null",
 			"returns": "LuaMessage<Dynamic>"
-		},
-		"removeGroup": {
-			"documentation": "Removes the group with the given ID\n\r* `id` ID of the group to remove\n\r* `forceDestroy` Force the game to destroy the group",
-			"args": "id:Int = -1, forceDestroy:Bool = false",
-			"returns": "LuaMessage"
 		},
 		"createRaw": {
 			"documentation": "Creates an instance of the given type from the given arguments\n\r* `name` Full name of the class\n\r* `args` Arguments for the constructor\n\r@return Null<Int> Unique identifier used to cache this instance",
@@ -113,10 +118,10 @@
 		"addScript": {
 			"documentation": "Opens a script with the given file\n\r* `file` File to open\n\r* `autoImport` Automatically imports all the built-in methods\n\r* `isRelated` Is the file related to the current script?",
 			"args": "file:String = null, autoImport:Bool = true, isRelated:Bool = true",
-			"returns": "LuaMessage<Dynamic>"
+			"returns": "LuaMessage"
 		},
 		"getChanges": {
-			"documentation": "No documentation given.",
+			"documentation": "Fetches the values of the given fields in the instance of the given ID\n\r* `id` ID of the instance\n\r* `args` Names of the fields to get\n\r@return StringMap<Dynamic> Values of each field",
 			"args": "id:Int = null, args:Dynamic = null",
 			"returns": "LuaMessage<haxe.ds.StringMap<Dynamic>>"
 		},
@@ -131,8 +136,8 @@
 			"returns": "LuaMessage<Array<String>>"
 		},
 		"destroyRaw": {
-			"documentation": "Destroys the instance with the given ID\n\r* `name` Full name of the class\n\r* `id` ID of the instance to remove\n\r* `forceDestroy` Force the game to immediately destroy the instance",
-			"args": "name:String = null, id:Int = null, forceDestroy:Bool = false",
+			"documentation": "Destroys the instance with the given ID\n\r* `name` Full name of the class\n\r* `id` ID of the instance to remove",
+			"args": "name:String = null, id:Int = null",
 			"returns": "LuaMessage"
 		},
 		"callMethod": {

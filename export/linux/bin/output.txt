@@ -1,5 +1,44 @@
-Roots
-└── source/States/Title/Scripts/script.lua (Mem: 88B | Status: O)
-    ├── source/States/Title/Scripts/UI/gfTitle.lua (Mem: 96B | Status: O)
-    ├── source/States/Title/Scripts/UI/logoTitle.lua (Mem: 100B | Status: O)
-    └── source/States/Title/Scripts/UI/titleEnter.lua (Mem: 102B | Status: O)
+===== DEBUG REPORT =====
+
+[ MEMORY USAGE ]
+- Total: 174.73MB
+- Used: 78.49MB
+- Allocated: 96.24MB
+
+[ OBJECT HIERARCHY ]
+- states.ScriptState (ID: 7) (ACTIVE)
+   - flixel.FlxSprite (ID: 10) (ACTIVE)
+   - flixel.FlxSprite (ID: 11) (ACTIVE)
+   - flixel.FlxSprite (ID: 12) (ACTIVE)
+
+[ SCRIPTS ]
+- source/States/Title/Scripts/script.lua (Mem: 80B | Status: O)
+ 	- source/States/Title/Scripts/UI/gfTitle.lua (Mem: 88B | Status: O)
+ 	- source/States/Title/Scripts/UI/logoTitle.lua (Mem: 92B | Status: O)
+ 	- source/States/Title/Scripts/UI/titleEnter.lua (Mem: 94B | Status: O)
+
+[ CACHE ]
+By Size:
+- source/States/Title/Music/freakyMenu.ogg (9.42MB)
+- source/States/Title/Images/logoBumpin.png (8.36MB)
+- source/States/Title/XML/titleEnter.xml (1.01kB)
+- source/shared/XML/alphabet.xml (185.01kB)
+- source/States/Title/Images/titleEnter.png (1.05MB)
+- source/States/Title/XML/gfDanceTitle.xml (8.32kB)
+- source/States/Title/Images/gfDanceTitle.png (37.28MB)
+- source/shared/Images/alphabet.png (5.55MB)
+- source/States/Title/XML/logoBumpin.xml (4.25kB)
+
+By Name:
+- source/shared/Images/alphabet.png (5.55MB)
+- source/shared/XML/alphabet.xml (185.01kB)
+- source/States/Title/Music/freakyMenu.ogg (9.42MB)
+- source/States/Title/Images/gfDanceTitle.png (37.28MB)
+- source/States/Title/XML/gfDanceTitle.xml (8.32kB)
+- source/States/Title/Images/logoBumpin.png (8.36MB)
+- source/States/Title/XML/logoBumpin.xml (4.25kB)
+- source/States/Title/Images/titleEnter.png (1.05MB)
+- source/States/Title/XML/titleEnter.xml (1.01kB)
+Total: 61.86MB
+
+=========================

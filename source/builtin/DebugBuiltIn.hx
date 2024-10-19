@@ -20,12 +20,19 @@ class DebugBuiltIn
 		return results;
 	}
 
-	public static function printState():Void
+	/**
+	 * Prints the current state of the game into the given file
+	 * @param file File to print to
+	 */
+	public static function printState(file:String = null):Void
 	{
+		if (file == null)
+			file = "output.txt";
+
 		var result:String = DebugHelper.printState();
 
 		// Save the resullt to a file
-		var file = sys.io.File.write("output.txt");
+		var file = sys.io.File.write(file);
 		file.writeString(result);
 		file.close();
 	}

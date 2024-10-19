@@ -3,7 +3,6 @@ package builtin;
 import helpers.ResourceHelper;
 import helpers.FlxBasicHelper;
 import flixel.FlxSprite;
-import helpers.FileHelper;
 
 /** Class holding every built-in methods for sprites */
 @:rtti
