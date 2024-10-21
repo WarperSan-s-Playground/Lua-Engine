@@ -1,5 +1,4 @@
 require("source.utils.Raw");
-importFile("GroupBuiltIn");
 
 FlxSprite = require("source.objects.flixel.FlxSprite");
 FlxGroup = setmetatable({}, FlxSprite);

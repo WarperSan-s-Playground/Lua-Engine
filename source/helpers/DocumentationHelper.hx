@@ -1,6 +1,6 @@
 package helpers;
 
-import lua_bridge.LuaImport;
+import engine.script.BuiltIns.BUILT_IN;
 
 /** Class that creates the documentation for this engine to be compatible with https://github.com/Snirozu/Funkin-Script-AutoComplete */
 class DocumentationHelper
@@ -10,8 +10,8 @@ class DocumentationHelper
 	{
 		var generated:Map<String, Dynamic> = [];
 		var functions:Map<String, Dynamic> = [];
-
-		for (t in LuaImport.getBuiltIn(true))
+		
+		for (t in BUILT_IN)
 			for (i in ProcessClass(t))
 				functions.set(i[0], i[1]);
 

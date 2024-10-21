@@ -1,7 +1,7 @@
 package builtin;
 
 import engine.ScriptCache;
-import engine.Script;
+import engine.script.Script;
 
 /** Class holding every built-in methods for data */
 @:rtti

@@ -3,7 +3,7 @@ package custom;
 import haxe.ds.StringMap;
 import helpers.DebugHelper;
 import interfaces.IMeasurable;
-import engine.Script;
+import engine.script.Script;
 
 /** Class that manages the data sharing between scripts */
 class DataContainer implements IMeasurable

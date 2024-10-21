@@ -1,8 +1,5 @@
 require("source.utils.Raw");
 
--- Manual import
-importFile("DataBuiltIn");
-
 local sprite;
 
 function OnCreate()

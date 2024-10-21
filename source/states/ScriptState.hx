@@ -1,11 +1,11 @@
 package states;
 
-import engine.Script;
+import engine.script.Script;
 
 /** State that is created from a script */
 class ScriptState extends flixel.FlxState
 {
-	private var root:Script;
+	private var instance:Script;
 	private var file:String;
 
 	public function new(file:String)
@@ -14,20 +14,20 @@ class ScriptState extends flixel.FlxState
 		this.file = file;
 	}
 
-	override function create()
+	public override function create()
 	{
-		root = Script.openFile(this.file, true);
+		instance = Script.openFile(this.file, null);
 	}
 
-	override function update(elapsed:Float)
+	public override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		root.call("OnUpdate", [elapsed], true);
+		instance.Events.OnUpdate(elapsed);
 	}
 
 	override function destroy()
 	{
 		super.destroy();
-		root.close();
+		instance.close();
 	}
 }

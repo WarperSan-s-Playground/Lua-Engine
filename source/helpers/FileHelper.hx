@@ -1,7 +1,7 @@
 package helpers;
 
 import engine.ScriptCache;
-import engine.Script;
+import engine.script.Script;
 import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;

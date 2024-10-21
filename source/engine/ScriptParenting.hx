@@ -1,5 +1,6 @@
 package engine;
 
+import engine.script.Script;
 import helpers.FileHelper;
 import custom.PointerMap;
 
@@ -18,13 +19,7 @@ class ScriptParenting
 		if (roots.contains(child))
 			return null;
 
-		var parent:Null<Script> = parentMap.get(child);
-
-		// If parent found, return
-		if (parent != null)
-			return parent;
-
-		throw('The script \'${child.File}\' is not a root nor a child of any script.');
+		return parentMap.get(child);
 	}
 
 	/** Sets the parent of the given child to the given parent */
@@ -48,6 +43,7 @@ class ScriptParenting
 	}
 
 	// #endregion
+
 	// #region Child
 
 	/** Fetches all the children of the given parent */

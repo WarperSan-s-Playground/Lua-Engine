@@ -1,6 +1,5 @@
 require("source.utils.Raw");
 require("source.utils.Color");
-importFile("SpriteBuiltIn");
 
 require("source.objects.flixel.FlxObject");
 FlxSprite = CreateClass("flixel.FlxSprite", "source.objects.flixel.FlxObject");

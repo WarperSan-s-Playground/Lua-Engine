@@ -1,5 +1,6 @@
 package engine;
 
+import engine.script.Script;
 import helpers.LogHelper;
 import custom.PointerMap;
 import sys.thread.Thread;

@@ -13,14 +13,14 @@ function OnCreate()
     setShared("TITLE_DATA", data);
 
     -- Add children
-    addScript("UI/gfTitle.lua", false);
-    addScript("UI/logoTitle.lua", false);
-    addScript("UI/titleEnter.lua", false);
+    addScript("UI/gfTitle.lua");
+    addScript("UI/logoTitle.lua");
+    addScript("UI/titleEnter.lua");
 
     CreateBlackScreen();
 
-    addScript("UI/newGroundsLogo.lua", false);
-    addScript("UI/introTexts.lua", false);
+    addScript("UI/newGroundsLogo.lua");
+    addScript("UI/introTexts.lua");
 
     -- -- Set Music
     playMusic("../Music/freakyMenu.ogg", true, 0);

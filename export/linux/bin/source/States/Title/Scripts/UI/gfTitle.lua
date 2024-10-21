@@ -1,8 +1,5 @@
 require("source.utils.Raw");
 
--- Manual imports
-importFile("DataBuiltIn");
-
 local danceLeft = true;
 local sprite;
 

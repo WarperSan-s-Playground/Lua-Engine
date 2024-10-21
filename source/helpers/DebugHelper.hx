@@ -1,6 +1,5 @@
 package helpers;
 
-import haxe.ds.StringMap;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import flixel.graphics.FlxGraphic;
@@ -9,11 +8,10 @@ import flixel.group.FlxGroup;
 import flixel.util.FlxStringUtil;
 import cpp.vm.Gc;
 import flixel.FlxG;
-import flixel.system.debug.stats.Stats;
 import haxe.Constraints.IMap;
 import interfaces.IMeasurable;
 import engine.ScriptParenting;
-import engine.Script;
+import engine.script.Script;
 
 /** Handles debug methods */
 class DebugHelper
@@ -92,7 +90,6 @@ class DebugHelper
 
 	private static function memoryUsage():String
 	{
-		var stats:Stats = new Stats();
 		var result:String = "[ MEMORY USAGE ]\n";
 
 		var memUsed:Float = openfl.system.System.totalMemory;
@@ -177,13 +174,13 @@ class DebugHelper
 		// Status
 		switch (script.State)
 		{
-			case Open:
+			case OPEN:
 				status = "O";
-			case Running:
+			case RUNNING:
 				status = "R";
-			case Errored:
+			case ERRORED:
 				status = "E";
-			case Closed:
+			case CLOSED:
 				status = "C";
 			default:
 				status = "?";

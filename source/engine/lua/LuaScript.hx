@@ -1,105 +1,48 @@
-package engine;
+package engine.lua;
 
+import engine.script.Message;
+import engine.script.Script;
 import llua.Convert;
 import helpers.LogHelper;
 import haxe.Exception;
-import lua_bridge.LuaImport;
-import custom.DataContainer;
 import llua.Lua;
 import llua.LuaL;
 import llua.State;
 
-typedef LuaMessage =
+/** Class that represents an instance of a .lua script */
+class LuaScript extends Script
 {
-	var message:String;
-	var value:Null<Dynamic>;
-	var isError:Bool;
-}
-
-/** Class that represents an instance of a Lua script */
-class LuaScript extends engine.Script
-{
-	public function new(file:String, parent:Null<Script>, autoImport:Bool)
+	public function new(file:String, parent:Null<Script>)
 	{
 		super(file, parent);
 
-		this.setLua(autoImport);
-
-		// Set data
-		this.Shared = new DataContainer(this);
+		this.setLua();
 	}
 
 	// #region Lua
-	private var lua:llua.State;
+	private var lua:State;
 
-	/**
-	 * Sets the lua state
-	 * @param autoImport Automatically imports all the built-in functions
-	 */
-	private function setLua(autoImport:Bool):Void
+	/** Sets the lua state **/
+	private function setLua():Void
 	{
 		this.lua = LuaL.newstate();
 		this.LinkKey = this.lua;
-
-		var methods:Array<Dynamic> = LuaImport.getBuiltIn(autoImport);
-
-		// Add every built-in methods
-		var i:Int = 0;
-		while (i < methods.length)
-		{
-			this.importFile(methods[i]);
-			i++;
-		}
 	}
 
 	// #endregion
 	// #region Import
 
-	public override function importMethod(name:String, callback:Dynamic):Void
+	private override function importMethod(name:String, callback:Dynamic):Void
 	{
 		if (callback == null)
 			throw('Could not add the method \'$name\'.');
 
-		add(this.lua, name, callback);
-	}
-
-	/**
-	 * Adds the given function to the given lua script
-	 * @param lua Script to add to
-	 * @param name Name of the function
-	 * @param Callback of the function
-	 */
-	private static function add(lua:State, name:String, func:Dynamic):Void
-	{
-		Lua_helper.add_callback(lua, name, func);
-	}
-
-	/**
-	 * Adds all the functions from the given object as a callback
-	 * @param lua Script to add to
-	 * @param Object to fetch the functions from
-	 */
-	public static function addAll(lua:State, o:Dynamic):Void
-	{
-		var fields:Array<String> = Type.getClassFields(o);
-
-		// Add each field
-		for (field in fields)
-		{
-			var callback:Dynamic = Reflect.field(o, field);
-
-			// If not a function, skip
-			if (!Reflect.isFunction(callback))
-				continue;
-
-			add(lua, field, callback);
-		}
+		Lua_helper.add_callback(this.lua, name, callback);
 	}
 
 	// #endregion
 	// #region Execute
 
-	/** Executes this script */
 	public function execute():Void
 	{
 		// Open standard libraries
@@ -155,7 +98,7 @@ class LuaScript extends engine.Script
 			if (script != null)
 			{
 				file = script.File;
-				script.State = Errored;
+				script.State = ERRORED;
 			}
 
 			LogHelper.error('Error while calling \'$name\' in \'$file\': ${e.message}');
@@ -166,12 +109,6 @@ class LuaScript extends engine.Script
 		return 1; // Has return value
 	}
 
-	/**
-	 * Calls the given method in the given file
-	 * @param name Name of the method to call
-	 * @param args Arguments to pass
-	 * @return LuaMessage or null if not found
-	 */
 	public function callMethod(name:String, args:Array<Dynamic>):Null<Dynamic>
 	{
 		var result:Dynamic = null;
@@ -213,7 +150,7 @@ class LuaScript extends engine.Script
 			if (script != null)
 			{
 				file = script.File;
-				script.State = Errored;
+				script.State = ERRORED;
 			}
 
 			LogHelper.error('Error while invoking \'$name\' in \'$file\': ${e.message}');
@@ -227,7 +164,7 @@ class LuaScript extends engine.Script
 	 * Creates a success
 	 * @param value Value of the success
 	 */
-	private inline static function success(value:Null<Dynamic>):LuaMessage
+	private inline static function success(value:Null<Dynamic>):Message
 		return {message: "Success.", value: value, isError: false};
 
 	/**
@@ -235,7 +172,7 @@ class LuaScript extends engine.Script
 	 * @param message Message of the error
 	 * @param value Value of the error
 	 */
-	private inline static function error(message:String = "Message undefined", value:Null<Dynamic> = false):LuaMessage
+	private inline static function error(message:String = "Message undefined", value:Null<Dynamic> = false):Message
 		return {message: message, value: value, isError: true};
 
 	// #endregion

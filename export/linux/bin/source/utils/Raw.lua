@@ -1,5 +1,3 @@
-importFile("RawBuiltIn");
-
 Raw = {};
 
 function FormatPath(class, name, id)

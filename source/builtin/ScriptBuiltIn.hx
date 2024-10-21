@@ -1,9 +1,8 @@
 package builtin;
 
+import engine.script.Script;
 import engine.ScriptParenting;
 import engine.ScriptCache;
-import engine.Script;
-import lua_bridge.LuaImport;
 import helpers.LogHelper;
 import helpers.FileHelper;
 
@@ -14,10 +13,9 @@ class ScriptBuiltIn
 	/**
 	 * Opens a script with the given file
 	 * @param file File to open
-	 * @param autoImport Automatically imports all the built-in methods
 	 * @param isRelated Is the file related to the current script?
 	 */
-	public static function addScript(file:Null<String> = null, autoImport:Bool = true, isRelated:Bool = true):Void
+	public static function addScript(file:Null<String> = null, isRelated:Bool = true):Void
 	{
 		var fixed:String = FileHelper.GetPath(file);
 
@@ -26,19 +24,18 @@ class ScriptBuiltIn
 			throw('Could not find a file at \'$file\'.');
 
 		var child:Null<Script> = null;
+		var script:Null<Script> = null;
 
 		// Create the script as child
 		if (isRelated)
 		{
-			var script:Null<Script> = ScriptCache.GetScript();
+			script = ScriptCache.GetScript();
 
 			if (script == null)
 				throw('Tried to add a script from an invalid script.');
-
-			child = script.openOther(file, autoImport);
 		}
-		else
-			child = Script.openFile(file, autoImport);
+
+		child = Script.openFile(file, script);
 
 		if (child == null)
 			throw('Failed to create a script for the file \'$file\'.');
@@ -60,61 +57,6 @@ class ScriptBuiltIn
 			throw('Could not find an instance of \'$file\'.');
 
 		script.close();
-	}
-
-	/**
-	 * Imports the given file to this script
-	 * @param file File to import
-	 */
-	public static function importFile(file:Null<String> = null):Void
-	{
-		// If invalid
-		if (file == null)
-			throw('No file was given to import.');
-
-		var script:Null<Script> = ScriptCache.GetScript();
-
-		if (script == null)
-			throw('Tried to import a file to an invalid script.');
-
-		var targetFile:Null<Dynamic> = null;
-
-		for (_file in LuaImport.IMPORTABLE_BUILT_IN)
-		{
-			var name:Null<String> = Type.getClassName(_file).split('.').pop();
-
-			if (name == null)
-				continue;
-
-			// If the target file is this file
-			if (name == file)
-			{
-				targetFile = _file;
-				break;
-			}
-
-			// If the target file is miswritten (SHORTEN)
-			if (name == file + "BuiltIn")
-			{
-				LogHelper.warn('Please import the file as \'$name\' instead of \'$file\'.');
-				targetFile = _file;
-				break;
-			}
-
-			// If the target file is miswritten (CASE INSENSITIVE)
-			if (name.toLowerCase() == file.toLowerCase())
-			{
-				LogHelper.warn('Please import the file as \'$name\' instead of \'$file\'.');
-				targetFile = _file;
-				break;
-			}
-		}
-
-		// If not file targetted, skip
-		if (targetFile == null)
-			throw('Could not find the file named \'$file\'.');
-
-		script.importFile(targetFile);
 	}
 
 	/**

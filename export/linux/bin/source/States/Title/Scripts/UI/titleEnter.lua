@@ -1,9 +1,6 @@
 require("source.utils.Color");
 require("source.utils.Raw");
 
--- Manual import
-importFile("DataBuiltIn");
-
 local timer = 0;
 local sprite;
 

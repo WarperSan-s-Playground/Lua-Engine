@@ -2,3 +2,5 @@
 /export/linux/haxe
 /export/linux/obj
 /export/linux/bin/LuaEngine
+/out/
+/.idea/

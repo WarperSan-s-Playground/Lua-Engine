@@ -1,7 +1,7 @@
 package builtin;
 
 import helpers.DebugHelper;
-import engine.Script;
+import engine.script.Script;
 import engine.ScriptParenting;
 
 /** Class holding every built-in methods for debugging */

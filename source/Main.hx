@@ -1,6 +1,6 @@
 package;
 
-import engine.LuaScript;
+import engine.lua.LuaScript;
 import objects.FPSCounter;
 import sys.FileSystem;
 import sys.thread.Thread;
