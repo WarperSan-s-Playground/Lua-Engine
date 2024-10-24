@@ -3,7 +3,6 @@ package builtin;
 import engine.script.Script;
 import engine.ScriptParenting;
 import engine.ScriptCache;
-import helpers.LogHelper;
 import helpers.FileHelper;
 
 /** Class holding every built-in methods for scripts */
@@ -79,6 +78,6 @@ class ScriptBuiltIn
 		if (args == null)
 			args = [];
 
-		return script.call(name, args, true);
+		return script.Events.callMethod(name, args, true);
 	}
 }

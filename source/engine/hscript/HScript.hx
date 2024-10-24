@@ -13,15 +13,13 @@ class HScript extends Script
 
 	private final loader:Loader;
 
-	override inline function importMethod(name:String, callback:Dynamic)
-		this.loader.set(name, callback, true);
-
-	public function execute()
-	{
+	public inline function execute():Void
 		this.loader.execute();
-	}
 
-	function callMethod(name:String, args:Array<Dynamic>):Null<Dynamic>
+	private inline function set(name:String, value:Dynamic):Void
+		this.loader.set(name, value, true);
+
+	public function callMethod(name:String, args:Array<Dynamic>):Null<Dynamic>
 	{
 		var value:Null<IrisCall> = this.loader.call(name, args);
 
@@ -31,8 +29,6 @@ class HScript extends Script
 		return value.returnValue;
 	}
 
-	function destroy()
-	{
+	private inline function destroy():Void
 		this.loader.destroy();
-	}
 }

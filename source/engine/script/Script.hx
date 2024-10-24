@@ -2,56 +2,50 @@ package engine.script;
 
 import engine.script.BuiltIns.BUILT_IN;
 import engine.script.Status;
-import helpers.DebugHelper;
-import interfaces.IMeasurable;
 import haxe.io.Path;
 import helpers.LogHelper;
 import helpers.FileHelper;
 import custom.DataContainer;
 
 /** Class that represents an instance of a script */
-abstract class Script implements IMeasurable
+abstract class Script
 {
 	public function new(file:String, parent:Null<Script>)
 	{
-		// Set file
-		var fixed:Null<String> = FileHelper.GetPath(file);
-
-		if (fixed == null)
-			throw('Could not find the file at \'$file\'.');
-
-		this.File = fixed;
-
-		// Set parent
+		this.File = file;
 		this.Parent = parent;
-
-		// Set data
 		this.Shared = new DataContainer(this);
-
-		// Set events
 		this.Events = new Events(this);
 	}
 
 	// #region Properties
 
 	/** File from which this script was created */
-	public final File:String;
+	public var File(default, set):String;
+
+	private function set_File(value:String):String
+	{
+		// Set file
+		var fixed:Null<String> = FileHelper.GetPath(value);
+
+		if (fixed == null)
+			throw('Could not find the file at \'$value\'.');
+
+		this.File = fixed;
+		return fixed;
+	}
 
 	// --- PARENTING ---
 
 	/** Parent of this script */
 	public var Parent(get, set):Null<Script>;
 
-	inline function get_Parent():Null<Script>
+	private inline function get_Parent():Null<Script>
 		return ScriptParenting.GetParent(this);
 
-	function set_Parent(value:Null<Script>):Null<Script>
+	private function set_Parent(value:Null<Script>):Null<Script>
 	{
-		if (value == null && this.Parent != null)
-			ScriptParenting.RemoveParent(this);
-		else
-			ScriptParenting.SetParent(this, value);
-
+		ScriptParenting.SetParent(this, value);
 		return value;
 	}
 
@@ -72,12 +66,55 @@ abstract class Script implements IMeasurable
 	// --- LINK ---
 
 	/** Key used to find this script */
-	public var LinkKey(default, null):Dynamic;
+	public var LinkKey(default, set):Dynamic;
+
+	private function set_LinkKey(value:Dynamic):Dynamic
+	{
+		// If unset the key, unlink
+		if (value == null)
+		{
+			ScriptCache.UnlinkScript(this.LinkKey, this);
+			this.LinkKey = null;
+			return null;
+		}
+
+		// If script already linked, unlink
+		if (this.LinkKey != null)
+		{
+			LogHelper.warn('Relinking the script \'${this.File}\'.');
+			ScriptCache.UnlinkScript(this.LinkKey, this);
+		}
+
+		ScriptCache.LinkScript(value, this);
+		this.LinkKey = value;
+
+		return value;
+	}
 
 	// --- STATE ---
 
 	/** Current state of this script */
-	public var State(default, default):Status = RUNNING;
+	public var State(default, set):Status = OPEN;
+
+	private function set_State(value:Status):Status
+	{
+		// If closed, skip
+		if (this.State == CLOSED)
+			return CLOSED;
+
+		// If closing, override all
+		if (value == CLOSED)
+		{
+			this.State = CLOSED;
+			return CLOSED;
+		}
+
+		this.State = value;
+		return value;
+	}
+
+	// --- EVENTS ---
+	public final Events:Events;
 
 	// #endregion
 	// #region Creation of scripts
@@ -88,40 +125,60 @@ abstract class Script implements IMeasurable
 	 * @param parent Parent of the new script
 	 * @return Script created
 	 */
-	public inline static function openFile(file:String, parent:Null<Script>):Null<Script>
+	public static function openFile(file:String, parent:Null<Script>):Null<Script>
 	{
 		// Create script
-		var script:Null<Dynamic> = null;
+		var script:Null<Script> = null;
 		var cls:Class<Dynamic> = getScriptClass(file);
 
 		try
 		{
 			script = Type.createInstance(cls, [file, parent]);
-			ScriptCache.LinkScript(script.LinkKey, script);
-
-			// Import built-ins
-			for (i in BUILT_IN)
-				script.importFile(i);
-
-			try
-			{
-				script.State = RUNNING;
-				script.execute();
-				script.State = OPEN;
-			}
-			catch (e:String)
-			{
-				script.State = ERRORED;
-				LogHelper.error('Error while executing \'${script.File}\': $e');
-			}
-
-			// Callback
-			script.Events.OnCreate(parent != null);
 		}
 		catch (e:String)
 		{
 			LogHelper.error('Error while creating a \'$cls\' from \'$file\': $e');
 			script = null;
+		}
+
+		// If errored, skip
+		if (script == null)
+			return null;
+
+		// Import built-ins
+		for (builtIn in BUILT_IN)
+		{
+			// Add each field
+			for (field in Type.getClassFields(builtIn))
+			{
+				var callback:Dynamic = Reflect.field(builtIn, field);
+
+				// If callback invalid, skip
+				if (callback == null)
+					continue;
+
+				// If not a function, skip
+				if (!Reflect.isFunction(callback))
+					continue;
+
+				script.set(field, callback);
+			}
+		}
+
+		try
+		{
+			script.State = RUNNING;
+			script.execute();
+
+			// Callback
+			script.Events.OnCreate(parent != null);
+
+			script.State = OPEN;
+		}
+		catch (e:String)
+		{
+			script.State = ERRORED;
+			LogHelper.error('Error while executing \'${script.File}\': $e');
 		}
 
 		return script;
@@ -131,7 +188,7 @@ abstract class Script implements IMeasurable
 	private static function getScriptClass(file:String):Class<Dynamic>
 	{
 		var cls:Null<Class<Dynamic>> = null;
-		var extension:Null<String> = Path.extension(file);
+		var extension:Null<String> = Path.extension(file).toLowerCase();
 
 		switch (extension)
 		{
@@ -147,69 +204,6 @@ abstract class Script implements IMeasurable
 	}
 
 	// #endregion
-	// #region Execution
-
-	/** Executes this script */
-	public abstract function execute():Void;
-
-	/** Calls the given method in this script */
-	public function call(name:String, args:Array<Dynamic>, callInChildren:Bool):Map<String, Null<Dynamic>>
-	{
-		// If the script has ERRORED, skip all call
-		if (this.State == ERRORED)
-			return [];
-
-		var results:Map<String, Null<Dynamic>> = [];
-
-		// Call in self
-		results.set(this.File, this.callMethod(name, args));
-
-		if (callInChildren)
-		{
-			for (child in this.Children)
-			{
-				for (r in child.call(name, args, callInChildren))
-					results.set(child.File, r);
-			}
-		}
-
-		return results;
-	}
-
-	private abstract function callMethod(name:String, args:Array<Dynamic>):Null<Dynamic>;
-
-	// #endregion
-	// #region Importing
-
-	/**
-	 * Imports a single method to this script
-	 * @param name Name of the method
-	 * @param callback Action to call
-	 */
-	private function importMethod(name:String, callback:Dynamic):Void {}
-
-	/**
-	 * Imports a whole class to this script
-	 * @param builtIn Class to import from
-	 */
-	private function importFile(builtIn:Dynamic):Void
-	{
-		var fields:Array<String> = Type.getClassFields(builtIn);
-
-		// Add each field
-		for (field in fields)
-		{
-			var callback:Dynamic = Reflect.field(builtIn, field);
-
-			// If not a function, skip
-			if (!Reflect.isFunction(callback))
-				continue;
-
-			this.importMethod(field, callback);
-		}
-	}
-
-	// #endregion
 	// #region Closing
 
 	/** Closes this script and the related scripts */
@@ -222,44 +216,41 @@ abstract class Script implements IMeasurable
 		this.State = CLOSED;
 
 		// Close children
-		for (child in ScriptParenting.GetChildren(this))
-		{
-			// If invalid, skip
-			if (child == null)
-				continue;
-
+		for (child in this.Children)
 			child.close();
-		}
 
 		// Callback
 		this.Events.OnDestroy();
-
-		// Close self
-		this.Parent = null;
-		ScriptCache.UnlinkScript(this.LinkKey, this);
 		this.destroy();
+
+		// Remove from systems
+		this.Parent = null;
+		this.LinkKey = null;
 	}
+
+	// #endregion
+	// #region Abstract
+
+	/** Executes this script */
+	public abstract function execute():Void;
+
+	/**
+	 * Calls the method of the given name with the given arguments
+	 * @param name Name of the method to call
+	 * @param args Arguments to use in the call
+	 * @return Result of the call
+	 */
+	public abstract function callMethod(name:String, args:Array<Dynamic>):Null<Dynamic>;
+
+	/**
+	 * Sets the global of the given name to the given value
+	 * @param name Name of the global value
+	 * @param value Value of the global
+	 */
+	private abstract function set(name:String, value:Dynamic):Void;
 
 	/** Destroys this script */
 	private abstract function destroy():Void;
-
-	// #endregion
-	// #region Events
-	public final Events:Events;
-
-	// #endregion
-	// #region Size Measurement
-
-	public function getSize():Int
-	{
-		var size = 0;
-
-		size += DebugHelper.getSize(this.File);
-		size += DebugHelper.getSize(this.Shared);
-		size += DebugHelper.getSize(this.State);
-
-		return size;
-	}
 
 	// #endregion
 }

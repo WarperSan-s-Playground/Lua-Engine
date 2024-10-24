@@ -169,7 +169,7 @@ class DebugHelper
 		file = script.File;
 
 		// Memory
-		memory = Std.string(script.getSize()) + "B";
+		memory = Std.string(getSize(script.Shared)) + "B";
 
 		// Status
 		switch (script.State)

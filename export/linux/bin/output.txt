@@ -1,9 +1,9 @@
 ===== DEBUG REPORT =====
 
 [ MEMORY USAGE ]
-- Total: 183.58MB
-- Used: 82.97MB
-- Allocated: 100.61MB
+- Total: 174.87MB
+- Used: 78.46MB
+- Allocated: 96.42MB
 
 [ OBJECT HIERARCHY ]
 - states.ScriptState (ID: 7) (ACTIVE)
@@ -13,9 +13,10 @@
 
 [ SCRIPTS ]
 - source/States/Title/Scripts/script.lua (Mem: 80B | Status: O)
- 	- source/States/Title/Scripts/UI/gfTitle.lua (Mem: 88B | Status: O)
- 	- source/States/Title/Scripts/UI/logoTitle.lua (Mem: 92B | Status: O)
- 	- source/States/Title/Scripts/UI/titleEnter.lua (Mem: 94B | Status: O)
+│	- source/States/Title/Scripts/UI/gfTitle.hx (Mem: 86B | Status: O)
+│	- source/States/Title/Scripts/UI/logoTitle.lua (Mem: 92B | Status: O)
+│	- source/States/Title/Scripts/UI/titleEnter.lua (Mem: 94B | Status: O)
+- start.lua (Mem: 22B | Status: C)
 
 [ CACHE ]
 By Size:

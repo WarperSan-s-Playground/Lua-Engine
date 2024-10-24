@@ -43,7 +43,6 @@ class ScriptParenting
 	}
 
 	// #endregion
-
 	// #region Child
 
 	/** Fetches all the children of the given parent */
@@ -53,8 +52,13 @@ class ScriptParenting
 
 		for (key in parentMap.keys())
 		{
-			if (parentMap.get(key) == parent)
-				children.push(key);
+			if (key == null)
+				continue;
+
+			if (parentMap.get(key) != parent)
+				continue;
+
+			children.push(key);
 		}
 
 		return children;

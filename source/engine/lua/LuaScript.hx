@@ -2,7 +2,6 @@ package engine.lua;
 
 import engine.script.Message;
 import engine.script.Script;
-import llua.Convert;
 import helpers.LogHelper;
 import haxe.Exception;
 import llua.Lua;
@@ -16,31 +15,12 @@ class LuaScript extends Script
 	{
 		super(file, parent);
 
-		this.setLua();
-	}
-
-	// #region Lua
-	private var lua:State;
-
-	/** Sets the lua state **/
-	private function setLua():Void
-	{
 		this.lua = LuaL.newstate();
 		this.LinkKey = this.lua;
 	}
 
-	// #endregion
-	// #region Import
+	private var lua:State;
 
-	private override function importMethod(name:String, callback:Dynamic):Void
-	{
-		if (callback == null)
-			throw('Could not add the method \'$name\'.');
-
-		Lua_helper.add_callback(this.lua, name, callback);
-	}
-
-	// #endregion
 	// #region Execute
 
 	public function execute():Void
@@ -84,7 +64,7 @@ class LuaScript extends Script
 			var args:Array<Dynamic> = [];
 
 			for (i in 0...paramCount)
-				args.push(fromLua(lua, i + 1, paramCount + 1));
+				args.push(LuaConvert.fromLua(lua, i + 1, paramCount + 1));
 
 			// Call method
 			var value:Dynamic = Reflect.callMethod(null, callback, args);
@@ -105,179 +85,52 @@ class LuaScript extends Script
 			result = error(e.message);
 		}
 
-		toLua(lua, result);
+		LuaConvert.toLua(lua, result);
 		return 1; // Has return value
 	}
 
 	public function callMethod(name:String, args:Array<Dynamic>):Null<Dynamic>
 	{
-		var result:Dynamic = null;
+		Lua.getglobal(this.lua, name);
 
-		try
-		{
-			Lua.getglobal(this.lua, name);
+		var type:Int = Lua.type(this.lua, -1);
 
-			var type:Int = Lua.type(this.lua, -1);
-
-			// If not found, skip
-			if (type == Lua.LUA_TNIL)
-				return null;
-
-			// If not function, error
-			if (type != Lua.LUA_TFUNCTION)
-				throw('Tried to call \'$name\', but it is not a function.');
-
-			// Put arguments
-			for (arg in args)
-				toLua(this.lua, arg);
-
-			// Call
-			var error:Int = Lua.pcall(this.lua, args.length, 1, 0);
-
-			var value:Dynamic = fromLua(this.lua, -1, 0);
-
-			if (error != 0)
-				throw(value);
-
-			result = success(value);
-			Lua.pop(lua, 1);
-		}
-		catch (e:Exception)
-		{
-			var script:Null<Script> = ScriptCache.GetScript();
-			var file:String = "undefined";
-
-			if (script != null)
-			{
-				file = script.File;
-				script.State = ERRORED;
-			}
-
-			LogHelper.error('Error while invoking \'$name\' in \'$file\': ${e.message}');
-			result = error(e.message);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Creates a success
-	 * @param value Value of the success
-	 */
-	private inline static function success(value:Null<Dynamic>):Message
-		return {message: "Success.", value: value, isError: false};
-
-	/**
-	 * Creates an error
-	 * @param message Message of the error
-	 * @param value Value of the error
-	 */
-	private inline static function error(message:String = "Message undefined", value:Null<Dynamic> = false):Message
-		return {message: message, value: value, isError: true};
-
-	// #endregion
-	// #region Convert
-
-	private static function fromLua(lua:State, i:Int, offset:Int):Dynamic
-	{
-		var type:Int = Lua.type(lua, i);
-
-		// If null, return null
-		if (type == Lua.LUA_TNONE)
+		// If not found, skip
+		if (type == Lua.LUA_TNIL)
 			return null;
 
-		// If not a table, use pre-made
-		if (type != Lua.LUA_TTABLE)
-			return Convert.fromLua(lua, i);
+		// If not function, error
+		if (type != Lua.LUA_TFUNCTION)
+			throw('Tried to call \'$name\', but it is not a function.');
 
-		var orderArgs:Array<Dynamic> = [];
-		var unorderArgs:Map<Dynamic, Dynamic> = new Map<Dynamic, Dynamic>();
-		var hasOrder:Bool = true;
+		// Put arguments
+		for (arg in args)
+			LuaConvert.toLua(this.lua, arg);
 
-		// Add padding
-		Lua.pushnil(lua);
+		// Call
+		var error:Int = Lua.pcall(this.lua, args.length, 1, 0);
 
-		var start = i - offset;
-		start -= 1; // Offset from padding
+		var value:Dynamic = LuaConvert.fromLua(this.lua, -1, 0);
 
-		// Load table
-		Lua.gettable(lua, start);
+		if (error != 0)
+			throw(value);
 
-		while (Lua.next(lua, start) != 0)
-		{
-			var key:String = Std.string(fromLua(lua, -2, 0));
-			var value:Dynamic = fromLua(lua, -1, 0);
+		Lua.pop(lua, 1);
 
-			// Set value
-			unorderArgs.set(key, value);
-			orderArgs.push(value);
-
-			if (hasOrder && key != Std.string(orderArgs.length))
-				hasOrder = false;
-
-			// Remove the value, keep the key for next iteration
-			Lua.pop(lua, 1);
-		}
-
-		// Remove padding
-		Lua.pop(lua, 0);
-
-		return hasOrder ? orderArgs : unorderArgs;
-	}
-
-	private static function toLua(lua:State, value:Dynamic):Void
-	{
-		// If value is null, return null
-		if (value == null)
-		{
-			Lua.pushnil(lua);
-			return;
-		}
-
-		var primitiveTypes:Array<Dynamic> = [Int, Float, Bool, String, Array, haxe.ds.StringMap];
-
-		for (i in primitiveTypes)
-		{
-			// If value is primitive type, return base value
-			if (Std.isOfType(value, i))
-			{
-				Convert.toLua(lua, value);
-				return;
-			}
-		}
-
-		// If not a class or an annonymous object, return null
-		if (Type.typeof(value) != Type.ValueType.TObject)
-		{
-			Lua.pushnil(lua);
-			return;
-		}
-
-		// If a class, return class name
-		if (Reflect.field(value.value, "__class__") != null)
-		{
-			Lua.pushstring(lua, Std.string(value.value));
-			return;
-		}
-
-		Lua.createtable(lua, 0, 0); // Create an empty table
-
-		// Iterate over the fields of the Haxe object
-		for (n in Reflect.fields(value))
-		{
-			Lua.pushstring(lua, n); // Push the field name as a key
-			toLua(lua, Reflect.field(value, n)); // Convert the field value to Lua
-			Lua.settable(lua, -3); // Set the key-value pair in the table
-		}
+		return success(value);
 	}
 
 	// #endregion
-	// #region Close
 
-	private function destroy():Void
+	private inline function set(name:String, value:Dynamic):Void
 	{
+		if (Reflect.isFunction(value))
+		{
+			Lua_helper.add_callback(this.lua, name, value);
+			return;
+		}
+	}
+
+	private inline function destroy():Void
 		Lua.close(this.lua);
-	}
-
-	// #endregion
 }

@@ -8,7 +8,7 @@ import sys.thread.Thread;
 /** Class that manages the access of scripts from a value or from a thread */
 class ScriptCache
 {
-    private static var runningScripts:PointerMap<Dynamic, Script> = new PointerMap<Dynamic, Script>();
+	private static var runningScripts:PointerMap<Dynamic, Script> = new PointerMap<Dynamic, Script>();
 	private static var lastScriptRan:Map<Dynamic, Script> = new Map<Dynamic, Script>();
 
 	/**
@@ -46,6 +46,13 @@ class ScriptCache
 	/** Links the given script to the given key */
 	public static function LinkScript(key:Dynamic, script:Script):Void
 	{
+		// If invalid, skip
+		if (key == null)
+		{
+			LogHelper.warn("Tried to register a script without giving a key.");
+			return;
+		}
+
 		// If exists, skip
 		if (runningScripts.exists(key))
 		{
@@ -59,6 +66,10 @@ class ScriptCache
 	/** Unlinks the given script from the given key if they were linked */
 	public static function UnlinkScript(key:Dynamic, script:Script):Void
 	{
+		// If invalid, skip
+		if (key == null)
+			return;
+
 		// If not found, skip
 		if (!runningScripts.exists(key))
 			return;
